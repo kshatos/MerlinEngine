@@ -3,6 +3,10 @@ project(MerlinEngine)
 
 option(BUILD_DEMO "Build the demo program" ON)
 option(BUILD_TESTS "Build the test program" ON)
+option(ENABLE_MERLIN_LOGGING "Enable merlin logging" ON)
+if(ENABLE_MERLIN_LOGGING)
+    add_compile_definitions(MERLIN_USE_LOGGING)
+endif()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Merlin)
 
