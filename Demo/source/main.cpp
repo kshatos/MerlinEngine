@@ -4,7 +4,8 @@
 void main()
 {
     Merlin::Logger::Init();
-    Merlin::Logger::GetLogger()->info("Hello World");
-    Merlin::Logger::GetLogger()->warn("Uh-Oh");
-    Merlin::Logger::GetLogger()->error("Yikes");
+    ME_LOG_INFO("Hello World");
+    ME_LOG_WARN("Oh-oh");
+    ME_LOG_ERROR("Yikes");
+    ME_LOG_FATAL("Oof");
 }

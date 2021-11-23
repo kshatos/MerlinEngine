@@ -1,3 +1,4 @@
+
 set(MERLIN_SRC
     Merlin/Core/logger.cpp
 )
@@ -21,6 +22,6 @@ target_include_directories(Merlin
 )
 
 target_link_libraries(Merlin
-    PUBLIC
+    PRIVATE
     spdlog::spdlog
 )
