@@ -10,7 +10,9 @@ namespace Merlin
     {
         None = 0,
         WindowClosed,
-        WindowResized
+        WindowResized,
+        KeyPressed,
+        KeyReleased
     };
 
     class AppEvent
@@ -47,6 +49,42 @@ namespace Merlin
         {
             std::ostringstream oss;
             oss << "WindowResizedEvent (" << new_width << ", " << new_height << ")";
+            return oss.str();
+        }
+    };
+
+    // KEY EVENTS
+    using KeyCode = uint16_t;
+
+    class KeyPressedEvent : public AppEvent
+    {
+        KeyCode key;
+        unsigned int repeat_count;
+    public:
+        KeyPressedEvent(KeyCode _key, int _repeat_count) : key(_key), repeat_count(_repeat_count) {}
+        inline KeyCode GetKeyCode() { return key; }
+        static AppEventType GetStaticType() { return AppEventType::KeyPressed; }
+        inline AppEventType GetType() override { return AppEventType::KeyPressed; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "KeyPressedEvent: keycode " << key << ", repeat " << repeat_count;
+            return oss.str();
+        }
+    };
+
+    class KeyReleasedEvent : public AppEvent
+    {
+        KeyCode key;
+    public:
+        KeyReleasedEvent(KeyCode _key) : key(_key) {}
+        inline KeyCode GetKeyCode() { return key; }
+        static AppEventType GetStaticType() { return AppEventType::KeyReleased; }
+        inline AppEventType GetType() override { return AppEventType::KeyReleased; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "KeyPressedEvent: keycode " << key;
             return oss.str();
         }
     };
