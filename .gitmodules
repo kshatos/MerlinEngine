@@ -1,3 +1,6 @@
 [submodule "Merlin/thirdparty/spdlog"]
 	path = Merlin/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "Merlin/thirdparty/glfw"]
+	path = Merlin/thirdparty/glfw
+	url = https://github.com/glfw/glfw.git

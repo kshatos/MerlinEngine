@@ -15,6 +15,7 @@ add_library(Merlin STATIC
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
 
 set_property(TARGET Merlin PROPERTY CXX_STANDARD 17)
 
@@ -26,4 +27,5 @@ target_include_directories(Merlin
 target_link_libraries(Merlin
     PRIVATE
     spdlog::spdlog
+    glfw
 )
