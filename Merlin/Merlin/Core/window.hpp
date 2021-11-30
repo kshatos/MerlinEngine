@@ -21,6 +21,7 @@ namespace Merlin
 
     class Window
     {
+    public:
         using EventCallbackFunction = std::function<void(AppEvent&)>;
 
         virtual ~Window() {}
