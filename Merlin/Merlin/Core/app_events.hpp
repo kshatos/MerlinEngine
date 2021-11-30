@@ -2,6 +2,7 @@
 #define APP_EVENTS_HPP
 #include <string>
 #include <sstream>
+#include <functional>
 
 
 namespace Merlin
@@ -21,12 +22,22 @@ namespace Merlin
 
     class AppEvent
     {
+        bool was_handled = false;
     public:
         virtual ~AppEvent() {}
         virtual AppEventType GetType() = 0;
         virtual std::string ToString() = 0;
-    protected:
-        bool was_handled = false;
+
+        template<typename T>
+        static void Dispatch(
+            AppEvent& app_event,
+            std::function<bool(T&)> callback)
+        {
+            if (app_event.GetType() == T::GetStaticType())
+            {
+                app_event.was_handled |= callback(static_cast<T&>(app_event));
+            }
+        }
     };
 
     // WINDOW EVENTS
