@@ -7,6 +7,7 @@ set(MERLIN_INC
     Merlin/Core/logger.hpp
     Merlin/Core/logger.hpp
     Merlin/Core/app_events.hpp
+    Merlin/Core/window.hpp
 )
 
 add_library(Merlin STATIC
