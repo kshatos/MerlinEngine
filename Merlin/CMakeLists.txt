@@ -29,6 +29,7 @@ target_include_directories(Merlin
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 
 set_property(TARGET Merlin PROPERTY CXX_STANDARD 17)
 
@@ -40,5 +41,6 @@ target_link_libraries(Merlin
     PRIVATE
     spdlog::spdlog
     glfw
+    glad
     ${OPENGL_LIBRARIES}
 )
