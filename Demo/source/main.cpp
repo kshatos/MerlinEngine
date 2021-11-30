@@ -1,11 +1,30 @@
 #include "Merlin/Core/logger.hpp"
+#include "Merlin/Core/glfw_window.hpp"
+using namespace Merlin;
+
+bool is_running = true;
+
+void EventCallback(AppEvent& app_event)
+{
+    ME_LOG_INFO(app_event.ToString());
+
+    AppEvent::Dispatch<WindowClosedEvent>(app_event,
+        [](WindowClosedEvent& e)
+    {
+        is_running = false;
+        return true;
+    });
+}
 
 
 void main()
 {
-    Merlin::Logger::Init();
-    ME_LOG_INFO("Hello World");
-    ME_LOG_WARN("Oh-oh");
-    ME_LOG_ERROR("Yikes");
-    ME_LOG_FATAL("Oof");
+    Logger::Init();
+
+    GLFWWindowImpl window(WindowProperties("asdf", 600, 800));
+    window.SetEventCallback(EventCallback);
+    while (is_running)
+    {
+        window.OnUpdate();
+    }
 }
