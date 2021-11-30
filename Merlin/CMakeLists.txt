@@ -1,6 +1,7 @@
 
 set(MERLIN_SRC
     Merlin/Core/logger.cpp
+    Merlin/Core/window.cpp
     Merlin/Core/glfw_window.cpp
 )
 
@@ -32,7 +33,7 @@ target_include_directories(Merlin
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(Merlin
-    PUBLIC
+    PRIVATE
     spdlog::spdlog
     glfw
     ${OPENGL_LIBRARIES}
