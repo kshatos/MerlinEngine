@@ -12,7 +12,11 @@ namespace Merlin
         WindowClosed,
         WindowResized,
         KeyPressed,
-        KeyReleased
+        KeyReleased,
+        MouseMoved,
+        MouseButtonPressed,
+        MouseButtonReleased,
+        MouseScrolled
     };
 
     class AppEvent
@@ -85,6 +89,77 @@ namespace Merlin
         {
             std::ostringstream oss;
             oss << "KeyPressedEvent: keycode " << key;
+            return oss.str();
+        }
+    };
+
+    // MOUSE EVENTS
+    using MouseCode = uint16_t;
+
+    class MouseMovedEvent : public AppEvent
+    {
+        float x_position;
+        float y_position;
+    public:
+        MouseMovedEvent(float x, float y) : x_position(x), y_position(y) {}
+        static AppEventType GetStaticType() { return AppEventType::MouseMoved; }
+        inline AppEventType GetType() override { return AppEventType::MouseMoved; }
+        inline float GetX() { return x_position; }
+        inline float GetY() { return y_position; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "MouseMovedEvent (" << x_position << ", " << y_position << ")";
+            return oss.str();
+        }
+    };
+
+    class MouseButtonPressedEvent : public AppEvent
+    {
+        MouseCode button;
+    public:
+        MouseButtonPressedEvent(MouseCode _button) : button(_button) {}
+        static AppEventType GetStaticType() { return AppEventType::MouseButtonPressed; }
+        inline AppEventType GetType() override { return AppEventType::MouseButtonPressed; }
+        inline MouseCode GetButton() { return button; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "MouseButtonPressedEvent: buttoncode " << button;
+            return oss.str();
+        }
+    };
+
+    class MouseButtonReleasedEvent : public AppEvent
+    {
+        MouseCode button;
+    public:
+        MouseButtonReleasedEvent(MouseCode _button) : button(_button) {}
+        static AppEventType GetStaticType() { return AppEventType::MouseButtonReleased; }
+        inline AppEventType GetType() override { return AppEventType::MouseButtonReleased; }
+        inline MouseCode GetButton() { return button; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "MouseButtonReleasedEvent: buttoncode " << button;
+            return oss.str();
+        }
+    };
+
+    class MouseScrolledEvent : public AppEvent
+    {
+        float x_scroll;
+        float y_scroll;
+    public:
+        MouseScrolledEvent(float _x_scroll, float _y_scroll) : x_scroll(_x_scroll), y_scroll(_y_scroll) {}
+        static AppEventType GetStaticType() { return AppEventType::MouseScrolled; }
+        inline AppEventType GetType() override { return AppEventType::MouseScrolled; }
+        inline float GetXScroll() { return x_scroll; }
+        inline float GetYScroll() { return y_scroll; }
+        std::string ToString() override
+        {
+            std::ostringstream oss;
+            oss << "MouseScrolledEvent (" << x_scroll << ", " << y_scroll << ")";
             return oss.str();
         }
     };
