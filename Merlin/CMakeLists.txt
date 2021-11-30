@@ -11,6 +11,7 @@ set(MERLIN_INC
     Merlin/Core/app_events.hpp
     Merlin/Core/window.hpp
     Merlin/Core/glfw_window.hpp
+    Merlin/Render/graphics_context.hpp
 )
 
 add_library(Merlin STATIC
