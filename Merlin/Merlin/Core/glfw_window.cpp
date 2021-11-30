@@ -23,7 +23,9 @@ namespace Merlin
         window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
 
-        glfwMakeContextCurrent(window_ptr);
+        context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(window_ptr));
+        context->Init();
+
         glfwSetWindowUserPointer(window_ptr, &data);
         glViewport(0, 0, props.width, props.height);
 
@@ -60,7 +62,7 @@ namespace Merlin
     void GLFWWindowImpl::OnUpdate()
     {
         glfwPollEvents();
-        glfwSwapBuffers(window_ptr);
+        context->SwapBuffers();
     }
 
     void GLFWWindowImpl::SetGLFWCallbacks()
