@@ -2,6 +2,7 @@
 #define GLFW_WINDOW_HPP
 #include <GLFW/glfw3.h>
 #include "window.hpp"
+#include "Merlin/Render/graphics_context.hpp"
 
 
 namespace Merlin
@@ -18,8 +19,10 @@ namespace Merlin
     {
         static bool glfw_is_initialized;
         static int glfw_window_count;
+
         GLFWwindow* window_ptr;
         GLFWWindowData data;
+        std::unique_ptr<GraphicsContext> context;
 
         void SetGLFWCallbacks();
     public:

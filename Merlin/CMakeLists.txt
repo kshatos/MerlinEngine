@@ -1,7 +1,10 @@
 
 set(MERLIN_SRC
     Merlin/Core/logger.cpp
+    Merlin/Core/window.cpp
     Merlin/Core/glfw_window.cpp
+    Merlin/Render/graphics_context.cpp
+    Merlin/Render/opengl_context.cpp
 )
 
 set(MERLIN_INC
@@ -10,6 +13,8 @@ set(MERLIN_INC
     Merlin/Core/app_events.hpp
     Merlin/Core/window.hpp
     Merlin/Core/glfw_window.hpp
+    Merlin/Render/graphics_context.hpp
+    Merlin/Render/opengl_context.hpp
 )
 
 add_library(Merlin STATIC
@@ -32,7 +37,7 @@ target_include_directories(Merlin
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_link_libraries(Merlin
-    PUBLIC
+    PRIVATE
     spdlog::spdlog
     glfw
     ${OPENGL_LIBRARIES}

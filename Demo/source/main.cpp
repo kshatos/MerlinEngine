@@ -1,5 +1,5 @@
 #include "Merlin/Core/logger.hpp"
-#include "Merlin/Core/glfw_window.hpp"
+#include "Merlin/Core/window.hpp"
 using namespace Merlin;
 
 bool is_running = true;
@@ -21,10 +21,10 @@ void main()
 {
     Logger::Init();
 
-    GLFWWindowImpl window(WindowProperties("asdf", 600, 800));
-    window.SetEventCallback(EventCallback);
+    auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 600, 800)));
+    window->SetEventCallback(EventCallback);
     while (is_running)
     {
-        window.OnUpdate();
+        window->OnUpdate();
     }
 }
