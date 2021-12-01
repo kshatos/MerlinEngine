@@ -7,7 +7,7 @@
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
 #include <glad/glad.h>
-
+#include <glm/glm.hpp>
 
 using namespace Merlin;
 
@@ -71,6 +71,8 @@ void EventCallback(AppEvent& app_event)
 
 void main()
 {
+    glm::vec2 x(0.0f, 1.0f);
+
     Logger::Init();
 
     auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 600, 800)));
