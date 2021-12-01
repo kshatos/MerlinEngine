@@ -6,7 +6,7 @@
 #include "Merlin/Render/buffer_layout.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
-#include <glad/glad.h>
+#include "Merlin/Render/renderer.hpp"
 #include <glm/glm.hpp>
 
 using namespace Merlin;
@@ -71,13 +71,14 @@ void EventCallback(AppEvent& app_event)
 
 void main()
 {
-    glm::vec2 x(0.0f, 1.0f);
-
+    // Setup
+    Renderer::Init();
     Logger::Init();
 
     auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 600, 800)));
     window->SetEventCallback(EventCallback);
 
+    // Build render data
     auto shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
 
     BufferLayout layout{
@@ -90,18 +91,17 @@ void main()
 
     auto ibuffer = std::shared_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
 
-    auto varray = std::unique_ptr<VertexArray>(VertexArray::Create());
+    auto varray = std::shared_ptr<VertexArray>(VertexArray::Create());
     varray->AddVertexBuffer(vbuffer);
     varray->SetIndexBuffer(ibuffer);
 
+    // Main loop
     while (is_running)
     {
-        glViewport(0, 0, window->GetWidth(), window->GetHeight());
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        shader->Bind();
-        varray->Bind();
-        glDrawElements(GL_TRIANGLES, varray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        Renderer::SetViewport(0, 0, window->GetWidth(), window->GetHeight());
+        Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+        Renderer::Clear();
+        Renderer::Submit(shader, varray);
         window->OnUpdate();
     }
 }

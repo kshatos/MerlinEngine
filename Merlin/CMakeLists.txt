@@ -14,6 +14,9 @@ set(MERLIN_SRC
     Merlin/Render/opengl_vertex_array.cpp
     Merlin/Render/shader.cpp
     Merlin/Render/opengl_shader.cpp
+    Merlin/Render/render_api.cpp
+    Merlin/Render/opengl_render_api.cpp
+    Merlin/Render/renderer.cpp
 )
 
 set(MERLIN_INC
@@ -33,6 +36,9 @@ set(MERLIN_INC
     Merlin/Render/opengl_vertex_array.hpp
     Merlin/Render/shader.hpp
     Merlin/Render/opengl_shader.hpp
+    Merlin/Render/render_api.hpp
+    Merlin/Render/opengl_render_api.hpp
+    Merlin/Render/renderer.hpp
 )
 
 add_library(Merlin STATIC
@@ -54,8 +60,8 @@ target_include_directories(Merlin
 target_link_libraries(Merlin
     PUBLIC
     glm
-    glad
     PRIVATE
+    glad
     spdlog::spdlog
     glfw
 )
