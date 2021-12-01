@@ -1,4 +1,6 @@
 #include "opengl_context.hpp"
+#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 
@@ -16,6 +18,7 @@ namespace Merlin
     void OpenGLContext::Init()
     {
         glfwMakeContextCurrent(window_ptr);
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     }
 
     void OpenGLContext::SwapBuffers()
