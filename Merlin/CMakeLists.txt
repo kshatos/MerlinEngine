@@ -5,6 +5,8 @@ set(MERLIN_SRC
     Merlin/Core/glfw_window.cpp
     Merlin/Render/graphics_context.cpp
     Merlin/Render/opengl_context.cpp
+    Merlin/Render/vertex_buffer.cpp
+    Merlin/Render/opengl_vertex_buffer.cpp
 )
 
 set(MERLIN_INC
@@ -15,17 +17,14 @@ set(MERLIN_INC
     Merlin/Core/glfw_window.hpp
     Merlin/Render/graphics_context.hpp
     Merlin/Render/opengl_context.hpp
+    Merlin/Render/vertex_buffer.hpp
+    Merlin/Render/opengl_vertex_buffer.hpp
 )
 
 add_library(Merlin STATIC
     ${MERLIN_SRC}
     ${MERLIN_INC}
 )
-
-find_package(OpenGL REQUIRED)
-target_include_directories(Merlin
-    PUBLIC
-    ${OPENGL_INCLUDE_DIRS})
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
@@ -42,5 +41,4 @@ target_link_libraries(Merlin
     spdlog::spdlog
     glfw
     glad
-    ${OPENGL_LIBRARIES}
 )

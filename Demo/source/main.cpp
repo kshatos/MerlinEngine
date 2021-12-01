@@ -1,5 +1,8 @@
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Core/window.hpp"
+#include "Merlin/Render/vertex_buffer.hpp"
+
+
 using namespace Merlin;
 
 bool is_running = true;
@@ -23,6 +26,9 @@ void main()
 
     auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 600, 800)));
     window->SetEventCallback(EventCallback);
+
+    float verts[]{ 1.0f, 1.0f, 1.0f };
+    auto buffer = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
     while (is_running)
     {
         window->OnUpdate();

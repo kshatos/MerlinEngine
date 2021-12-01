@@ -1,5 +1,7 @@
 #include "glfw_window.hpp"
 #include "app_events.hpp"
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 
 namespace Merlin
@@ -27,7 +29,6 @@ namespace Merlin
         context->Init();
 
         glfwSetWindowUserPointer(window_ptr, &data);
-        glViewport(0, 0, props.width, props.height);
 
         SetGLFWCallbacks();
     }

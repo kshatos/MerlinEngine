@@ -1,9 +1,10 @@
 #ifndef GLFW_WINDOW_HPP
 #define GLFW_WINDOW_HPP
-#include <GLFW/glfw3.h>
 #include "window.hpp"
 #include "Merlin/Render/graphics_context.hpp"
 
+
+struct GLFWwindow;
 
 namespace Merlin
 {
