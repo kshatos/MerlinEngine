@@ -55,7 +55,7 @@ namespace Merlin
         inline std::vector<BufferElement>::iterator end() { return elements.end(); }
         inline std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
         inline std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
-        uint32_t GetStride();
+        uint32_t GetStride() const;
     };
 
 }

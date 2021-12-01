@@ -53,7 +53,7 @@ namespace Merlin
         stride = offset;
     }
 
-    uint32_t BufferLayout::GetStride()
+    uint32_t BufferLayout::GetStride() const
     {
         return stride;
     }
