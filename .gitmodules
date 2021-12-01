@@ -4,3 +4,6 @@
 [submodule "Merlin/thirdparty/glfw"]
 	path = Merlin/thirdparty/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Merlin/thirdparty/glm"]
+	path = Merlin/thirdparty/glm
+	url = https://github.com/g-truc/glm.git
