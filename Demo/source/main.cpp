@@ -1,6 +1,7 @@
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Core/window.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
+#include "Merlin/Render/index_buffer.hpp"
 
 
 using namespace Merlin;
@@ -28,7 +29,11 @@ void main()
     window->SetEventCallback(EventCallback);
 
     float verts[]{ 1.0f, 1.0f, 1.0f };
-    auto buffer = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
+    auto vbuffer = std::unique_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
+
+    uint32_t tris[]{ 0, 1, 2 };
+    auto ibuffer = std::unique_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
+
     while (is_running)
     {
         window->OnUpdate();
