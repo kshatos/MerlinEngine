@@ -10,6 +10,7 @@ set(MERLIN_SRC
     Merlin/Render/index_buffer.cpp
     Merlin/Render/opengl_index_buffer.cpp
     Merlin/Render/buffer_layout.cpp
+    Merlin/Render/vertex_array.cpp
 )
 
 set(MERLIN_INC
@@ -25,6 +26,7 @@ set(MERLIN_INC
     Merlin/Render/index_buffer.hpp
     Merlin/Render/opengl_index_buffer.hpp
     Merlin/Render/buffer_layout.hpp
+    Merlin/Render/vertex_array.hpp
 )
 
 add_library(Merlin STATIC
