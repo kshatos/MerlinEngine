@@ -13,6 +13,7 @@ set(MERLIN_SRC
     Merlin/Render/vertex_array.cpp
     Merlin/Render/opengl_vertex_array.cpp
     Merlin/Render/shader.cpp
+    Merlin/Render/opengl_shader.cpp
 )
 
 set(MERLIN_INC
@@ -31,6 +32,7 @@ set(MERLIN_INC
     Merlin/Render/vertex_array.hpp
     Merlin/Render/opengl_vertex_array.hpp
     Merlin/Render/shader.hpp
+    Merlin/Render/opengl_shader.hpp
 )
 
 add_library(Merlin STATIC
