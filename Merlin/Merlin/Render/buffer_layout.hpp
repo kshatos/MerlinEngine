@@ -22,23 +22,9 @@ namespace Merlin
         Int4
     };
 
-    uint32_t ShaderDataTypeSize(const ShaderDataType& type)
-    {
-        switch (type)
-        {
-        case(ShaderDataType::Float):  return 4 * 1;
-        case(ShaderDataType::Float2): return 4 * 2;
-        case(ShaderDataType::Float3): return 4 * 3;
-        case(ShaderDataType::Float4): return 4 * 4;
-        case(ShaderDataType::Mat3):   return 4 * 3 * 3;
-        case(ShaderDataType::Mat4):   return 4 * 4 * 4;
-        case(ShaderDataType::Int):    return 4 * 1;
-        case(ShaderDataType::Int2):   return 4 * 2;
-        case(ShaderDataType::Int3):   return 4 * 3;
-        case(ShaderDataType::Int4):   return 4 * 4;
-        default: return 0;
-        }
-    }
+    uint32_t ShaderDataTypeSize(const ShaderDataType& type);
+
+    uint32_t ShaderDataTypeElementCount(const ShaderDataType& type);
 
     struct BufferElement
     {
@@ -46,12 +32,14 @@ namespace Merlin
         ShaderDataType type;
         uint32_t offset;
         uint32_t size;
+        bool normalized;
 
-        BufferElement(ShaderDataType _type, const std::string _name) :
+        BufferElement(ShaderDataType _type, const std::string _name, bool _normalized=false) :
             name(_name),
             type(_type),
+            offset(0),
             size(ShaderDataTypeSize(_type)),
-            offset(0)
+            normalized(_normalized)
         {
         }
     };
@@ -61,18 +49,14 @@ namespace Merlin
         std::vector<BufferElement> elements;
         uint32_t stride;
     public:
-        BufferLayout(const std::initializer_list<BufferElement>& _elements) : elements(_elements)
-        {
-            uint32_t offset = 0;
-            for (auto& element : elements)
-            {
-                element.offset = offset;
-                offset += element.size;
-            }
-            stride = offset;
-        }
+        BufferLayout();
+        BufferLayout(const std::initializer_list<BufferElement>& _elements);
+        inline std::vector<BufferElement>::iterator begin() { return elements.begin(); }
+        inline std::vector<BufferElement>::iterator end() { return elements.end(); }
+        inline std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
+        inline std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
+        uint32_t GetStride();
     };
 
 }
-
 #endif

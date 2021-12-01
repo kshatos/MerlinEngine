@@ -16,6 +16,17 @@ namespace Merlin
     {
         glDeleteBuffers(1, &id);
     }
+
+
+    void OpenGLVertexBuffer::SetLayout(const BufferLayout& _layout)
+    {
+        layout = _layout;
+    }
+
+    const BufferLayout& OpenGLVertexBuffer::GetLayout() const
+    {
+        return layout;
+    }
     
     void OpenGLVertexBuffer::Bind()
     {

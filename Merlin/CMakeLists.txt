@@ -9,6 +9,7 @@ set(MERLIN_SRC
     Merlin/Render/opengl_vertex_buffer.cpp
     Merlin/Render/index_buffer.cpp
     Merlin/Render/opengl_index_buffer.cpp
+    Merlin/Render/buffer_layout.cpp
 )
 
 set(MERLIN_INC
