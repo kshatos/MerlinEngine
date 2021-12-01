@@ -23,6 +23,7 @@ set(MERLIN_INC
     Merlin/Render/opengl_vertex_buffer.hpp
     Merlin/Render/index_buffer.hpp
     Merlin/Render/opengl_index_buffer.hpp
+    Merlin/Render/buffer_layout.hpp
 )
 
 add_library(Merlin STATIC

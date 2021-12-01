@@ -2,7 +2,8 @@
 #include "Merlin/Core/window.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/index_buffer.hpp"
-
+#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_layout.hpp"
 
 using namespace Merlin;
 
@@ -33,6 +34,11 @@ void main()
 
     uint32_t tris[]{ 0, 1, 2 };
     auto ibuffer = std::unique_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
+
+    BufferLayout layout{
+        {ShaderDataType::Float3, "pos"},
+        {ShaderDataType::Float4, "color"}
+    };
 
     while (is_running)
     {
