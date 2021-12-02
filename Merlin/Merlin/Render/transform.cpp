@@ -1,8 +1,19 @@
 #include "Merlin/Render/transform.hpp"
+#include  <glm/gtx/transform.hpp>
 
 
 namespace Merlin
 {
+
+    Transform::Transform() :
+        position(glm::vec3(0.0f, 0.0f, 0.0f)),
+        scale(glm::vec3(1.0f, 1.0f, 1.0f)),
+        orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+        transform_matrix_is_dirty(false),
+        transform_matrix(glm::mat4(1.0f))
+    {
+    }
+
     Transform::Transform(
         glm::vec3 _position,
         glm::vec3 _scale,
@@ -34,10 +45,12 @@ namespace Merlin
     {
         if (transform_matrix_is_dirty)
         {
-            transform_matrix = (
-                glm::scale(glm::mat4(), scale) *
-                glm::translate(glm::mat4(), position) *
-                glm::toMat4(orientation));
+            auto tr = glm::translate(glm::mat4(1.0f), position);
+            auto ro = glm::toMat4(orientation);
+            auto sc = glm::scale(glm::mat4(1.0f), scale);
+            transform_matrix = tr * ro * sc;
+
+            transform_matrix_is_dirty = false;
         }
         return transform_matrix;
     }

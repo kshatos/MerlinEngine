@@ -15,6 +15,7 @@ namespace Merlin
         bool transform_matrix_is_dirty;
         glm::mat4 transform_matrix;
     public:
+        Transform();
         Transform(
             glm::vec3 _position,
             glm::vec3 _scale,

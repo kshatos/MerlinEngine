@@ -12,11 +12,12 @@ enable_testing()
 
 add_executable(
   Test
-  source/hello_test.cpp
+  source/transform_test.cpp
 )
 target_link_libraries(
     Test
     gtest_main
+    Merlin
 )
 
 include(GoogleTest)
