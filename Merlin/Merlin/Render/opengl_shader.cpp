@@ -2,6 +2,7 @@
 #include "Merlin/Render/opengl_shader.hpp"
 #include "Merlin/Core//logger.hpp"
 #include <sstream>
+#include<glm/gtc/type_ptr.hpp>
 
 
 namespace Merlin
@@ -54,6 +55,36 @@ namespace Merlin
     void OpenGLShader::UnBind()
     {
         glUseProgram(0);
+    }
+
+    void OpenGLShader::SetUniformMat4(const std::string& name, glm::mat4 value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+    }
+
+    void OpenGLShader::SetUniformFloat4(const std::string& name, glm::vec4 value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniform4f(location, value.x, value.y, value.z, value.w);
+    }
+
+    void OpenGLShader::SetUniformFloat3(const std::string& name, glm::vec3 value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniform3f(location, value.x, value.y, value.z);
+    }
+
+    void OpenGLShader::SetUniformFloat2(const std::string& name, glm::vec2 value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniform2f(location, value.x, value.y);
+    }
+
+    void OpenGLShader::SetUniformFloat(const std::string& name, float value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniform1f(location, value);
     }
 
     bool OpenGLShader::CompilationSucceeded(int shader_id)
