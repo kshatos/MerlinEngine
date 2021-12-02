@@ -6,14 +6,18 @@
 namespace Merlin
 {
     std::unique_ptr<RenderAPI> Renderer::render_impl = nullptr;
+    std::unique_ptr<Renderer::SceneData> Renderer::scene_data = nullptr;
 
     void Renderer::Init()
     {
         render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create());
+        scene_data = std::make_unique<Renderer::SceneData>();
     }
 
-    void Renderer::BeginScene()
+    void Renderer::BeginScene(const std::shared_ptr<Camera>& camera)
     {
+        scene_data->view_matrix = camera->GetViewMatrix();
+        scene_data->projection_matrix = camera->GetProjectionMatrix();
     }
 
     void Renderer::EndScene()
@@ -44,6 +48,9 @@ namespace Merlin
         const std::shared_ptr<VertexArray>& vertex_array)
     {
         shader->Bind();
+        shader->SetUniformMat4("u_ProjectionMatrix", scene_data->projection_matrix);
+        shader->SetUniformMat4("u_ViewMatrix", scene_data->view_matrix);
+
         vertex_array->Bind();
         render_impl->DrawTriangles(vertex_array);
     }
