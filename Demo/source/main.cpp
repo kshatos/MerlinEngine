@@ -30,11 +30,10 @@ float verts[]
 
 uint32_t tris[]
 {
-    0, 2, 1,
-    0, 3, 2,
+    0, 1, 2,
+    0, 2, 3,
     5, 4, 7,
     5, 7, 6,
-    /*
     1, 5, 6,
     1, 6, 2,
     4, 0, 3,
@@ -43,7 +42,6 @@ uint32_t tris[]
     3, 6, 7,
     4, 5, 1,
     4, 1, 0,
-    */
 };
 
 auto vertex_source =
@@ -60,8 +58,8 @@ uniform mat4 u_ProjectionMatrix;
 
 void main()
 {
-   gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-   color = aCol;
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    color = aCol;
 }
 )";
 
@@ -123,14 +121,15 @@ void EventCallback(AppEvent& app_event)
 void main()
 {
     // Setup
-    Renderer::Init();
     Logger::Init();
 
     auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
     window->SetEventCallback(EventCallback);
 
+    Renderer::Init();
+
     // Build render data
-    camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.0f, 10.0f);
+    camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
     camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
 
     auto shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));

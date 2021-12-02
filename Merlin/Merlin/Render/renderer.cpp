@@ -11,6 +11,7 @@ namespace Merlin
     void Renderer::Init()
     {
         render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create());
+        render_impl->Init();
         scene_data = std::make_unique<Renderer::SceneData>();
     }
 
