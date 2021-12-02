@@ -92,17 +92,17 @@ void EventCallback(AppEvent& app_event)
         [](KeyPressedEvent& e)
     {
         float speed = 1.0e-1f;
-        if (e.GetKeyCode() == 87) //W
+        if (e.GetKeyCode() == Key::W)
             camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, -speed));
-        if (e.GetKeyCode() == 65) //A
+        if (e.GetKeyCode() == Key::A)
             camera->GetTransform().Translate(glm::vec3(-speed, 0.0f, 0.0f));
-        if (e.GetKeyCode() == 83) //S
+        if (e.GetKeyCode() == Key::S)
             camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, speed));
-        if (e.GetKeyCode() == 68) //D
+        if (e.GetKeyCode() == Key::D)
             camera->GetTransform().Translate(glm::vec3(speed, 0.0f, 0.0f));
-        if (e.GetKeyCode() == 90) //Z
+        if (e.GetKeyCode() == Key::Z)
             camera->GetTransform().Translate(glm::vec3(0.0f, speed, 0.0f));
-        if (e.GetKeyCode() == 88) //X
+        if (e.GetKeyCode() == Key::X)
             camera->GetTransform().Translate(glm::vec3(0.0f, -speed, 0.0f));
         return true;
     });
