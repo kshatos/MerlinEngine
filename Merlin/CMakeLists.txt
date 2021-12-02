@@ -17,6 +17,9 @@ set(MERLIN_SRC
     Merlin/Render/render_api.cpp
     Merlin/Render/opengl_render_api.cpp
     Merlin/Render/renderer.cpp
+    Merlin/Render/camera.cpp
+    Merlin/Render/perspective_camera.cpp
+    Merlin/Render/transform.cpp
 )
 
 set(MERLIN_INC
@@ -39,6 +42,9 @@ set(MERLIN_INC
     Merlin/Render/render_api.hpp
     Merlin/Render/opengl_render_api.hpp
     Merlin/Render/renderer.hpp
+    Merlin/Render/camera.hpp
+    Merlin/Render/perspective_camera.hpp
+    Merlin/Render/transform.hpp
 )
 
 add_library(Merlin STATIC
