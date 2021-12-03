@@ -9,7 +9,8 @@
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/perspective_camera.hpp"
 #include <glm/glm.hpp>
-
+#include <imgui.h>
+#include <backends/imgui_impl_opengl3.h>
 
 using namespace Merlin;
 
@@ -78,9 +79,44 @@ void main()
 )";
 
 
+void HandleIMGUIEvents(AppEvent& app_event)
+{
+    AppEvent::Dispatch<MouseButtonPressedEvent>(app_event,
+        [](MouseButtonPressedEvent& e)
+    {
+        auto& io = ImGui::GetIO();
+        io.MouseDown[e.GetButton()] = true;
+        return false;
+    });
+    AppEvent::Dispatch<MouseButtonReleasedEvent>(app_event,
+        [](MouseButtonReleasedEvent& e)
+    {
+        auto& io = ImGui::GetIO();
+        io.MouseDown[e.GetButton()] = false;
+        return false;
+    });
+    AppEvent::Dispatch<MouseMovedEvent>(app_event,
+        [](MouseMovedEvent& e)
+    {
+        auto& io = ImGui::GetIO();
+        io.MousePos = ImVec2(e.GetX(), e.GetY());
+        return false;
+    });
+    AppEvent::Dispatch<MouseScrolledEvent>(app_event,
+        [](MouseScrolledEvent& e)
+    {
+        auto& io = ImGui::GetIO();
+        io.MouseWheel += e.GetYScroll();
+        io.MouseWheelH += e.GetXScroll();
+        return false;
+    });
+}
+
 void EventCallback(AppEvent& app_event)
 {
     ME_LOG_INFO(app_event.ToString());
+
+    HandleIMGUIEvents(app_event);
 
     AppEvent::Dispatch<WindowClosedEvent>(app_event,
         [](WindowClosedEvent& e)
@@ -129,6 +165,11 @@ void main()
 
     Renderer::Init();
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplOpenGL3_Init("#version 130");
+
     // Build render data
     camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
     camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
@@ -155,11 +196,28 @@ void main()
         Renderer::SetViewport(0, 0, window->GetWidth(), window->GetHeight());
         Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
         Renderer::Clear();
+
+        // SCENE RENDER
         {
             Renderer::BeginScene(camera);
             Renderer::Submit(shader, varray);
             Renderer::EndScene();
         }
+
+        // GUI RENDER
+        {
+            auto& io = ImGui::GetIO();
+            io.DisplaySize = ImVec2((float)window->GetWidth(), (float)window->GetHeight());
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui::NewFrame();
+
+            ImGui::ShowDemoWindow();
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        }
+
         window->OnUpdate();
     }
 }
