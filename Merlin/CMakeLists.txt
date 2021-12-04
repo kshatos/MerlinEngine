@@ -1,6 +1,7 @@
 
 set(MERLIN_SRC
     Merlin/Core/logger.cpp
+    Merlin/Core/application.cpp
     Merlin/Core/window.cpp
     Merlin/Core/glfw_window.cpp
     Merlin/Core/input.cpp
@@ -26,7 +27,7 @@ set(MERLIN_SRC
 
 set(MERLIN_INC
     Merlin/Core/logger.hpp
-    Merlin/Core/logger.hpp
+    Merlin/Core/application.hpp
     Merlin/Core/app_events.hpp
     Merlin/Core/window.hpp
     Merlin/Core/glfw_window.hpp
