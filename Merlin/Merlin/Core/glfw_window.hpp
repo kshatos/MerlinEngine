@@ -33,6 +33,7 @@ namespace Merlin
         unsigned int GetHeight() override;
         void SetEventCallback(const EventCallbackFunction& callback) override;
         void OnUpdate() override;
+        void* GetNativePointer() override;
     };
 }
 #endif

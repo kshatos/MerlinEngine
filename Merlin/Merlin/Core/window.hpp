@@ -31,6 +31,7 @@ namespace Merlin
         virtual unsigned int GetHeight() = 0;
         virtual void SetEventCallback(const EventCallbackFunction& callback) = 0;
         virtual void OnUpdate() = 0;
+        virtual void* GetNativePointer() = 0;
     };
 }
 #endif

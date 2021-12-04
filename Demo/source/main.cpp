@@ -11,12 +11,12 @@
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <backends/imgui_impl_opengl3.h>
+#include "Merlin/Core/application.hpp"
+#include "Merlin/Core/input.hpp"
 
 using namespace Merlin;
 
 bool is_running = true;
-
-std::shared_ptr<Camera> camera;
 
 float verts[]
 {
@@ -79,121 +79,73 @@ void main()
 )";
 
 
-void HandleIMGUIEvents(AppEvent& app_event)
+class DemoApplication : public Application
 {
-    AppEvent::Dispatch<MouseButtonPressedEvent>(app_event,
-        [](MouseButtonPressedEvent& e)
+    std::shared_ptr<Camera> camera;
+    std::shared_ptr<Shader> shader;
+    std::shared_ptr<VertexArray> varray;
+public:
+    DemoApplication() : Application()
     {
-        auto& io = ImGui::GetIO();
-        io.MouseDown[e.GetButton()] = true;
-        return false;
-    });
-    AppEvent::Dispatch<MouseButtonReleasedEvent>(app_event,
-        [](MouseButtonReleasedEvent& e)
+        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
+
+        shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
+
+        BufferLayout layout{
+            {ShaderDataType::Float3, "pos"},
+            {ShaderDataType::Float4, "color"},
+        };
+
+        auto vbuffer = std::shared_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
+        vbuffer->SetLayout(layout);
+
+        auto ibuffer = std::shared_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
+
+        varray = std::shared_ptr<VertexArray>(VertexArray::Create());
+        varray->AddVertexBuffer(vbuffer);
+        varray->SetIndexBuffer(ibuffer);
+    }
+
+    virtual void HandleEvent(AppEvent& app_event) override
     {
-        auto& io = ImGui::GetIO();
-        io.MouseDown[e.GetButton()] = false;
-        return false;
-    });
-    AppEvent::Dispatch<MouseMovedEvent>(app_event,
-        [](MouseMovedEvent& e)
+        ME_LOG_INFO(app_event.ToString());
+
+        Application::HandleEvent(app_event);
+
+        AppEvent::Dispatch<KeyPressedEvent>(app_event,
+            [this](KeyPressedEvent& e)
+        {
+            float speed = 1.0e-1f;
+            if (e.GetKeyCode() == Key::W)
+                camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, -speed));
+            if (e.GetKeyCode() == Key::A)
+                camera->GetTransform().Translate(glm::vec3(-speed, 0.0f, 0.0f));
+            if (e.GetKeyCode() == Key::S)
+                camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, speed));
+            if (e.GetKeyCode() == Key::D)
+                camera->GetTransform().Translate(glm::vec3(speed, 0.0f, 0.0f));
+            if (e.GetKeyCode() == Key::Z)
+                camera->GetTransform().Translate(glm::vec3(0.0f, speed, 0.0f));
+            if (e.GetKeyCode() == Key::X)
+                camera->GetTransform().Translate(glm::vec3(0.0f, -speed, 0.0f));
+            return true;
+        });
+
+        AppEvent::Dispatch<MouseScrolledEvent>(app_event,
+            [this](MouseScrolledEvent& e)
+        {
+            float th = e.GetYScroll() * 1.0e-1f;
+            float c = glm::cos(th);
+            float s = glm::sin(th);
+            camera->GetTransform().Rotate(glm::quat(c, 0.0f, s, 0.0f));
+            return true;
+        });
+    }
+
+    virtual void OnUpdate() override
     {
-        auto& io = ImGui::GetIO();
-        io.MousePos = ImVec2(e.GetX(), e.GetY());
-        return false;
-    });
-    AppEvent::Dispatch<MouseScrolledEvent>(app_event,
-        [](MouseScrolledEvent& e)
-    {
-        auto& io = ImGui::GetIO();
-        io.MouseWheel += e.GetYScroll();
-        io.MouseWheelH += e.GetXScroll();
-        return false;
-    });
-}
-
-void EventCallback(AppEvent& app_event)
-{
-    ME_LOG_INFO(app_event.ToString());
-
-    HandleIMGUIEvents(app_event);
-
-    AppEvent::Dispatch<WindowClosedEvent>(app_event,
-        [](WindowClosedEvent& e)
-    {
-        is_running = false;
-        return true;
-    });
-
-    AppEvent::Dispatch<KeyPressedEvent>(app_event,
-        [](KeyPressedEvent& e)
-    {
-        float speed = 1.0e-1f;
-        if (e.GetKeyCode() == Key::W)
-            camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, -speed));
-        if (e.GetKeyCode() == Key::A)
-            camera->GetTransform().Translate(glm::vec3(-speed, 0.0f, 0.0f));
-        if (e.GetKeyCode() == Key::S)
-            camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, speed));
-        if (e.GetKeyCode() == Key::D)
-            camera->GetTransform().Translate(glm::vec3(speed, 0.0f, 0.0f));
-        if (e.GetKeyCode() == Key::Z)
-            camera->GetTransform().Translate(glm::vec3(0.0f, speed, 0.0f));
-        if (e.GetKeyCode() == Key::X)
-            camera->GetTransform().Translate(glm::vec3(0.0f, -speed, 0.0f));
-        return true;
-    });
-
-    AppEvent::Dispatch<MouseScrolledEvent>(app_event,
-        [](MouseScrolledEvent& e)
-    {
-        float th = e.GetYScroll() * 1.0e-1f;
-        float c = glm::cos(th);
-        float s = glm::sin(th);
-        camera->GetTransform().Rotate(glm::quat(c, 0.0f, s, 0.0f));
-        return true;
-    });
-}
-
-void main()
-{
-    // Setup
-    Logger::Init();
-
-    auto window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
-    window->SetEventCallback(EventCallback);
-
-    Renderer::Init();
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-    ImGui_ImplOpenGL3_Init("#version 130");
-
-    // Build render data
-    camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
-    camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
-
-    auto shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
-
-    BufferLayout layout{
-        {ShaderDataType::Float3, "pos"},
-        {ShaderDataType::Float4, "color"},
-    };
-
-    auto vbuffer = std::shared_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
-    vbuffer->SetLayout(layout);
-
-    auto ibuffer = std::shared_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
-
-    auto varray = std::shared_ptr<VertexArray>(VertexArray::Create());
-    varray->AddVertexBuffer(vbuffer);
-    varray->SetIndexBuffer(ibuffer);
-
-    // Main loop
-    while (is_running)
-    {
-        Renderer::SetViewport(0, 0, window->GetWidth(), window->GetHeight());
+        Renderer::SetViewport(0, 0, GeMaintWindow()->GetWidth(), GeMaintWindow()->GetHeight());
         Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
         Renderer::Clear();
 
@@ -207,7 +159,9 @@ void main()
         // GUI RENDER
         {
             auto& io = ImGui::GetIO();
-            io.DisplaySize = ImVec2((float)window->GetWidth(), (float)window->GetHeight());
+            io.DisplaySize = ImVec2(
+                (float)GeMaintWindow()->GetWidth(),
+                (float)GeMaintWindow()->GetHeight());
 
             ImGui_ImplOpenGL3_NewFrame();
             ImGui::NewFrame();
@@ -217,7 +171,12 @@ void main()
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         }
-
-        window->OnUpdate();
     }
+};
+
+
+void main()
+{
+    DemoApplication app;
+    app.Run();
 }
