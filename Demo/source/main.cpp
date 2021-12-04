@@ -109,7 +109,7 @@ public:
 
     virtual void HandleEvent(AppEvent& app_event) override
     {
-        //ME_LOG_INFO(app_event.ToString());
+        ME_LOG_INFO(app_event.ToString());
 
         Application::HandleEvent(app_event);
 
@@ -145,17 +145,6 @@ public:
 
     virtual void OnUpdate() override
     {
-        {
-            auto pos = Input::GetMousePosition();
-            std::ostringstream oss;
-            oss << "Mouse Pos: (" << pos.x << ", " << pos.y << ")";
-            oss << " Left: " << Input::GetMouseButtonDown(MouseButton::BUTTON_1);
-            oss << " Right: " << Input::GetMouseButtonDown(MouseButton::BUTTON_2);
-            oss << " Middle: " << Input::GetMouseButtonDown(MouseButton::BUTTON_3);
-            oss << " A: " << Input::GetKeyDown(Key::A);
-            ME_LOG_INFO(oss.str());
-        }
-
         Renderer::SetViewport(0, 0, GeMaintWindow()->GetWidth(), GeMaintWindow()->GetHeight());
         Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
         Renderer::Clear();

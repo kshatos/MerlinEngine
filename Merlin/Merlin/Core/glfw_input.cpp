@@ -9,9 +9,7 @@ namespace Merlin
     {
         GLFWwindow* window = static_cast<GLFWwindow*>(Application::Get().GeMaintWindow()->GetNativePointer());
         auto state = glfwGetKey(window, static_cast<int32_t>(key));
-        return (
-            key == GLFW_PRESS ||
-            key == GLFW_REPEAT);
+        return (state == GLFW_PRESS);
     }
 
     bool GLFWInput::GetMouseButtonDownImpl(MouseCode button)
