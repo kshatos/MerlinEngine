@@ -151,4 +151,8 @@ namespace Merlin
         });
     }
 
+    void* GLFWWindowImpl::GetNativePointer()
+    {
+        return static_cast<void*>(window_ptr);
+    }
 }
