@@ -23,21 +23,18 @@ namespace Merlin
 
     class AppEvent
     {
-        bool was_handled = false;
     public:
+        bool was_handled = false;
+
         virtual ~AppEvent() {}
         virtual AppEventType GetType() = 0;
         virtual std::string ToString() = 0;
 
         template<typename T>
-        static void Dispatch(
-            AppEvent& app_event,
-            std::function<bool(T&)> callback)
+        void Dispatch(std::function<bool(T&)> callback)
         {
-            if (app_event.GetType() == T::GetStaticType())
-            {
-                app_event.was_handled |= callback(static_cast<T&>(app_event));
-            }
+            if (GetType() == T::GetStaticType())
+                was_handled |= callback(static_cast<T&>(*this));
         }
     };
 

@@ -79,13 +79,13 @@ void main()
 )";
 
 
-class DemoApplication : public Application
+class SceneLayer : public Layer
 {
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Shader> shader;
     std::shared_ptr<VertexArray> varray;
 public:
-    DemoApplication() : Application()
+    SceneLayer()
     {
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
@@ -107,13 +107,48 @@ public:
         varray->SetIndexBuffer(ibuffer);
     }
 
+    virtual void OnAttach()override {}
+    
+    virtual void OnDetatch() override {}
+    
+    virtual void OnUpdate() override
+    {
+        Renderer::SetViewport(
+            0, 0,
+            Application::Get().GeMaintWindow()->GetWidth(),
+            Application::Get().GeMaintWindow()->GetHeight());
+        Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+        Renderer::Clear();
+
+        // SCENE RENDER
+        {
+            Renderer::BeginScene(camera);
+            Renderer::Submit(shader, varray);
+            Renderer::EndScene();
+        }
+
+        // GUI RENDER
+        {
+            auto& io = ImGui::GetIO();
+            io.DisplaySize = ImVec2(
+                (float)Application::Get().GeMaintWindow()->GetWidth(),
+                (float)Application::Get().GeMaintWindow()->GetHeight());
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui::NewFrame();
+
+            ImGui::ShowDemoWindow();
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        }
+    }
+
     virtual void HandleEvent(AppEvent& app_event) override
     {
         ME_LOG_INFO(app_event.ToString());
 
-        Application::HandleEvent(app_event);
-
-        AppEvent::Dispatch<KeyPressedEvent>(app_event,
+        app_event.Dispatch<KeyPressedEvent>(
             [this](KeyPressedEvent& e)
         {
             float speed = 1.0e-1f;
@@ -132,7 +167,7 @@ public:
             return true;
         });
 
-        AppEvent::Dispatch<MouseScrolledEvent>(app_event,
+        app_event.Dispatch<MouseScrolledEvent>(
             [this](MouseScrolledEvent& e)
         {
             float th = e.GetYScroll() * 1.0e-1f;
@@ -143,34 +178,14 @@ public:
         });
     }
 
-    virtual void OnUpdate() override
+};
+
+class DemoApplication : public Application
+{
+public:
+    DemoApplication() : Application()
     {
-        Renderer::SetViewport(0, 0, GeMaintWindow()->GetWidth(), GeMaintWindow()->GetHeight());
-        Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
-        Renderer::Clear();
-
-        // SCENE RENDER
-        {
-            Renderer::BeginScene(camera);
-            Renderer::Submit(shader, varray);
-            Renderer::EndScene();
-        }
-
-        // GUI RENDER
-        {
-            auto& io = ImGui::GetIO();
-            io.DisplaySize = ImVec2(
-                (float)GeMaintWindow()->GetWidth(),
-                (float)GeMaintWindow()->GetHeight());
-
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui::NewFrame();
-
-            ImGui::ShowDemoWindow();
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        }
+        PushLayerFront(std::make_shared<SceneLayer>());
     }
 };
 

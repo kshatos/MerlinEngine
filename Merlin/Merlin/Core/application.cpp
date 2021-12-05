@@ -13,7 +13,7 @@ namespace Merlin
     {
         Logger::Init();
 
-        main_window= std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
+        main_window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
         main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
@@ -28,9 +28,19 @@ namespace Merlin
         app_instance = this;
     }
 
+    void Application::PushLayerFront(std::shared_ptr<Layer> layer)
+    {
+        layer_stack.PushFront(layer);
+    }
+
+    void Application::PushLayerBack(std::shared_ptr<Layer> layer)
+    {
+        layer_stack.PushFront(layer);
+    }
+
     void Application::HandleEvent(AppEvent& app_event)
     {
-        AppEvent::Dispatch<WindowClosedEvent>(app_event,
+        app_event.Dispatch<WindowClosedEvent>(
             [this](WindowClosedEvent& e)
         {
             is_running = false;
@@ -38,28 +48,28 @@ namespace Merlin
         });
 
         // IMGUI
-        AppEvent::Dispatch<MouseButtonPressedEvent>(app_event,
+        app_event.Dispatch<MouseButtonPressedEvent>(
             [](MouseButtonPressedEvent& e)
         {
             auto& io = ImGui::GetIO();
             io.MouseDown[e.GetButton()] = true;
             return false;
         });
-        AppEvent::Dispatch<MouseButtonReleasedEvent>(app_event,
+        app_event.Dispatch<MouseButtonReleasedEvent>(
             [](MouseButtonReleasedEvent& e)
         {
             auto& io = ImGui::GetIO();
             io.MouseDown[e.GetButton()] = false;
             return false;
         });
-        AppEvent::Dispatch<MouseMovedEvent>(app_event,
+        app_event.Dispatch<MouseMovedEvent>(
             [](MouseMovedEvent& e)
         {
             auto& io = ImGui::GetIO();
             io.MousePos = ImVec2(e.GetX(), e.GetY());
             return false;
         });
-        AppEvent::Dispatch<MouseScrolledEvent>(app_event,
+        app_event.Dispatch<MouseScrolledEvent>(
             [](MouseScrolledEvent& e)
         {
             auto& io = ImGui::GetIO();
@@ -67,13 +77,29 @@ namespace Merlin
             io.MouseWheelH += e.GetXScroll();
             return false;
         });
+
+        // Dispatch events to layers allowing them to block
+        for (auto& layer : layer_stack)
+        {
+            if (app_event.was_handled)
+                break;
+            layer->HandleEvent(app_event);
+        }
+    }
+
+    void Application::OnUpdate()
+    {
+        for(auto & layer : layer_stack)
+        {
+            layer->OnUpdate();
+        }
     }
 
     void Application::Run()
     {
         while (is_running)
         {
-            this->OnUpdate();
+            OnUpdate();
             main_window->OnUpdate();
         }
     }
