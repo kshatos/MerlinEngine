@@ -17,6 +17,8 @@ set(MERLIN_SRC
     Merlin/Render/buffer_layout.cpp
     Merlin/Render/vertex_array.cpp
     Merlin/Render/opengl_vertex_array.cpp
+    Merlin/Render/texture2d.cpp
+    Merlin/Render/opengl_texture2d.cpp
     Merlin/Render/shader.cpp
     Merlin/Render/opengl_shader.cpp
     Merlin/Render/render_api.cpp
@@ -48,6 +50,8 @@ set(MERLIN_INC
     Merlin/Render/buffer_layout.hpp
     Merlin/Render/vertex_array.hpp
     Merlin/Render/opengl_vertex_array.hpp
+    Merlin/Render/texture2d.hpp
+    Merlin/Render/opengl_texture2d.hpp
     Merlin/Render/shader.hpp
     Merlin/Render/opengl_shader.hpp
     Merlin/Render/render_api.hpp

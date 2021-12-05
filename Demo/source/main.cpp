@@ -46,6 +46,17 @@ uint32_t tris[]
     4, 1, 0,
 };
 
+uint8_t tex[]
+{
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
+    0, 0, 0,
+};
+uint32_t tex_width = 2;
+uint32_t tex_height = 2;
+
+
 auto vertex_source =
 R"(
 #version 330 core
