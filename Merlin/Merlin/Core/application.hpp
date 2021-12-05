@@ -2,6 +2,7 @@
 #define APPLICATION_HPP
 #include "Merlin//Core/app_events.hpp"
 #include "Merlin//Core/window.hpp"
+#include "Merlin/Core/layer_stack.hpp"
 
 
 namespace Merlin
@@ -10,6 +11,7 @@ namespace Merlin
     {
         static Application* app_instance;
 
+        LayerStack layer_stack;
         std::shared_ptr<Window> main_window;
         bool is_running;
     public:
@@ -17,10 +19,15 @@ namespace Merlin
        
         Application();
         virtual ~Application() {}
+
+        void PushLayerFront(std::shared_ptr<Layer> layer);
+        void PushLayerBack(std::shared_ptr<Layer> layer);
+
         inline std::shared_ptr<Window> GeMaintWindow() { return main_window; }
-        virtual void HandleEvent(AppEvent& app_event);
-        virtual void OnUpdate() {}
         void Run();
+    private:
+        void HandleEvent(AppEvent& app_event);
+        void OnUpdate();
     };
 }
 

@@ -1,8 +1,7 @@
 #include "Merlin/Core/application.hpp"
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Render/renderer.hpp"
-#include "imgui.h"
-#include <backends/imgui_impl_opengl3.h>
+#include "Merlin/Core/imgui_layer.hpp"
 
 
 namespace Merlin
@@ -13,67 +12,59 @@ namespace Merlin
     {
         Logger::Init();
 
-        main_window= std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
+        main_window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
         main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
         Renderer::Init();
 
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui::StyleColorsDark();
-        ImGui_ImplOpenGL3_Init("#version 130");
+        PushLayerFront(std::make_shared<IMGUILayer>());
 
         is_running = true;
         app_instance = this;
     }
 
+    void Application::PushLayerFront(std::shared_ptr<Layer> layer)
+    {
+        layer_stack.PushFront(layer);
+    }
+
+    void Application::PushLayerBack(std::shared_ptr<Layer> layer)
+    {
+        layer_stack.PushFront(layer);
+    }
+
     void Application::HandleEvent(AppEvent& app_event)
     {
-        AppEvent::Dispatch<WindowClosedEvent>(app_event,
+        app_event.Dispatch<WindowClosedEvent>(
             [this](WindowClosedEvent& e)
         {
             is_running = false;
             return true;
         });
 
-        // IMGUI
-        AppEvent::Dispatch<MouseButtonPressedEvent>(app_event,
-            [](MouseButtonPressedEvent& e)
+        // Dispatch events to layers allowing them to block
+        for (auto& layer : layer_stack)
         {
-            auto& io = ImGui::GetIO();
-            io.MouseDown[e.GetButton()] = true;
-            return false;
-        });
-        AppEvent::Dispatch<MouseButtonReleasedEvent>(app_event,
-            [](MouseButtonReleasedEvent& e)
+            if (app_event.was_handled)
+                break;
+            layer->HandleEvent(app_event);
+        }
+    }
+
+    void Application::OnUpdate()
+    {
+        for(auto & layer : layer_stack)
         {
-            auto& io = ImGui::GetIO();
-            io.MouseDown[e.GetButton()] = false;
-            return false;
-        });
-        AppEvent::Dispatch<MouseMovedEvent>(app_event,
-            [](MouseMovedEvent& e)
-        {
-            auto& io = ImGui::GetIO();
-            io.MousePos = ImVec2(e.GetX(), e.GetY());
-            return false;
-        });
-        AppEvent::Dispatch<MouseScrolledEvent>(app_event,
-            [](MouseScrolledEvent& e)
-        {
-            auto& io = ImGui::GetIO();
-            io.MouseWheel += e.GetYScroll();
-            io.MouseWheelH += e.GetXScroll();
-            return false;
-        });
+            layer->OnUpdate();
+        }
     }
 
     void Application::Run()
     {
         while (is_running)
         {
-            this->OnUpdate();
+            OnUpdate();
             main_window->OnUpdate();
         }
     }
