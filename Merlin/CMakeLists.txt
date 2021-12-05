@@ -6,6 +6,7 @@ set(MERLIN_SRC
     Merlin/Core/glfw_window.cpp
     Merlin/Core/input.cpp
     Merlin/Core/glfw_input.cpp
+    Merlin/Core/layer_stack.cpp
     Merlin/Render/graphics_context.cpp
     Merlin/Render/opengl_context.cpp
     Merlin/Render/vertex_buffer.cpp
@@ -34,6 +35,8 @@ set(MERLIN_INC
     Merlin/Core/input_codes.hpp
     Merlin/Core/glfw_input.hpp
     Merlin/Core/input.hpp
+    Merlin/Core/layer.hpp
+    Merlin/Core/layer_stack.hpp
     Merlin/Render/graphics_context.hpp
     Merlin/Render/opengl_context.hpp
     Merlin/Render/vertex_buffer.hpp
