@@ -10,10 +10,10 @@ namespace Merlin
         height = _height;
 
         glCreateTextures(GL_TEXTURE_2D, 1, &id);
-        glTextureStorage2D(id, 1, GL_RGB8, width, height);
+        glTextureStorage2D(id, 1, GL_RGB, width, height);
         glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureSubImage2D(id, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()

@@ -5,6 +5,7 @@
 #include "Merlin/Render/index_buffer.hpp"
 #include "Merlin/Render/buffer_layout.hpp"
 #include "Merlin/Render/vertex_array.hpp"
+#include "Merlin/Render/texture2d.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/perspective_camera.hpp"
@@ -20,38 +21,24 @@ bool is_running = true;
 
 float verts[]
 {
-    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f , 1.0f, 1.0f,
-    +0.5f, -0.5f, +0.5f, 1.0f, 0.0f , 1.0f, 1.0f,
-    +0.5f, +0.5f, +0.5f, 1.0f, 1.0f , 1.0f, 1.0f,
-    -0.5f, +0.5f, +0.5f, 0.0f, 1.0f , 1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f , 0.0f, 1.0f,
-    +0.5f, -0.5f, -0.5f, 1.0f, 0.0f , 0.0f, 1.0f,
-    +0.5f, +0.5f, -0.5f, 1.0f, 1.0f , 0.0f, 1.0f,
-    -0.5f, +0.5f, -0.5f, 0.0f, 1.0f , 0.0f, 1.0f
+    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f,
+    +0.5f, -0.5f, +0.5f, 1.0f, 0.0f,
+    +0.5f, +0.5f, +0.5f, 1.0f, 1.0f,
+    -0.5f, +0.5f, +0.5f, 0.0f, 1.0f
 };
 
 uint32_t tris[]
 {
     0, 1, 2,
     0, 2, 3,
-    5, 4, 7,
-    5, 7, 6,
-    1, 5, 6,
-    1, 6, 2,
-    4, 0, 3,
-    4, 3, 7,
-    3, 2, 6,
-    3, 6, 7,
-    4, 5, 1,
-    4, 1, 0,
 };
 
 uint8_t tex[]
 {
-    0, 0, 0,
-    0, 0, 0,
-    0, 0, 0,
-    0, 0, 0,
+    1, 1, 1,
+    1, 1, 1,
+    1, 1, 1,
+    1, 1, 1,
 };
 uint32_t tex_width = 2;
 uint32_t tex_height = 2;
@@ -61,9 +48,9 @@ auto vertex_source =
 R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec4 aCol;
+layout (location = 1) in vec2 aUV;
 
-out vec4 color;
+out vec2 v_TexCoord;
 
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
@@ -71,8 +58,8 @@ uniform mat4 u_ProjectionMatrix;
 
 void main()
 {
+    v_TexCoord = aUV;
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-    color = aCol;
 }
 )";
 
@@ -80,12 +67,13 @@ auto fragment_source =
 R"(
 #version 330 core
 out vec4 FragColor;
-in vec4 color;
+in vec2 v_TexCoord;
 
+uniform sampler2D u_Texture;
 
 void main()
 {
-    FragColor = color;
+    FragColor = texture(u_Texture, v_TexCoord);
 }
 )";
 
@@ -95,17 +83,22 @@ class SceneLayer : public Layer
     std::shared_ptr<Camera> camera;
     std::shared_ptr<Shader> shader;
     std::shared_ptr<VertexArray> varray;
+    std::shared_ptr<Texture2D> texture;
 public:
     SceneLayer()
     {
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
 
+        texture = Texture2D::Create(&tex, sizeof(tex), tex_width, tex_height);
+
         shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
+        shader->Bind();
+        shader->SetUniformInt("u_Texture", 0);
 
         BufferLayout layout{
             {ShaderDataType::Float3, "pos"},
-            {ShaderDataType::Float4, "color"},
+            {ShaderDataType::Float2, "uv"},
         };
 
         auto vbuffer = std::shared_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));
@@ -133,6 +126,7 @@ public:
 
         // SCENE RENDER
         {
+            texture->Bind();
             Renderer::BeginScene(camera);
             Renderer::Submit(shader, varray);
             Renderer::EndScene();

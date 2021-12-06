@@ -87,6 +87,14 @@ namespace Merlin
         glUniform1f(location, value);
     }
 
+
+    void OpenGLShader::SetUniformInt(const std::string& name, int value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniform1i(location, value);
+
+    }
+
     bool OpenGLShader::CompilationSucceeded(int shader_id)
     {
         int compile_status;
