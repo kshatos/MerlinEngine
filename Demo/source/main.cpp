@@ -150,8 +150,11 @@ public:
     
     virtual void OnDetatch() override {}
     
-    virtual void OnUpdate() override
+    virtual void OnUpdate(float time_step) override
     {
+        HandleInput(time_step);
+
+        ME_LOG_INFO(std::to_string(time_step));
         Renderer::SetViewport(
             0, 0,
             Application::Get().GeMaintWindow()->GetWidth(),
@@ -188,25 +191,6 @@ public:
     {
         ME_LOG_INFO(app_event.ToString());
 
-        app_event.Dispatch<KeyPressedEvent>(
-            [this](KeyPressedEvent& e)
-        {
-            float speed = 1.0e-1f;
-            if (e.GetKeyCode() == Key::W)
-                camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, -speed));
-            if (e.GetKeyCode() == Key::A)
-                camera->GetTransform().Translate(glm::vec3(-speed, 0.0f, 0.0f));
-            if (e.GetKeyCode() == Key::S)
-                camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, speed));
-            if (e.GetKeyCode() == Key::D)
-                camera->GetTransform().Translate(glm::vec3(speed, 0.0f, 0.0f));
-            if (e.GetKeyCode() == Key::Z)
-                camera->GetTransform().Translate(glm::vec3(0.0f, speed, 0.0f));
-            if (e.GetKeyCode() == Key::X)
-                camera->GetTransform().Translate(glm::vec3(0.0f, -speed, 0.0f));
-            return true;
-        });
-
         app_event.Dispatch<MouseScrolledEvent>(
             [this](MouseScrolledEvent& e)
         {
@@ -218,6 +202,22 @@ public:
         });
     }
 
+    void HandleInput(float time_step)
+    {
+        float speed = 5.0e-1f;
+        if (Input::GetKeyDown(Key::W))
+            camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, -speed * time_step));
+        if (Input::GetKeyDown(Key::A))
+            camera->GetTransform().Translate(glm::vec3(-speed * time_step, 0.0f, 0.0f));
+        if (Input::GetKeyDown(Key::S))
+            camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, speed * time_step));
+        if (Input::GetKeyDown(Key::D))
+            camera->GetTransform().Translate(glm::vec3(speed * time_step, 0.0f, 0.0f));
+        if (Input::GetKeyDown(Key::Z))
+            camera->GetTransform().Translate(glm::vec3(0.0f, speed * time_step, 0.0f));
+        if (Input::GetKeyDown(Key::X))
+            camera->GetTransform().Translate(glm::vec3(0.0f, -speed * time_step, 0.0f));
+    }
 };
 
 class DemoApplication : public Application

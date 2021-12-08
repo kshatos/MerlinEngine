@@ -2,6 +2,7 @@
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Core/imgui_layer.hpp"
+#include "GLFW/glfw3.h"
 
 
 namespace Merlin
@@ -52,11 +53,11 @@ namespace Merlin
         }
     }
 
-    void Application::OnUpdate()
+    void Application::OnUpdate(float time_step)
     {
         for(auto & layer : layer_stack)
         {
-            layer->OnUpdate();
+            layer->OnUpdate(time_step);
         }
     }
 
@@ -64,7 +65,11 @@ namespace Merlin
     {
         while (is_running)
         {
-            OnUpdate();
+            auto current_frame_time = glfwGetTime();
+            auto time_step = current_frame_time - last_frame_time;
+            last_frame_time = current_frame_time;
+
+            OnUpdate(time_step);
             main_window->OnUpdate();
         }
     }
