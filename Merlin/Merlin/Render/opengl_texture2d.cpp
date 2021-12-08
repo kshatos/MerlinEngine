@@ -35,7 +35,7 @@ namespace Merlin
             return GL_LINEAR;
         default:
             ME_LOG_ERROR("Unkown TextureFilterMode wrap type given");
-            GL_NONE;
+            return GL_NONE;
         }
     }
 

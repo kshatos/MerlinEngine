@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 project(MerlinEngine)
 
+set(ASSET_DIR ${CMAKE_SOURCE_DIR}/Assets)
+
 option(BUILD_DEMO "Build the demo program" ON)
 option(BUILD_TESTS "Build the test program" ON)
 option(ENABLE_MERLIN_LOGGING "Enable merlin logging" ON)

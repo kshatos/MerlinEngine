@@ -15,6 +15,7 @@
 #include "Merlin/Core/application.hpp"
 #include "Merlin/Core/input.hpp"
 
+
 using namespace Merlin;
 
 bool is_running = true;
@@ -120,7 +121,7 @@ public:
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
 
         texture = Texture2D::Create(
-            "C:\\Users\\kshat\\Desktop\\debug.jpg",
+            ".\\Assets\\Textures\\debug.jpg",
             Texture2DProperties(
                 TextureWrapMode::Repeat,
                 TextureWrapMode::Repeat,
