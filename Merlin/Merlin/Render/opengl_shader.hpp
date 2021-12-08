@@ -25,6 +25,7 @@ namespace Merlin
         void SetUniformFloat3(const std::string& name, glm::vec3 value) override;
         void SetUniformFloat2(const std::string& name, glm::vec2 value) override;
         void SetUniformFloat(const std::string& name, float value) override;
+        void SetUniformInt(const std::string& name, int value) override;
     };
 }
 
