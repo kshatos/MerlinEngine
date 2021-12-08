@@ -1,7 +1,7 @@
 #ifndef OPENGL_TEXTURE
 #define OPENGL_TEXTURE
 #include "Merlin/Render/texture2d.hpp"
-
+#include <string>
 
 namespace Merlin
 {
@@ -10,8 +10,10 @@ namespace Merlin
         uint32_t width;
         uint32_t height;
         uint32_t id;
+        void Init(void* data, uint32_t _width, uint32_t _height);
     public:
-        OpenGLTexture2D(void* data, size_t size, uint32_t _width, uint32_t _height);
+        OpenGLTexture2D(const std::string& filepath);
+        OpenGLTexture2D(void* data, uint32_t _width, uint32_t _height);
         ~OpenGLTexture2D();
         inline uint32_t GetWidth() override { return width; }
         inline uint32_t GetHeight() override { return height; }

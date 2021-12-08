@@ -2,6 +2,7 @@
 #define TEXTURE_HPP
 #include <stdint.h>
 #include <memory>
+#include <string>
 
 
 namespace Merlin
@@ -15,7 +16,8 @@ namespace Merlin
         virtual void Bind(uint32_t slot=0) = 0;
         virtual void UnBind(uint32_t slot=0) = 0;
 
-        static std::shared_ptr<Texture2D> Create(void* data, size_t size,  uint32_t width, uint32_t height);
+        static std::shared_ptr<Texture2D> Create(const std::string& filepath);
+        static std::shared_ptr<Texture2D> Create(void* data, uint32_t width, uint32_t height);
     };
 }
 

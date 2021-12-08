@@ -21,45 +21,31 @@ bool is_running = true;
 
 float verts[]
 {
-    -0.5f, -0.5f, +0.5f, 0.0f, 0.0f,
-    +0.5f, -0.5f, +0.5f, 1.0f, 0.0f,
-    +0.5f, +0.5f, +0.5f, 1.0f, 1.0f,
-    -0.5f, +0.5f, +0.5f, 0.0f, 1.0f
+    // positions         // texture coords
+     0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
+     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
 };
 
 uint32_t tris[]
 {
-    0, 1, 2,
-    0, 2, 3,
+    0, 1, 3, // first triangle
+    1, 2, 3  // second triangle
 };
-
-uint8_t tex[]
-{
-    1, 1, 1,
-    1, 1, 1,
-    1, 1, 1,
-    1, 1, 1,
-};
-uint32_t tex_width = 2;
-uint32_t tex_height = 2;
-
 
 auto vertex_source =
 R"(
 #version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aUV;
+layout (location = 1) in vec2 aTexCoord;
 
-out vec2 v_TexCoord;
-
-uniform mat4 u_ViewMatrix;
-uniform mat4 u_ProjectionMatrix;
-
+out vec2 TexCoord;
 
 void main()
 {
-    v_TexCoord = aUV;
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+	gl_Position = vec4(aPos, 1.0);
+	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
 )";
 
@@ -67,13 +53,14 @@ auto fragment_source =
 R"(
 #version 330 core
 out vec4 FragColor;
-in vec2 v_TexCoord;
+
+in vec2 TexCoord;
 
 uniform sampler2D u_Texture;
 
 void main()
 {
-    FragColor = texture(u_Texture, v_TexCoord);
+	FragColor = texture(u_Texture, TexCoord);
 }
 )";
 
@@ -90,15 +77,15 @@ public:
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
 
-        texture = Texture2D::Create(&tex, sizeof(tex), tex_width, tex_height);
+        texture = Texture2D::Create("C:\\Users\\kshat\\Desktop\\debug.jpg");
 
         shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
         shader->Bind();
         shader->SetUniformInt("u_Texture", 0);
 
         BufferLayout layout{
-            {ShaderDataType::Float3, "pos"},
-            {ShaderDataType::Float2, "uv"},
+            {ShaderDataType::Float3, "aPos"},
+            {ShaderDataType::Float2, "aTexCoord"},
         };
 
         auto vbuffer = std::shared_ptr<VertexBuffer>(VertexBuffer::Create(verts, sizeof(verts)));

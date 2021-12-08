@@ -72,6 +72,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 
 set_property(TARGET Merlin PROPERTY CXX_STANDARD 17)
 
@@ -87,4 +88,5 @@ target_link_libraries(Merlin
     glad
     spdlog::spdlog
     glfw
+    stb
 )

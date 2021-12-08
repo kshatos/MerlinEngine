@@ -92,7 +92,6 @@ namespace Merlin
     {
         auto location = glGetUniformLocation(id, name.c_str());
         glUniform1i(location, value);
-
     }
 
     bool OpenGLShader::CompilationSucceeded(int shader_id)
