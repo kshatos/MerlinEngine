@@ -14,6 +14,7 @@ namespace Merlin
         LayerStack layer_stack;
         std::shared_ptr<Window> main_window;
         bool is_running;
+        float last_frame_time = 0.0f;
     public:
         inline static Application& Get() { return *app_instance; }
        
@@ -27,7 +28,7 @@ namespace Merlin
         void Run();
     private:
         void HandleEvent(AppEvent& app_event);
-        void OnUpdate();
+        void OnUpdate(float time_step);
     };
 }
 

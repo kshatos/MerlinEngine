@@ -10,7 +10,7 @@ namespace Merlin
     public:
         void OnAttach() override;
         void OnDetatch() override;
-        void OnUpdate() override;
+        void OnUpdate(float time_step) override;
         void HandleEvent(AppEvent& app_event) override;
     };
 }

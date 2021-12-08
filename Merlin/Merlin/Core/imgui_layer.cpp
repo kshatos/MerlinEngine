@@ -19,7 +19,7 @@ namespace Merlin
         ImGui::DestroyContext();
     }
 
-    void IMGUILayer::OnUpdate()
+    void IMGUILayer::OnUpdate(float time_step)
     {
     }
 
