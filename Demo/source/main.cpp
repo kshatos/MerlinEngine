@@ -21,17 +21,57 @@ bool is_running = true;
 
 float verts[]
 {
-    // positions         // texture coords
-     0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
-    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
+     // positions          // texture coords
+    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+                          
+     0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 
+     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+                          
+     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+
+    -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+
+     0.5f,  -0.5f,  0.5f,   0.0f, 0.0f,
+    -0.5f,  -0.5f,  0.5f,   1.0f, 0.0f,
+    -0.5f,  -0.5f, -0.5f,   1.0f, 1.0f,
+     0.5f,  -0.5f, -0.5f,   0.0f, 1.0f,
 };
 
 uint32_t tris[]
 {
-    0, 1, 3, // first triangle
-    1, 2, 3  // second triangle
+    0, 1, 2,
+    0, 2, 3,
+
+    4, 5, 6,
+    4, 6, 7,
+
+    8, 9, 10,
+    8, 10, 11,
+
+    12, 13, 14,
+    12, 14, 15,
+
+    16, 17, 18,
+    16, 18, 19,
+
+    20, 21, 22,
+    20, 22, 23
 };
 
 auto vertex_source =
@@ -40,11 +80,13 @@ R"(
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 
+uniform mat4 u_ViewMatrix;
+uniform mat4 u_ProjectionMatrix;
 out vec2 TexCoord;
 
 void main()
 {
-	gl_Position = vec4(aPos, 1.0);
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
 )";
@@ -77,7 +119,12 @@ public:
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
 
-        texture = Texture2D::Create("C:\\Users\\kshat\\Desktop\\debug.jpg");
+        texture = Texture2D::Create(
+            "C:\\Users\\kshat\\Desktop\\debug.jpg",
+            Texture2DProperties(
+                TextureWrapMode::Repeat,
+                TextureWrapMode::Repeat,
+                TextureFilterMode::Linear));
 
         shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
         shader->Bind();

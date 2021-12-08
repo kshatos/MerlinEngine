@@ -5,14 +5,20 @@
 namespace Merlin
 {
 
-    std::shared_ptr<Texture2D> Texture2D::Create(const std::string& filepath)
+    std::shared_ptr<Texture2D> Texture2D::Create(
+        const std::string& filepath,
+        Texture2DProperties props)
     {
-        return std::make_shared<OpenGLTexture2D>(filepath);
+        return std::make_shared<OpenGLTexture2D>(filepath, props);
     }
 
-    std::shared_ptr<Texture2D> Texture2D::Create(void* data, uint32_t width, uint32_t height)
+    std::shared_ptr<Texture2D> Texture2D::Create(
+        void* data,
+        uint32_t width,
+        uint32_t height,
+        Texture2DProperties props)
     {
-        return std::make_shared<OpenGLTexture2D>(data, width, height);
+        return std::make_shared<OpenGLTexture2D>(data, width, height, props);
     }
 
 }
