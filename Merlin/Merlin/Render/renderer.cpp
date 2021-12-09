@@ -46,11 +46,13 @@ namespace Merlin
 
     void Renderer::Submit(
         const std::shared_ptr<Shader>& shader,
-        const std::shared_ptr<VertexArray>& vertex_array)
+        const std::shared_ptr<VertexArray>& vertex_array,
+        const glm::mat4& model_matrix)
     {
         shader->Bind();
-        shader->SetUniformMat4("u_ProjectionMatrix", scene_data->projection_matrix);
+        shader->SetUniformMat4("u_ModelMatrix", model_matrix);
         shader->SetUniformMat4("u_ViewMatrix", scene_data->view_matrix);
+        shader->SetUniformMat4("u_ProjectionMatrix", scene_data->projection_matrix);
 
         vertex_array->Bind();
         render_impl->DrawTriangles(vertex_array);

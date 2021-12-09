@@ -10,7 +10,10 @@ namespace Merlin
         for (const auto& entity : entities)
         {
             entity->OnBeforeRender();
-            Renderer::Submit(entity->shader, entity->varray);
+            Renderer::Submit(
+                entity->shader,
+                entity->varray,
+                entity->transform.GetTransformationMatrix());
         }
         Renderer::EndScene();
     }

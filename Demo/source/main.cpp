@@ -14,7 +14,8 @@
 #include <backends/imgui_impl_opengl3.h>
 #include "Merlin/Core/application.hpp"
 #include "Merlin/Core/input.hpp"
-
+#include "Merlin/Scene/scene.hpp"
+#include <glm/gtc/random.hpp>
 
 using namespace Merlin;
 
@@ -22,36 +23,36 @@ bool is_running = true;
 
 float verts[]
 {
-     // positions          // texture coords
-    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-                          
-     0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
-                          
-     0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    // positions          // texture coords
+   -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+   -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
 
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
 
-    -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+   -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
+   -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
 
-     0.5f,  -0.5f,  0.5f,   0.0f, 0.0f,
-    -0.5f,  -0.5f,  0.5f,   1.0f, 0.0f,
-    -0.5f,  -0.5f, -0.5f,   1.0f, 1.0f,
-     0.5f,  -0.5f, -0.5f,   0.0f, 1.0f,
+   -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
+   -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
+   -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
+   -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+
+   -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
+   -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+
+    0.5f,  -0.5f,  0.5f,   0.0f, 0.0f,
+   -0.5f,  -0.5f,  0.5f,   1.0f, 0.0f,
+   -0.5f,  -0.5f, -0.5f,   1.0f, 1.0f,
+    0.5f,  -0.5f, -0.5f,   0.0f, 1.0f,
 };
 
 uint32_t tris[]
@@ -81,13 +82,14 @@ R"(
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
 
+uniform mat4 u_ModelMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
 out vec2 TexCoord;
 
 void main()
 {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }
 )";
@@ -107,29 +109,65 @@ void main()
 }
 )";
 
+std::shared_ptr<VertexArray> main_varray;
+std::shared_ptr<Texture2D> main_texture;
+std::shared_ptr<Shader> main_shader;
+
+class SpinningCubeEntity : public Entity
+{
+    glm::vec3 axis;
+    float rotation_speed;
+    std::shared_ptr<Texture2D> texture;
+public:
+    SpinningCubeEntity()
+    {
+        rotation_speed = glm::linearRand(0.05f, 0.50f);
+        axis = glm::vec3(
+            glm::linearRand(-1.0f, 1.0f),
+            glm::linearRand(-1.0f, 1.0f),
+            glm::linearRand(-1.0f, 1.0f));
+        axis = glm::normalize(axis);
+
+        shader = main_shader;
+        texture = main_texture;
+        varray = main_varray;
+    }
+
+    virtual void OnBeforeRender() override
+    {
+        texture->Bind();
+    }
+
+    virtual void OnUpdate(float time_step) override
+    {
+        auto th = time_step * rotation_speed;
+        auto c = glm::cos(th);
+        auto s = glm::sin(th);
+
+        glm::quat q(c, s * axis.x, s * axis.y, s * axis.z);
+        transform.Rotate(q);
+    }
+
+};
 
 class SceneLayer : public Layer
 {
+    Scene scene;
     std::shared_ptr<Camera> camera;
-    std::shared_ptr<Shader> shader;
-    std::shared_ptr<VertexArray> varray;
-    std::shared_ptr<Texture2D> texture;
 public:
     SceneLayer()
     {
-        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
-
-        texture = Texture2D::Create(
+        // Initialize render data
+        main_texture = Texture2D::Create(
             ".\\Assets\\Textures\\debug.jpg",
             Texture2DProperties(
                 TextureWrapMode::Repeat,
                 TextureWrapMode::Repeat,
                 TextureFilterMode::Linear));
 
-        shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
-        shader->Bind();
-        shader->SetUniformInt("u_Texture", 0);
+        main_shader = std::shared_ptr<Shader>(Shader::Create(vertex_source, fragment_source));
+        main_shader->Bind();
+        main_shader->SetUniformInt("u_Texture", 0);
 
         BufferLayout layout{
             {ShaderDataType::Float3, "aPos"},
@@ -141,18 +179,38 @@ public:
 
         auto ibuffer = std::shared_ptr<IndexBuffer>(IndexBuffer::Create(tris, sizeof(tris) / sizeof(uint32_t)));
 
-        varray = std::shared_ptr<VertexArray>(VertexArray::Create());
-        varray->AddVertexBuffer(vbuffer);
-        varray->SetIndexBuffer(ibuffer);
+        main_varray = std::shared_ptr<VertexArray>(VertexArray::Create());
+        main_varray->AddVertexBuffer(vbuffer);
+        main_varray->SetIndexBuffer(ibuffer);
+
+        // Initialize camera
+        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
+        scene.SetCamera(camera);
+
+        // Add entities to the scene
+        for (int i = 0; i < 600; ++i)
+        {
+            auto e = std::make_shared<SpinningCubeEntity>();
+            e->transform.Translate(glm::vec3(
+                glm::linearRand(-5.0f, 5.0f),
+                glm::linearRand(-5.0f, 5.0f),
+                glm::linearRand(-5.0f, 5.0f)));
+            float scale = glm::linearRand(0.1f, 0.5f);
+
+            e->transform.Scale(glm::vec3(scale));
+            scene.AddEntity(e);
+        }
     }
 
     virtual void OnAttach()override {}
-    
+
     virtual void OnDetatch() override {}
-    
+
     virtual void OnUpdate(float time_step) override
     {
-        HandleInput(time_step);
+        scene.OnUpdate(time_step);
+        MoveCamera(time_step);
 
         ME_LOG_INFO(std::to_string(time_step));
         Renderer::SetViewport(
@@ -161,16 +219,9 @@ public:
             Application::Get().GeMaintWindow()->GetHeight());
         Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
         Renderer::Clear();
+        scene.RenderScene();
 
-        // SCENE RENDER
-        {
-            texture->Bind();
-            Renderer::BeginScene(camera);
-            Renderer::Submit(shader, varray);
-            Renderer::EndScene();
-        }
-
-        // GUI RENDER
+        // GUI
         {
             auto& io = ImGui::GetIO();
             io.DisplaySize = ImVec2(
@@ -183,7 +234,6 @@ public:
             ImGui::ShowDemoWindow();
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
         }
     }
 
@@ -202,7 +252,7 @@ public:
         });
     }
 
-    void HandleInput(float time_step)
+    void MoveCamera(float time_step)
     {
         float speed = 5.0e-1f;
         if (Input::GetKeyDown(Key::W))
