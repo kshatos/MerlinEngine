@@ -113,13 +113,14 @@ std::shared_ptr<VertexArray> main_varray;
 std::shared_ptr<Texture2D> main_texture;
 std::shared_ptr<Shader> main_shader;
 
-class SpinningCubeEntity : public Entity
+class SpinningComponent : public Component
 {
     glm::vec3 axis;
     float rotation_speed;
-    std::shared_ptr<Texture2D> texture;
+    std::shared_ptr<TransformComponent> transform_comp;
+
 public:
-    SpinningCubeEntity()
+    SpinningComponent(Entity* parent) : Component(parent)
     {
         rotation_speed = glm::linearRand(0.05f, 0.50f);
         axis = glm::vec3(
@@ -127,15 +128,11 @@ public:
             glm::linearRand(-1.0f, 1.0f),
             glm::linearRand(-1.0f, 1.0f));
         axis = glm::normalize(axis);
-
-        shader = main_shader;
-        texture = main_texture;
-        varray = main_varray;
     }
 
-    virtual void OnBeforeRender() override
+    virtual void OnAwake() override
     {
-        texture->Bind();
+        transform_comp = parent->GetComponent<TransformComponent>();
     }
 
     virtual void OnUpdate(float time_step) override
@@ -145,7 +142,7 @@ public:
         auto s = glm::sin(th);
 
         glm::quat q(c, s * axis.x, s * axis.y, s * axis.z);
-        transform.Rotate(q);
+        transform_comp->transform.Rotate(q);
     }
 
 };
@@ -184,23 +181,30 @@ public:
         main_varray->SetIndexBuffer(ibuffer);
 
         // Initialize camera
-        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.01f, 10.0f);
+        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 20.0f);
         camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
         scene.SetCamera(camera);
 
         // Add entities to the scene
         for (int i = 0; i < 600; ++i)
         {
-            auto e = std::make_shared<SpinningCubeEntity>();
-            e->transform.Translate(glm::vec3(
+            auto entity = std::make_shared<Entity>();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+            auto spin_comp = entity->AddComponent<SpinningComponent>();
+
+            transform_comp->transform.Translate(glm::vec3(
                 glm::linearRand(-5.0f, 5.0f),
                 glm::linearRand(-5.0f, 5.0f),
                 glm::linearRand(-5.0f, 5.0f)));
-            float scale = glm::linearRand(0.1f, 0.5f);
-
-            e->transform.Scale(glm::vec3(scale));
-            scene.AddEntity(e);
+            transform_comp->transform.Scale(
+                glm::vec3(glm::linearRand(0.3f, 0.8f)));
+            mesh_comp->shader = main_shader;
+            mesh_comp->varray = main_varray;
+            scene.AddEntity(entity);
         }
+
+        scene.OnAwake();
     }
 
     virtual void OnAttach()override {}
@@ -212,7 +216,7 @@ public:
         scene.OnUpdate(time_step);
         MoveCamera(time_step);
 
-        ME_LOG_INFO(std::to_string(time_step));
+        ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
         Renderer::SetViewport(
             0, 0,
             Application::Get().GeMaintWindow()->GetWidth(),
