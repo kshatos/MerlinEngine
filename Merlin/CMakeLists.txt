@@ -62,9 +62,11 @@ set(MERLIN_INC
     Merlin/Render/camera.hpp
     Merlin/Render/perspective_camera.hpp
     Merlin/Render/transform.hpp
+    Merlin/Render/lighting.hpp
     Merlin/Scene/scene.hpp
     Merlin/Scene/entity.hpp
     Merlin/Scene/component.hpp
+    Merlin/Scene/core_components.hpp
 )
 
 add_library(Merlin STATIC

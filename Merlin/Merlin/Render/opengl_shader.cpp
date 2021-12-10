@@ -17,7 +17,7 @@ namespace Merlin
         unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
-        if (!CompilationSucceeded(vertex))
+        if (!CompilationSucceeded("Vertex", vertex))
         {
             glDeleteShader(vertex);
             return;
@@ -26,7 +26,7 @@ namespace Merlin
         unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
-        if (!CompilationSucceeded(fragment))
+        if (!CompilationSucceeded("Fragment", fragment))
         {
             glDeleteShader(vertex);
             glDeleteShader(fragment);
@@ -63,6 +63,12 @@ namespace Merlin
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
     }
 
+    void OpenGLShader::SetUniformMat3(const std::string& name, glm::mat3 value)
+    {
+        auto location = glGetUniformLocation(id, name.c_str());
+        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+    }
+
     void OpenGLShader::SetUniformFloat4(const std::string& name, glm::vec4 value)
     {
         auto location = glGetUniformLocation(id, name.c_str());
@@ -94,7 +100,7 @@ namespace Merlin
         glUniform1i(location, value);
     }
 
-    bool OpenGLShader::CompilationSucceeded(int shader_id)
+    bool OpenGLShader::CompilationSucceeded(std::string name, int shader_id)
     {
         int compile_status;
         glGetShaderiv(shader_id, GL_COMPILE_STATUS, &compile_status);
@@ -104,7 +110,7 @@ namespace Merlin
             glGetShaderInfoLog(shader_id, 512, NULL, infoLog);
 
             std::ostringstream oss;
-            oss << "Vertex shader compilation failed: " << std::endl << std::string(infoLog);
+            oss << name << " shader compilation failed: " << std::endl << std::string(infoLog);
             ME_LOG_ERROR(oss.str());
             return false;
         }
