@@ -15,10 +15,18 @@ namespace Merlin
         scene_data = std::make_unique<Renderer::SceneData>();
     }
 
-    void Renderer::BeginScene(const std::shared_ptr<Camera>& camera)
+    void Renderer::BeginScene(
+        const std::shared_ptr<Camera>& camera)
     {
+        scene_data->view_pos = camera->GetTransform().GetPosition();
         scene_data->view_matrix = camera->GetViewMatrix();
         scene_data->projection_matrix = camera->GetProjectionMatrix();
+        scene_data->point_lights.clear();
+    }
+
+    void Renderer::AddPointLight(const PointLightData& light)
+    {
+        scene_data->point_lights.push_back(light);
     }
 
     void Renderer::EndScene()
@@ -50,9 +58,21 @@ namespace Merlin
         const glm::mat4& model_matrix)
     {
         shader->Bind();
+        shader->SetUniformFloat3("u_viewPos", scene_data->view_pos);
+        shader->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
         shader->SetUniformMat4("u_ModelMatrix", model_matrix);
         shader->SetUniformMat4("u_ViewMatrix", scene_data->view_matrix);
         shader->SetUniformMat4("u_ProjectionMatrix", scene_data->projection_matrix);
+
+        shader->SetUniformInt("u_nPointLights", scene_data->point_lights.size());
+        for (int i=0; i<scene_data->point_lights.size(); ++i)
+        {
+            const auto& light = scene_data->point_lights[i];
+            shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
+            shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].intensity", light.intensity);
+            shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
+            shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
+        }
 
         vertex_array->Bind();
         render_impl->DrawTriangles(vertex_array);

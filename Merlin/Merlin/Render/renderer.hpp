@@ -1,8 +1,10 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 #include <memory>
+#include <vector>
 #include <glm/glm.hpp>
 #include "Merlin/Render/camera.hpp"
+#include "Merlin/Render/lighting.hpp"
 
 
 namespace Merlin
@@ -15,8 +17,10 @@ namespace Merlin
     {
         struct SceneData
         {
+            glm::vec3 view_pos;
             glm::mat4 view_matrix;
             glm::mat4 projection_matrix;
+            std::vector<PointLightData> point_lights;
         };
 
         static std::unique_ptr <SceneData> scene_data;
@@ -24,6 +28,7 @@ namespace Merlin
     public:
         static void Init();
         static void BeginScene(const std::shared_ptr<Camera>& camera);
+        static void AddPointLight(const PointLightData& light);
         static void EndScene();
 
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

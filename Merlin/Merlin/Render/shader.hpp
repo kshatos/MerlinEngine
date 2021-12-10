@@ -16,6 +16,7 @@ namespace Merlin
         virtual void UnBind() = 0;
 
         virtual void SetUniformMat4(const std::string& name, glm::mat4 value) = 0;
+        virtual void SetUniformMat3(const std::string& name, glm::mat3 value) = 0;
         virtual void SetUniformFloat4(const std::string& name, glm::vec4 value) = 0;
         virtual void SetUniformFloat3(const std::string& name, glm::vec3 value) = 0;
         virtual void SetUniformFloat2(const std::string& name, glm::vec2 value) = 0;

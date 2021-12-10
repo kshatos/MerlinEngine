@@ -15,6 +15,7 @@
 #include "Merlin/Core/application.hpp"
 #include "Merlin/Core/input.hpp"
 #include "Merlin/Scene/scene.hpp"
+#include "Merlin/Scene/core_components.hpp"
 #include <glm/gtc/random.hpp>
 
 using namespace Merlin;
@@ -23,36 +24,36 @@ bool is_running = true;
 
 float verts[]
 {
-    // positions          // texture coords
-   -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-    0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-   -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+    // positions         // normal          // texture coords
+   -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+    0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+   -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
 
-    0.5f, -0.5f,  0.5f,   0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-    0.5f,  0.5f,  0.5f,   0.0f, 1.0f,
+    0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+    0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
 
-    0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-   -0.5f, -0.5f, -0.5f,   1.0f, 0.0f,
-   -0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-    0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+    0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f, 0.0f,
+   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f,
+   -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  1.0f, 1.0f,
+    0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f, 1.0f,
 
-   -0.5f, -0.5f, -0.5f,   0.0f, 0.0f,
-   -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,
-   -0.5f,  0.5f,  0.5f,   1.0f, 1.0f,
-   -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+   -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.0f, 0.0f,
+   -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  1.0f, 0.0f,
+   -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,  1.0f, 1.0f,
+   -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,  0.0f, 1.0f,
 
-   -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,
-    0.5f,  0.5f,  0.5f,   1.0f, 0.0f,
-    0.5f,  0.5f, -0.5f,   1.0f, 1.0f,
-   -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,
+   -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f,
+    0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,
+    0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f,
+   -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,
 
-    0.5f,  -0.5f,  0.5f,   0.0f, 0.0f,
-   -0.5f,  -0.5f,  0.5f,   1.0f, 0.0f,
-   -0.5f,  -0.5f, -0.5f,   1.0f, 1.0f,
-    0.5f,  -0.5f, -0.5f,   0.0f, 1.0f,
+    0.5f,  -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+   -0.5f,  -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+   -0.5f,  -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f,
+    0.5f,  -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,  0.0f, 1.0f,
 };
 
 uint32_t tris[]
@@ -79,33 +80,81 @@ uint32_t tris[]
 auto vertex_source =
 R"(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
-
+uniform mat3 u_NormalMatrix;
 uniform mat4 u_ModelMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
+
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoord;
+
+out vec3 Pos;
+out vec3 Normal;
 out vec2 TexCoord;
 
 void main()
 {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+    Pos = vec3(u_ModelMatrix * vec4(aPos, 1.0));
+    Normal = normalize(u_NormalMatrix * aNormal);
+    TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+
+    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(aPos, 1.0);
 }
 )";
 
 auto fragment_source =
 R"(
 #version 330 core
+struct PointLight
+{
+    vec3 position;
+    float intensity;
+    float range;
+    vec3 color;
+};
+
+#define MAX_POINT_LIGHTS 32
+uniform int u_nPointLights;
+uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
+uniform sampler2D u_Texture;
+uniform vec3 u_viewPos;
+
+in vec3 Pos;
+in vec3 Normal;
+in vec2 TexCoord;
 out vec4 FragColor;
 
-in vec2 TexCoord;
 
-uniform sampler2D u_Texture;
+vec3 CalcPointLight(
+    PointLight light,
+    vec3 normal,
+    vec3 fragPos)
+{
+    float distance    = length(light.position - fragPos);
+    vec3 lightDir = normalize(light.position - fragPos);
+    vec3 viewDir = normalize(u_viewPos - fragPos);
+    vec3 reflectDir = reflect(-lightDir, normal); 
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    float attenuation = 1.0 / (1.0 + (distance / light.range) * (distance / light.range));
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = 0.8 * pow(max(dot(viewDir, halfwayDir), 0.0), 64);
+
+    return light.color * light.intensity * attenuation * (spec + diff);
+}
 
 void main()
 {
-	FragColor = texture(u_Texture, TexCoord);
+    vec3 albedo = vec3(texture(u_Texture, TexCoord));
+    vec3 result = vec3(0.0f);
+
+    for (int i=0; i<u_nPointLights; i++)
+    {
+        result += albedo * CalcPointLight(u_pointLights[i], Normal, Pos);
+    }
+    FragColor = vec4(result, 1.0);
 }
 )";
 
@@ -168,6 +217,7 @@ public:
 
         BufferLayout layout{
             {ShaderDataType::Float3, "aPos"},
+            {ShaderDataType::Float3, "aNormal"},
             {ShaderDataType::Float2, "aTexCoord"},
         };
 
@@ -182,10 +232,26 @@ public:
 
         // Initialize camera
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 20.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.5f, 2.0f));
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 10.0f));
         scene.SetCamera(camera);
 
         // Add entities to the scene
+        for (int i = 0; i < 4; ++i)
+        {
+            auto entity = std::make_shared<Entity>();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            transform_comp->transform.Translate(glm::vec3(
+                glm::linearRand(-5.0f, 5.0f),
+                glm::linearRand(-5.0f, 5.0f),
+                glm::linearRand(-5.0f, 5.0f)));
+            auto light_comp = entity->AddComponent<PointLightComponent>();
+            light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
+            light_comp->data.intensity = 1.0f;
+            light_comp->data.range = 2.0f;
+
+            scene.AddEntity(entity);
+        }
+
         for (int i = 0; i < 600; ++i)
         {
             auto entity = std::make_shared<Entity>();

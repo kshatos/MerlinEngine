@@ -3,6 +3,7 @@
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/transform.hpp"
+#include "Merlin/Scene/core_components.hpp"
 
 
 namespace Merlin
@@ -10,6 +11,14 @@ namespace Merlin
     void Scene::RenderScene()
     {
         Renderer::BeginScene(camera);
+        for (const auto& entity : entities)
+        {
+            auto point_light_comp = entity->GetComponent<PointLightComponent>();
+            if (point_light_comp != nullptr)
+            {
+                Renderer::AddPointLight(point_light_comp->data);
+            }
+        }
         for (const auto& entity : entities)
         {
             auto mesh_comp = entity->GetComponent<MeshRenderComponent>();

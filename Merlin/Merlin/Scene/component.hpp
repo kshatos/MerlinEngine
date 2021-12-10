@@ -4,6 +4,7 @@
 #include "Merlin/Render/transform.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
+#include "Merlin/Render/lighting.hpp"
 
 
 namespace Merlin
@@ -19,21 +20,6 @@ namespace Merlin
         virtual ~Component() {}
         virtual void OnAwake() {};
         virtual void OnUpdate(float time_step) {}
-    };
-
-    class TransformComponent : public Component
-    {
-    public:
-        TransformComponent(Entity* parent) : Component(parent) {}
-        Transform transform;
-    };
-
-    class MeshRenderComponent : public Component
-    {
-    public:
-        MeshRenderComponent(Entity* parent) : Component(parent) {}
-        std::shared_ptr<VertexArray> varray;
-        std::shared_ptr<Shader> shader;
     };
 }
 
