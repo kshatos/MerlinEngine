@@ -24,7 +24,14 @@ namespace Merlin
             {
                 Renderer::AddLight(directional_light_comp->data);
             }
+
+            auto spot_light_component = entity->GetComponent<SpotLightComponent>();
+            if (spot_light_component != nullptr)
+            {
+                Renderer::AddLight(spot_light_component->data);
+            }
         }
+
         for (const auto& entity : entities)
         {
             auto mesh_comp = entity->GetComponent<MeshRenderComponent>();
@@ -37,9 +44,10 @@ namespace Merlin
                     transform_comp->transform.GetTransformationMatrix());
             }
         }
+
         Renderer::EndScene();
     }
-    
+
     void Scene::OnAwake()
     {
         for (const auto& entity : entities)

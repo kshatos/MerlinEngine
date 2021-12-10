@@ -46,6 +46,26 @@ namespace Merlin
         DirectionalLightComponent(Entity* parent) : Component(parent) {}
         DirectionalLightData data;
     };
+
+    class SpotLightComponent : public Component
+    {
+        std::shared_ptr<TransformComponent> transform;
+    public:
+        SpotLightData data;
+
+        SpotLightComponent(Entity* parent) : Component(parent) {}
+
+        void OnAwake() override
+        {
+            transform = parent->GetComponent<TransformComponent>();
+        }
+
+        void OnUpdate(float time_step) override
+        {
+            data.position = transform->transform.GetPosition();
+            data.direction = transform->transform.GetOrientation() * glm::vec3(0.0, 0.0, -1.0);
+        }
+    };
 }
 
 #endif

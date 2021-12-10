@@ -21,8 +21,10 @@ namespace Merlin
         scene_data->view_pos = camera->GetTransform().GetPosition();
         scene_data->view_matrix = camera->GetViewMatrix();
         scene_data->projection_matrix = camera->GetProjectionMatrix();
+
         scene_data->point_lights.clear();
         scene_data->directional_lights.clear();
+        scene_data->spot_lights.clear();
     }
 
     void Renderer::AddLight(const PointLightData& light)
@@ -33,6 +35,11 @@ namespace Merlin
     void Renderer::AddLight(const DirectionalLightData& light)
     {
         scene_data->directional_lights.push_back(light);
+    }
+
+    void Renderer::AddLight(const SpotLightData& light)
+    {
+        scene_data->spot_lights.push_back(light);
     }
 
     void Renderer::EndScene()
@@ -71,7 +78,7 @@ namespace Merlin
         shader->SetUniformMat4("u_ProjectionMatrix", scene_data->projection_matrix);
 
         shader->SetUniformInt("u_nPointLights", scene_data->point_lights.size());
-        for (int i=0; i<scene_data->point_lights.size(); ++i)
+        for (int i = 0; i < scene_data->point_lights.size(); ++i)
         {
             const auto& light = scene_data->point_lights[i];
             shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
@@ -86,6 +93,18 @@ namespace Merlin
             const auto& light = scene_data->directional_lights[i];
             shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
             shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
+        }
+
+        shader->SetUniformInt("u_nSpotLights", scene_data->spot_lights.size());
+        for (int i = 0; i < scene_data->spot_lights.size(); ++i)
+        {
+            const auto& light = scene_data->spot_lights[i];
+            shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
+            shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
+            shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoff", light.cutoff);
+            shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].intensity", light.intensity);
+            shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
+            shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
         }
 
         vertex_array->Bind();

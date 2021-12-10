@@ -18,6 +18,17 @@ namespace Merlin
         glm::vec3 direction;
         glm::vec3 color;
     };
+
+    struct SpotLightData
+    {
+        glm::vec3 position;
+        glm::vec3 direction;
+        float cutoff;
+        float intensity;
+        float range;
+        glm::vec3 color;
+    };
+
 }
 
 #endif
