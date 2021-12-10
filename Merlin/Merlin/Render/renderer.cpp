@@ -22,11 +22,17 @@ namespace Merlin
         scene_data->view_matrix = camera->GetViewMatrix();
         scene_data->projection_matrix = camera->GetProjectionMatrix();
         scene_data->point_lights.clear();
+        scene_data->directional_lights.clear();
     }
 
-    void Renderer::AddPointLight(const PointLightData& light)
+    void Renderer::AddLight(const PointLightData& light)
     {
         scene_data->point_lights.push_back(light);
+    }
+
+    void Renderer::AddLight(const DirectionalLightData& light)
+    {
+        scene_data->directional_lights.push_back(light);
     }
 
     void Renderer::EndScene()
@@ -72,6 +78,14 @@ namespace Merlin
             shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].intensity", light.intensity);
             shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
             shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
+        }
+
+        shader->SetUniformInt("u_nDirectionalLights", scene_data->directional_lights.size());
+        for (int i = 0; i < scene_data->directional_lights.size(); ++i)
+        {
+            const auto& light = scene_data->directional_lights[i];
+            shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
+            shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
         }
 
         vertex_array->Bind();

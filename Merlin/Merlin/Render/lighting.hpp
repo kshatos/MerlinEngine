@@ -12,6 +12,12 @@ namespace Merlin
         float range;
         glm::vec3 color;
     };
+
+    struct DirectionalLightData
+    {
+        glm::vec3 direction;
+        glm::vec3 color;
+    };
 }
 
 #endif

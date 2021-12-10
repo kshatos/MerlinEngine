@@ -106,6 +106,7 @@ void main()
 auto fragment_source =
 R"(
 #version 330 core
+
 struct PointLight
 {
     vec3 position;
@@ -114,9 +115,18 @@ struct PointLight
     vec3 color;
 };
 
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 color;
+};
+
 #define MAX_POINT_LIGHTS 32
 uniform int u_nPointLights;
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
+#define MAX_DIRECTIONAL_LIGHTS 4
+uniform int u_nDirectionalLights;
+uniform DirectionalLight u_directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform sampler2D u_Texture;
 uniform vec3 u_viewPos;
 
@@ -145,6 +155,23 @@ vec3 CalcPointLight(
     return light.color * light.intensity * attenuation * (spec + diff);
 }
 
+vec3 CalcDirectionalLight(
+    DirectionalLight light,
+    vec3 normal,
+    vec3 fragPos)
+{
+    vec3 lightDir = normalize(-light.direction);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 viewDir = normalize(u_viewPos - fragPos);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = 0.8 * pow(max(dot(viewDir, halfwayDir), 0.0), 64);
+
+    return light.color * (spec + diff);
+}
+
+
 void main()
 {
     vec3 albedo = vec3(texture(u_Texture, TexCoord));
@@ -154,6 +181,11 @@ void main()
     {
         result += albedo * CalcPointLight(u_pointLights[i], Normal, Pos);
     }
+    for (int i=0; i<u_nDirectionalLights; i++)
+    {
+        result += albedo * CalcDirectionalLight(u_directionalLights[i], Normal, Pos);
+    }
+
     FragColor = vec4(result, 1.0);
 }
 )";
@@ -236,6 +268,15 @@ public:
         scene.SetCamera(camera);
 
         // Add entities to the scene
+        {
+            auto entity = std::make_shared<Entity>();
+            auto light_comp = entity->AddComponent<DirectionalLightComponent>();
+            light_comp->data.color = glm::vec3(0.8, 0.8, 0.8);
+            light_comp->data.direction = glm::vec3(1.0, 1.0, 0.0);
+
+            scene.AddEntity(entity);
+        }
+        /*
         for (int i = 0; i < 4; ++i)
         {
             auto entity = std::make_shared<Entity>();
@@ -251,6 +292,7 @@ public:
 
             scene.AddEntity(entity);
         }
+        */
 
         for (int i = 0; i < 600; ++i)
         {

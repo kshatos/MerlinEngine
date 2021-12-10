@@ -21,6 +21,7 @@ namespace Merlin
             glm::mat4 view_matrix;
             glm::mat4 projection_matrix;
             std::vector<PointLightData> point_lights;
+            std::vector<DirectionalLightData> directional_lights;
         };
 
         static std::unique_ptr <SceneData> scene_data;
@@ -28,7 +29,8 @@ namespace Merlin
     public:
         static void Init();
         static void BeginScene(const std::shared_ptr<Camera>& camera);
-        static void AddPointLight(const PointLightData& light);
+        static void AddLight(const PointLightData& light);
+        static void AddLight(const DirectionalLightData& light);
         static void EndScene();
 
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

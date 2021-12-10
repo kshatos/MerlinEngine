@@ -39,6 +39,13 @@ namespace Merlin
             data.position = transform->transform.GetPosition();
         }
     };
+
+    class DirectionalLightComponent : public Component
+    {
+    public:
+        DirectionalLightComponent(Entity* parent) : Component(parent) {}
+        DirectionalLightData data;
+    };
 }
 
 #endif

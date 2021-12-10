@@ -16,7 +16,13 @@ namespace Merlin
             auto point_light_comp = entity->GetComponent<PointLightComponent>();
             if (point_light_comp != nullptr)
             {
-                Renderer::AddPointLight(point_light_comp->data);
+                Renderer::AddLight(point_light_comp->data);
+            }
+
+            auto directional_light_comp = entity->GetComponent<DirectionalLightComponent>();
+            if (directional_light_comp != nullptr)
+            {
+                Renderer::AddLight(directional_light_comp->data);
             }
         }
         for (const auto& entity : entities)
