@@ -27,6 +27,8 @@ set(MERLIN_SRC
     Merlin/Render/camera.cpp
     Merlin/Render/perspective_camera.cpp
     Merlin/Render/transform.cpp
+    Merlin/Render/frame_buffer.cpp
+    Merlin/Render/opengl_frame_buffer.cpp
     Merlin/Scene/scene.cpp
     Merlin/Scene/entity.cpp
 )
@@ -63,6 +65,8 @@ set(MERLIN_INC
     Merlin/Render/perspective_camera.hpp
     Merlin/Render/transform.hpp
     Merlin/Render/lighting.hpp
+    Merlin/Render/frame_buffer.hpp
+    Merlin/Render/opengl_frame_buffer.hpp
     Merlin/Scene/scene.hpp
     Merlin/Scene/entity.hpp
     Merlin/Scene/component.hpp
