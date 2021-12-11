@@ -10,7 +10,7 @@ namespace Merlin
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGui::StyleColorsDark();
-        ImGui_ImplOpenGL3_Init("#version 130");
+        ImGui_ImplOpenGL3_Init("#version 330 core");
     }
 
     void IMGUILayer::OnDetatch()

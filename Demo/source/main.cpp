@@ -16,6 +16,7 @@
 #include "Merlin/Core/input.hpp"
 #include "Merlin/Scene/scene.hpp"
 #include "Merlin/Scene/core_components.hpp"
+#include "Merlin/Render/frame_buffer.hpp"
 #include <glm/gtc/random.hpp>
 
 using namespace Merlin;
@@ -296,6 +297,7 @@ public:
 class SceneLayer : public Layer
 {
     Scene scene;
+    std::shared_ptr<FrameBuffer> fbuffer;
 public:
     SceneLayer()
     {
@@ -389,26 +391,43 @@ public:
         scene.OnAwake();
     }
 
-    virtual void OnAttach()override {}
+    virtual void OnAttach()override
+    {
+        FrameBufferParameters fb_params;
+        fb_params.width = 800;
+        fb_params.height = 800;
+        fbuffer = FrameBuffer::Create(fb_params);
+    }
 
     virtual void OnDetatch() override {}
 
     virtual void OnUpdate(float time_step) override
     {
+        ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
+
         scene.OnUpdate(time_step);
         MoveCamera(time_step);
 
-        ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
-        Renderer::SetViewport(
-            0, 0,
-            Application::Get().GeMaintWindow()->GetWidth(),
-            Application::Get().GeMaintWindow()->GetHeight());
-        Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
-        Renderer::Clear();
-        scene.RenderScene();
+        // Rendering
+        {// Prepare background
+            Renderer::SetViewport(
+                0, 0,
+                Application::Get().GeMaintWindow()->GetWidth(),
+                Application::Get().GeMaintWindow()->GetHeight());
+            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+            Renderer::Clear();
+        }
 
-        // GUI
-        {
+        {// Render scene to framebuffer
+            fbuffer->Bind();
+            Renderer::Clear();
+            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+            main_texture->Bind();
+            scene.RenderScene();
+            fbuffer->UnBind();
+        }
+
+        {// Render GUI to main window
             auto& io = ImGui::GetIO();
             io.DisplaySize = ImVec2(
                 (float)Application::Get().GeMaintWindow()->GetWidth(),
@@ -418,6 +437,12 @@ public:
             ImGui::NewFrame();
 
             ImGui::ShowDemoWindow();
+            
+            ImGui::Begin("Scene");
+            uint32_t tex_id = fbuffer->GetColorAttachmentID();
+            ImGui::Image((ImTextureID)tex_id, ImVec2{800, 800});
+            ImGui::End();
+
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
