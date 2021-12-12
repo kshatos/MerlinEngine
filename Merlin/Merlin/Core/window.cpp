@@ -1,5 +1,5 @@
 #include "window.hpp"
-#include "glfw_window.hpp"
+#include "Merlin/Platform/GLFW/glfw_window.hpp"
 
 
 namespace Merlin

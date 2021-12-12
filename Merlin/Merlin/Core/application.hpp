@@ -11,10 +11,10 @@ namespace Merlin
     {
         static Application* app_instance;
 
-        LayerStack layer_stack;
-        std::shared_ptr<Window> main_window;
-        bool is_running;
-        float last_frame_time = 0.0f;
+        LayerStack m_layer_stack;
+        std::shared_ptr<Window> m_main_window;
+        bool m_is_running;
+        float m_last_frame_time = 0.0f;
     public:
         inline static Application& Get() { return *app_instance; }
        
@@ -24,7 +24,7 @@ namespace Merlin
         void PushLayerFront(std::shared_ptr<Layer> layer);
         void PushLayerBack(std::shared_ptr<Layer> layer);
 
-        inline std::shared_ptr<Window> GeMaintWindow() { return main_window; }
+        inline std::shared_ptr<Window> GeMaintWindow() { return m_main_window; }
         void Run();
     private:
         void HandleEvent(AppEvent& app_event);

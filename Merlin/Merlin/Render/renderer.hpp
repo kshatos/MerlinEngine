@@ -25,8 +25,8 @@ namespace Merlin
             std::vector<SpotLightData> spot_lights;
         };
 
-        static std::unique_ptr <SceneData> scene_data;
-        static std::unique_ptr<RenderAPI> render_impl;
+        static std::unique_ptr <SceneData> m_scene_data;
+        static std::unique_ptr<RenderAPI> m_render_impl;
     public:
         static void Init();
         static void BeginScene(const std::shared_ptr<Camera>& camera);

@@ -14,9 +14,9 @@ namespace Merlin
     class Component
     {
     protected:
-        Entity* parent;
+        Entity* m_parent;
     public:
-        Component(Entity* _parent) { parent = _parent; }
+        Component(Entity* parent) { m_parent = parent; }
         virtual ~Component() {}
         virtual void OnAwake() {};
         virtual void OnUpdate(float time_step) {}

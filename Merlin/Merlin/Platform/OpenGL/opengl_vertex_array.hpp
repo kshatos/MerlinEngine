@@ -9,9 +9,9 @@ namespace Merlin
 {
     class OpenGLVertexArray : public VertexArray
     {
-        uint32_t id;
-        std::vector<std::shared_ptr<VertexBuffer>> vertex_buffers;
-        std::shared_ptr<IndexBuffer> index_buffer;
+        uint32_t m_id;
+        std::vector<std::shared_ptr<VertexBuffer>> m_vertex_buffers;
+        std::shared_ptr<IndexBuffer> m_index_buffer;
     public:
         OpenGLVertexArray();
         ~OpenGLVertexArray();

@@ -13,26 +13,26 @@ namespace Merlin
     {
         Logger::Init();
 
-        main_window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
-        main_window->SetEventCallback(
+        m_main_window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
+        m_main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
         Renderer::Init();
 
         PushLayerFront(std::make_shared<IMGUILayer>());
 
-        is_running = true;
+        m_is_running = true;
         app_instance = this;
     }
 
     void Application::PushLayerFront(std::shared_ptr<Layer> layer)
     {
-        layer_stack.PushFront(layer);
+        m_layer_stack.PushFront(layer);
     }
 
     void Application::PushLayerBack(std::shared_ptr<Layer> layer)
     {
-        layer_stack.PushFront(layer);
+        m_layer_stack.PushFront(layer);
     }
 
     void Application::HandleEvent(AppEvent& app_event)
@@ -40,14 +40,14 @@ namespace Merlin
         app_event.Dispatch<WindowClosedEvent>(
             [this](WindowClosedEvent& e)
         {
-            is_running = false;
+            m_is_running = false;
             return true;
         });
 
         // Dispatch events to layers allowing them to block
-        for (auto& layer : layer_stack)
+        for (auto& layer : m_layer_stack)
         {
-            if (app_event.was_handled)
+            if (app_event.m_was_handled)
                 break;
             layer->HandleEvent(app_event);
         }
@@ -55,7 +55,7 @@ namespace Merlin
 
     void Application::OnUpdate(float time_step)
     {
-        for(auto & layer : layer_stack)
+        for(auto & layer : m_layer_stack)
         {
             layer->OnUpdate(time_step);
         }
@@ -63,14 +63,14 @@ namespace Merlin
 
     void Application::Run()
     {
-        while (is_running)
+        while (m_is_running)
         {
             auto current_frame_time = glfwGetTime();
-            auto time_step = current_frame_time - last_frame_time;
-            last_frame_time = current_frame_time;
+            auto time_step = current_frame_time - m_last_frame_time;
+            m_last_frame_time = current_frame_time;
 
             OnUpdate(time_step);
-            main_window->OnUpdate();
+            m_main_window->OnUpdate();
         }
     }
 

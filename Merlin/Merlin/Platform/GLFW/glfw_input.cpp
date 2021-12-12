@@ -1,6 +1,6 @@
-#include "Merlin/Core/glfw_input.hpp"
+#include "Merlin/Platform/GLFW/glfw_input.hpp"
 #include <glfw/glfw3.h>
-#include "application.hpp"
+#include "Merlin/Core/application.hpp"
 
 
 namespace Merlin

@@ -46,15 +46,15 @@ namespace Merlin
 
     class BufferLayout
     {
-        std::vector<BufferElement> elements;
-        uint32_t stride;
+        std::vector<BufferElement> m_elements;
+        uint32_t m_stride;
     public:
         BufferLayout();
         BufferLayout(const std::initializer_list<BufferElement>& _elements);
-        inline std::vector<BufferElement>::iterator begin() { return elements.begin(); }
-        inline std::vector<BufferElement>::iterator end() { return elements.end(); }
-        inline std::vector<BufferElement>::const_iterator begin() const { return elements.begin(); }
-        inline std::vector<BufferElement>::const_iterator end() const { return elements.end(); }
+        inline std::vector<BufferElement>::iterator begin() { return m_elements.begin(); }
+        inline std::vector<BufferElement>::iterator end() { return m_elements.end(); }
+        inline std::vector<BufferElement>::const_iterator begin() const { return m_elements.begin(); }
+        inline std::vector<BufferElement>::const_iterator end() const { return m_elements.end(); }
         uint32_t GetStride() const;
     };
 

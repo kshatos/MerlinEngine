@@ -8,7 +8,7 @@ namespace Merlin
 {
     class Camera
     {
-        Transform transform;
+        Transform m_transform;
     public:
         virtual ~Camera() {}
         virtual glm::mat4 GetProjectionMatrix() = 0;

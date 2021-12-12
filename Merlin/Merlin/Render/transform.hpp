@@ -8,18 +8,18 @@ namespace Merlin
 {
     class Transform
     {
-        glm::vec3 position;
-        glm::vec3 scale;
-        glm::quat orientation;
+        glm::vec3 m_position;
+        glm::vec3 m_scale;
+        glm::quat m_orientation;
 
-        bool transform_matrix_is_dirty;
-        glm::mat4 transform_matrix;
+        bool m_transform_matrix_is_dirty;
+        glm::mat4 m_transform_matrix;
     public:
         Transform();
         Transform(
-            glm::vec3 _position,
-            glm::vec3 _scale,
-            glm::quat _orientation);
+            glm::vec3 position,
+            glm::vec3 scale,
+            glm::quat orientation);
 
         const glm::vec3& GetPosition();
         const glm::vec3& GetScale();

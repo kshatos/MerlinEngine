@@ -1,4 +1,4 @@
-#include "Merlin/Scene/scene.hpp"
+#include "Merlin/Scene/game_scene.hpp"
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/vertex_array.hpp"
@@ -8,10 +8,10 @@
 
 namespace Merlin
 {
-    void Scene::RenderScene()
+    void GameScene::RenderScene()
     {
-        Renderer::BeginScene(camera);
-        for (const auto& entity : entities)
+        Renderer::BeginScene(m_camera);
+        for (const auto& entity : m_entities)
         {
             auto point_light_comp = entity->GetComponent<PointLightComponent>();
             if (point_light_comp != nullptr)
@@ -32,7 +32,7 @@ namespace Merlin
             }
         }
 
-        for (const auto& entity : entities)
+        for (const auto& entity : m_entities)
         {
             auto mesh_comp = entity->GetComponent<MeshRenderComponent>();
             auto transform_comp = entity->GetComponent<TransformComponent>();
@@ -48,17 +48,17 @@ namespace Merlin
         Renderer::EndScene();
     }
 
-    void Scene::OnAwake()
+    void GameScene::OnAwake()
     {
-        for (const auto& entity : entities)
+        for (const auto& entity : m_entities)
         {
             entity->OnAwake();
         }
     }
 
-    void Scene::OnUpdate(float time_step)
+    void GameScene::OnUpdate(float time_step)
     {
-        for (const auto& entity : entities)
+        for (const auto& entity : m_entities)
         {
             entity->OnUpdate(time_step);
         }
