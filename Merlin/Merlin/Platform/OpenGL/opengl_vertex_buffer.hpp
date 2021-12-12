@@ -7,8 +7,8 @@ namespace Merlin
 {
     class OpenGLVertexBuffer : public VertexBuffer
     {
-        BufferLayout layout;
-        uint32_t id;
+        BufferLayout m_layout;
+        uint32_t m_id;
     public:
         OpenGLVertexBuffer(float* vertices, size_t size);
         ~OpenGLVertexBuffer();

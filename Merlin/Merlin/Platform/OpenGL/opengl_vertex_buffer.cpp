@@ -6,30 +6,30 @@ namespace Merlin
 {
     OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size)
     {
-        glCreateBuffers(1, &id);
-        glBindBuffer(GL_ARRAY_BUFFER, id);
+        glCreateBuffers(1, &m_id);
+        glBindBuffer(GL_ARRAY_BUFFER, m_id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 
     }
 
     OpenGLVertexBuffer::~OpenGLVertexBuffer()
     {
-        glDeleteBuffers(1, &id);
+        glDeleteBuffers(1, &m_id);
     }
 
     void OpenGLVertexBuffer::SetLayout(const BufferLayout& _layout)
     {
-        layout = _layout;
+        m_layout = _layout;
     }
 
     const BufferLayout& OpenGLVertexBuffer::GetLayout() const
     {
-        return layout;
+        return m_layout;
     }
     
     void OpenGLVertexBuffer::Bind()
     {
-        glBindBuffer(GL_ARRAY_BUFFER, id);
+        glBindBuffer(GL_ARRAY_BUFFER, m_id);
     }
 
     void OpenGLVertexBuffer::UnBind()

@@ -43,15 +43,15 @@ namespace Merlin
             [](MouseMovedEvent& e)
         {
             auto& io = ImGui::GetIO();
-            io.MousePos = ImVec2(e.GetX(), e.GetY());
+            io.MousePos = ImVec2(e.GetXPosition(), e.GetYPosition());
             return false;
         });
         app_event.Dispatch<MouseScrolledEvent>(
             [](MouseScrolledEvent& e)
         {
             auto& io = ImGui::GetIO();
-            io.MouseWheel += e.GetYScroll();
-            io.MouseWheelH += e.GetXScroll();
+            io.MouseWheel += e.GetYScrollDelta();
+            io.MouseWheelH += e.GetXScrollDelta();
             return false;
         });
     }

@@ -41,15 +41,15 @@ namespace Merlin
 
     void OpenGLTexture2D::Init(
         void* data,
-        uint32_t _width,
-        uint32_t _height,
+        uint32_t width,
+        uint32_t height,
         Texture2DProperties props)
     {
-        width = _width;
-        height = _height;
+        m_width = width;
+        m_height = height;
 
-        glGenTextures(1, &id);
-        glBindTexture(GL_TEXTURE_2D, id);
+        glGenTextures(1, &m_id);
+        glBindTexture(GL_TEXTURE_2D, m_id);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetOpenGLWrapMode(props.s_wrap_mode));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetOpenGLWrapMode(props.t_wrap_mode));
@@ -58,7 +58,7 @@ namespace Merlin
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_mode);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
@@ -82,21 +82,21 @@ namespace Merlin
 
     OpenGLTexture2D::OpenGLTexture2D(
         void* data,
-        uint32_t _width,
-        uint32_t _height,
+        uint32_t width,
+        uint32_t height,
         Texture2DProperties props)
     {
-        Init(data, _width, _height, props);
+        Init(data, width, height, props);
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()
     {
-        glDeleteTextures(1, &id);
+        glDeleteTextures(1, &m_id);
     }
     
     void OpenGLTexture2D::Bind(uint32_t slot)
     {
-        glBindTextureUnit(slot, id);
+        glBindTextureUnit(slot, m_id);
     }
     
     void OpenGLTexture2D::UnBind(uint32_t slot)

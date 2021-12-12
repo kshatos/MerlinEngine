@@ -248,7 +248,7 @@ public:
 
     virtual void OnAwake() override
     {
-        transform_comp = parent->GetComponent<TransformComponent>();
+        transform_comp = m_parent->GetComponent<TransformComponent>();
     }
 
     virtual void OnUpdate(float time_step) override
@@ -273,7 +273,7 @@ public:
 
     virtual void OnAwake() override
     {
-        transform_comp = parent->GetComponent<TransformComponent>();
+        transform_comp = m_parent->GetComponent<TransformComponent>();
     }
 
     virtual void OnUpdate(float time_step) override
@@ -444,7 +444,7 @@ public:
         app_event.Dispatch<MouseScrolledEvent>(
             [this](MouseScrolledEvent& e)
         {
-            float th = e.GetYScroll() * 1.0e-1f;
+            float th = e.GetYScrollDelta() * 1.0e-1f;
             float c = glm::cos(th);
             float s = glm::sin(th);
             camera->GetTransform().Rotate(glm::quat(c, 0.0f, s, 0.0f));

@@ -6,71 +6,71 @@ namespace Merlin
 {
 
     Transform::Transform() :
-        position(glm::vec3(0.0f, 0.0f, 0.0f)),
-        scale(glm::vec3(1.0f, 1.0f, 1.0f)),
-        orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
-        transform_matrix_is_dirty(false),
-        transform_matrix(glm::mat4(1.0f))
+        m_position(glm::vec3(0.0f, 0.0f, 0.0f)),
+        m_scale(glm::vec3(1.0f, 1.0f, 1.0f)),
+        m_orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+        m_transform_matrix_is_dirty(false),
+        m_transform_matrix(glm::mat4(1.0f))
     {
     }
 
     Transform::Transform(
-        glm::vec3 _position,
-        glm::vec3 _scale,
-        glm::quat _orientation) :
-        position(_position),
-        scale(_scale),
-        orientation(_orientation),
-        transform_matrix_is_dirty(true),
-        transform_matrix(glm::mat4())
+        glm::vec3 position,
+        glm::vec3 scale,
+        glm::quat orientation) :
+        m_position(position),
+        m_scale(scale),
+        m_orientation(orientation),
+        m_transform_matrix_is_dirty(true),
+        m_transform_matrix(glm::mat4())
     {
     }
 
     const glm::vec3& Transform::GetPosition()
     {
-        return position;
+        return m_position;
     }
 
     const glm::vec3& Transform::GetScale()
     {
-        return scale;
+        return m_scale;
     }
 
     const glm::quat& Transform::GetOrientation()
     {
-        return orientation;
+        return m_orientation;
     }
 
     const glm::mat4& Transform::GetTransformationMatrix()
     {
-        if (transform_matrix_is_dirty)
+        if (m_transform_matrix_is_dirty)
         {
-            auto tr = glm::translate(glm::mat4(1.0f), position);
-            auto ro = glm::toMat4(orientation);
-            auto sc = glm::scale(glm::mat4(1.0f), scale);
-            transform_matrix = tr * ro * sc;
+            auto tr = glm::translate(glm::mat4(1.0f), m_position);
+            auto ro = glm::toMat4(m_orientation);
+            auto sc = glm::scale(glm::mat4(1.0f), m_scale);
+            m_transform_matrix = tr * ro * sc;
 
-            transform_matrix_is_dirty = false;
+            m_transform_matrix_is_dirty = false;
         }
-        return transform_matrix;
+        return m_transform_matrix;
     }
 
     void Transform::Translate(glm::vec3 direction)
     {
-        position += direction;
-        transform_matrix_is_dirty = true;
+        m_position += direction;
+        m_transform_matrix_is_dirty = true;
     }
 
     void Transform::Scale(glm::vec3 direction)
     {
-        scale *= direction;
-        transform_matrix_is_dirty = true;
+        m_scale *= direction;
+        m_transform_matrix_is_dirty = true;
     }
 
     void Transform::Rotate(glm::quat direction)
     {
-        orientation *= direction;
-        transform_matrix_is_dirty = true;
+        m_orientation *= direction;
+        m_transform_matrix_is_dirty = true;
     }
 
 }

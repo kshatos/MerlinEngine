@@ -10,16 +10,16 @@ namespace Merlin
         float aspect,
         float near,
         float far) :
-            fov(fov),
-            aspect(aspect),
-            near(near),
-            far(far),
-            projection_matrix(glm::perspective(fov, aspect, near, far))
+            m_fov(fov),
+            m_aspect(aspect),
+            m_near(near),
+            m_far(far),
+            m_projection_matrix(glm::perspective(fov, aspect, near, far))
     {
     }
 
     glm::mat4 PerspectiveCamera::GetProjectionMatrix()
     {
-        return projection_matrix;
+        return m_projection_matrix;
     }
 }

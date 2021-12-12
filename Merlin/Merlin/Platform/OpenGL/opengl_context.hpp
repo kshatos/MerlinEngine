@@ -9,9 +9,9 @@ namespace Merlin
 {
     class OpenGLContext : public GraphicsContext
     {
-        GLFWwindow* window_ptr;
+        GLFWwindow* m_window;
     public:
-        OpenGLContext(GLFWwindow* window_handle);
+        OpenGLContext(GLFWwindow* window);
         ~OpenGLContext();
         virtual void Init() override;
         virtual void SwapBuffers() override;

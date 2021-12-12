@@ -5,7 +5,7 @@ namespace Merlin
 {
     void Entity::OnAwake()
     {
-        for(auto & component : components)
+        for(auto & component : m_components)
         {
             component->OnAwake();
         }
@@ -13,7 +13,7 @@ namespace Merlin
 
     void Entity::OnUpdate(float time_step)
     {
-        for (auto& component : components)
+        for (auto& component : m_components)
         {
             component->OnUpdate(time_step);
         }

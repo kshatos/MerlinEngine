@@ -7,12 +7,12 @@ namespace Merlin
 {
     class PerspectiveCamera : public Camera
     {
-        float fov;
-        float aspect;
-        float near;
-        float far;
+        float m_fov;
+        float m_aspect;
+        float m_near;
+        float m_far;
+        glm::mat4 m_projection_matrix;
 
-        glm::mat4 projection_matrix;
     public:
         PerspectiveCamera(float fov, float aspect, float near, float far);
         glm::mat4 GetProjectionMatrix() override;

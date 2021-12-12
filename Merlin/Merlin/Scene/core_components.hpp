@@ -23,7 +23,7 @@ namespace Merlin
 
     class PointLightComponent : public Component
     {
-        std::shared_ptr<TransformComponent> transform;
+        std::shared_ptr<TransformComponent> m_transform;
     public:
         PointLightData data;
 
@@ -31,25 +31,26 @@ namespace Merlin
 
         void OnAwake() override
         {
-            transform = parent->GetComponent<TransformComponent>();
+            m_transform = m_parent->GetComponent<TransformComponent>();
         }
 
         void OnUpdate(float time_step) override
         {
-            data.position = transform->transform.GetPosition();
+            data.position = m_transform->transform.GetPosition();
         }
     };
 
     class DirectionalLightComponent : public Component
     {
     public:
-        DirectionalLightComponent(Entity* parent) : Component(parent) {}
         DirectionalLightData data;
+
+        DirectionalLightComponent(Entity* parent) : Component(parent) {}
     };
 
     class SpotLightComponent : public Component
     {
-        std::shared_ptr<TransformComponent> transform;
+        std::shared_ptr<TransformComponent> m_transform;
     public:
         SpotLightData data;
 
@@ -57,13 +58,13 @@ namespace Merlin
 
         void OnAwake() override
         {
-            transform = parent->GetComponent<TransformComponent>();
+            m_transform = m_parent->GetComponent<TransformComponent>();
         }
 
         void OnUpdate(float time_step) override
         {
-            data.position = transform->transform.GetPosition();
-            data.direction = transform->transform.GetOrientation() * glm::vec3(0.0, 0.0, -1.0);
+            data.position = m_transform->transform.GetPosition();
+            data.direction = m_transform->transform.GetOrientation() * glm::vec3(0.0, 0.0, -1.0);
         }
     };
 }

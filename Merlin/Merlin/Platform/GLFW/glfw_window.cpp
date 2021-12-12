@@ -11,9 +11,9 @@ namespace Merlin
 
     GLFWWindowImpl::GLFWWindowImpl(WindowProperties props)
     {
-        data.title = props.title;
-        data.width = props.width;
-        data.height = props.height;
+        m_data.title = props.title;
+        m_data.width = props.width;
+        m_data.height = props.height;
 
         glfw_window_count++;
         if (!glfw_is_initialized)
@@ -22,20 +22,20 @@ namespace Merlin
             glfw_is_initialized = true;
         }
 
-        window_ptr = glfwCreateWindow(
+        m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
 
-        context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(window_ptr));
-        context->Init();
+        m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
+        m_context->Init();
 
-        glfwSetWindowUserPointer(window_ptr, &data);
+        glfwSetWindowUserPointer(m_window_ptr, &m_data);
 
         SetGLFWCallbacks();
     }
 
     GLFWWindowImpl::~GLFWWindowImpl()
     {
-        glfwDestroyWindow(window_ptr);
+        glfwDestroyWindow(m_window_ptr);
 
         glfw_window_count--;
         if (glfw_window_count <= 0 && glfw_is_initialized)
@@ -47,28 +47,28 @@ namespace Merlin
 
     unsigned int GLFWWindowImpl::GetWidth()
     {
-        return data.width;
+        return m_data.width;
     }
 
     unsigned int GLFWWindowImpl::GetHeight()
     {
-        return data.height;
+        return m_data.height;
     }
 
     void GLFWWindowImpl::SetEventCallback(const EventCallbackFunction& callback)
     {
-        data.callback = callback;
+        m_data.callback = callback;
     }
 
     void GLFWWindowImpl::OnUpdate()
     {
         glfwPollEvents();
-        context->SwapBuffers();
+        m_context->SwapBuffers();
     }
 
     void GLFWWindowImpl::SetGLFWCallbacks()
     {
-        glfwSetWindowSizeCallback(window_ptr,
+        glfwSetWindowSizeCallback(m_window_ptr,
             [](GLFWwindow* window, int width, int height)
         {
             auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
@@ -78,7 +78,7 @@ namespace Merlin
             x.callback(app_event);
         });
 
-        glfwSetWindowCloseCallback(window_ptr,
+        glfwSetWindowCloseCallback(m_window_ptr,
             [](GLFWwindow* window)
         {
             WindowClosedEvent app_event;
@@ -86,7 +86,7 @@ namespace Merlin
             x.callback(app_event);
         });
 
-        glfwSetKeyCallback(window_ptr,
+        glfwSetKeyCallback(m_window_ptr,
             [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
             auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
@@ -113,7 +113,7 @@ namespace Merlin
             }
         });
 
-        glfwSetMouseButtonCallback(window_ptr,
+        glfwSetMouseButtonCallback(m_window_ptr,
             [](GLFWwindow* window, int button, int action, int mods)
         {
             auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
@@ -134,7 +134,7 @@ namespace Merlin
             }
         });
 
-        glfwSetScrollCallback(window_ptr,
+        glfwSetScrollCallback(m_window_ptr,
             [](GLFWwindow* window, double xoffset, double yoffset)
         {
             MouseScrolledEvent app_event((float)xoffset, (float)yoffset);
@@ -142,7 +142,7 @@ namespace Merlin
             x.callback(app_event);
         });
 
-        glfwSetCursorPosCallback(window_ptr,
+        glfwSetCursorPosCallback(m_window_ptr,
             [](GLFWwindow* window, double xpos, double ypos)
         {
             MouseMovedEvent app_event((float)xpos, (float)ypos);
@@ -153,6 +153,6 @@ namespace Merlin
 
     void* GLFWWindowImpl::GetNativePointer()
     {
-        return static_cast<void*>(window_ptr);
+        return static_cast<void*>(m_window_ptr);
     }
 }

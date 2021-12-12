@@ -24,17 +24,17 @@ namespace Merlin
 
     OpenGLVertexArray::OpenGLVertexArray()
     {
-        glCreateVertexArrays(1, &id);
+        glCreateVertexArrays(1, &m_id);
     }
 
     OpenGLVertexArray::~OpenGLVertexArray()
     {
-        glDeleteVertexArrays(1, &id);
+        glDeleteVertexArrays(1, &m_id);
     }
 
     void OpenGLVertexArray::Bind()
     {
-        glBindVertexArray(id);
+        glBindVertexArray(m_id);
     }
 
     void OpenGLVertexArray::UnBind()
@@ -44,9 +44,9 @@ namespace Merlin
 
     void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer)
     {
-        vertex_buffers.push_back(buffer);
+        m_vertex_buffers.push_back(buffer);
 
-        glBindVertexArray(id);
+        glBindVertexArray(m_id);
         buffer->Bind();
 
         const auto& layout = buffer->GetLayout();
@@ -68,14 +68,14 @@ namespace Merlin
 
     void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)
     {
-        index_buffer = buffer;
+        m_index_buffer = buffer;
 
-        glBindVertexArray(id);
+        glBindVertexArray(m_id);
         buffer->Bind();
     }
 
     const std::shared_ptr<IndexBuffer>& OpenGLVertexArray::GetIndexBuffer()
     {
-        return index_buffer;
+        return m_index_buffer;
     }
 }

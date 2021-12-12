@@ -8,7 +8,7 @@ namespace Merlin
 {
     class OpenGLShader : public Shader
     {
-        uint32_t id;
+        uint32_t m_id;
 
         bool CompilationSucceeded(std::string name, int shader_id);
 

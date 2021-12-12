@@ -9,10 +9,10 @@ namespace Merlin
 
     class OpenGLIndexBuffer : public IndexBuffer
     {
-        uint32_t count;
-        uint32_t id;
+        uint32_t m_index_count;
+        uint32_t m_id;
     public:
-        OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+        OpenGLIndexBuffer(uint32_t* indices, uint32_t index_count);
         ~OpenGLIndexBuffer();
         void Bind() override;
         void UnBind()override;

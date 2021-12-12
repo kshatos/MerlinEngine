@@ -4,21 +4,21 @@
 
 namespace Merlin
 {
-    OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t _count) : count(_count)
+    OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t index_count) : m_index_count(index_count)
     {
-        glCreateBuffers(1, &id);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+        glCreateBuffers(1, &m_id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_index_count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
     }
 
     OpenGLIndexBuffer::~OpenGLIndexBuffer()
     {
-        glDeleteBuffers(1, &id);
+        glDeleteBuffers(1, &m_id);
     }
 
     void OpenGLIndexBuffer::Bind()
     {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
     }
 
     void OpenGLIndexBuffer::UnBind()
@@ -28,7 +28,7 @@ namespace Merlin
 
     uint32_t OpenGLIndexBuffer::GetCount()
     {
-        return count;
+        return m_index_count;
     }
 
 }

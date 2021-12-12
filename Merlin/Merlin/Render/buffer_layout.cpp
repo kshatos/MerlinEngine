@@ -38,24 +38,24 @@ namespace Merlin
         }
     }
 
-    BufferLayout::BufferLayout() : stride(0) {}
+    BufferLayout::BufferLayout() : m_stride(0) {}
 
     BufferLayout::BufferLayout(
         const std::initializer_list<BufferElement>& _elements) :
-        elements(_elements)
+        m_elements(_elements)
     {
         uint32_t offset = 0;
-        for (auto& element : elements)
+        for (auto& element : m_elements)
         {
             element.offset = offset;
             offset += element.size;
         }
-        stride = offset;
+        m_stride = offset;
     }
 
     uint32_t BufferLayout::GetStride() const
     {
-        return stride;
+        return m_stride;
     }
 
 }

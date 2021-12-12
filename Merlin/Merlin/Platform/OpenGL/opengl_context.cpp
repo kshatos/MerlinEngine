@@ -6,9 +6,9 @@
 
 namespace Merlin
 {
-    OpenGLContext::OpenGLContext(GLFWwindow* window_handle)
+    OpenGLContext::OpenGLContext(GLFWwindow* window)
     {
-        window_ptr = window_handle;
+        m_window = window;
     }
 
     OpenGLContext::~OpenGLContext()
@@ -17,12 +17,12 @@ namespace Merlin
 
     void OpenGLContext::Init()
     {
-        glfwMakeContextCurrent(window_ptr);
+        glfwMakeContextCurrent(m_window);
         gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     }
 
     void OpenGLContext::SwapBuffers()
     {
-        glfwSwapBuffers(window_ptr);
+        glfwSwapBuffers(m_window);
     }
 }
