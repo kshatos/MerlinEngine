@@ -1,4 +1,4 @@
-#include "Merlin/Render/opengl_vertex_array.hpp"
+#include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
 #include <glad/glad.h>
 
 

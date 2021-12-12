@@ -1,5 +1,5 @@
-#include "glfw_window.hpp"
-#include "app_events.hpp"
+#include "Merlin/Platform/GLFW/glfw_window.hpp"
+#include "Merlin/Core/app_events.hpp"
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

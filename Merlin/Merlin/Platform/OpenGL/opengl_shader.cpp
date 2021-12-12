@@ -1,6 +1,6 @@
 #include <glad/glad.h>
-#include "Merlin/Render/opengl_shader.hpp"
-#include "Merlin/Core//logger.hpp"
+#include "Merlin/Platform/OpenGL/opengl_shader.hpp"
+#include "Merlin/Core/logger.hpp"
 #include <sstream>
 #include<glm/gtc/type_ptr.hpp>
 

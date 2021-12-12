@@ -1,5 +1,5 @@
 #include "Merlin/Render/shader.hpp"
-#include "Merlin/Render/opengl_shader.hpp"
+#include "Merlin/Platform/OpenGL/opengl_shader.hpp"
 
 
 namespace Merlin

@@ -1,6 +1,6 @@
 #ifndef OPENGL_VERTEX_BUFFER_HPP
 #define OPENGL_VERTEX_BUFFER_HPP
-#include "vertex_buffer.hpp"
+#include "Merlin/Render/vertex_buffer.hpp"
 #include <stdint.h>
 
 namespace Merlin

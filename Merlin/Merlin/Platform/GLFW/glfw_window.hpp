@@ -1,6 +1,6 @@
 #ifndef GLFW_WINDOW_HPP
 #define GLFW_WINDOW_HPP
-#include "window.hpp"
+#include "Merlin/Core/window.hpp"
 #include "Merlin/Render/graphics_context.hpp"
 
 

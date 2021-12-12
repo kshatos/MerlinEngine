@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include "Merlin/Render/opengl_frame_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_frame_buffer.hpp"
 #include "Merlin/Core/logger.hpp"
 
 

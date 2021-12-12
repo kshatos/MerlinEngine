@@ -1,5 +1,5 @@
 #include "Merlin/Core/input.hpp"
-#include "Merlin/Core/glfw_input.hpp"
+#include "Merlin/Platform/GLFW/glfw_input.hpp"
 
 
 namespace Merlin

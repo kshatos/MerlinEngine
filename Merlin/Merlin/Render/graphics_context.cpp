@@ -1,5 +1,5 @@
-#include "graphics_context.hpp"
-#include "opengl_context.hpp"
+#include "Merlin/Render/graphics_context.hpp"
+#include "Merlin/Platform/OpenGL/opengl_context.hpp"
 
 
 namespace Merlin

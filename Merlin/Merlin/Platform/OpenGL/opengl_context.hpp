@@ -1,6 +1,6 @@
 #ifndef OPENGL_CONTEXT_HPP
 #define OPENGL_CONTEXT_HPP
-#include "graphics_context.hpp"
+#include "Merlin/Render/graphics_context.hpp"
 
 
 struct GLFWwindow;

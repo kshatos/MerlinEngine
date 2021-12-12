@@ -1,5 +1,5 @@
 #include <glad/glad.h>
-#include "Merlin/Render/opengl_render_api.hpp"
+#include "Merlin/Platform/OpenGL/opengl_render_api.hpp"
 
 
 namespace Merlin

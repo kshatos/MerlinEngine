@@ -1,4 +1,4 @@
-#include "Merlin/Render/opengl_index_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
 #include <glad/glad.h>
 
 
