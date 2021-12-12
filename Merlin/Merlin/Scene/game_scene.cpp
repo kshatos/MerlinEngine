@@ -1,4 +1,4 @@
-#include "Merlin/Scene/scene.hpp"
+#include "Merlin/Scene/game_scene.hpp"
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/vertex_array.hpp"
@@ -8,7 +8,7 @@
 
 namespace Merlin
 {
-    void Scene::RenderScene()
+    void GameScene::RenderScene()
     {
         Renderer::BeginScene(camera);
         for (const auto& entity : entities)
@@ -48,7 +48,7 @@ namespace Merlin
         Renderer::EndScene();
     }
 
-    void Scene::OnAwake()
+    void GameScene::OnAwake()
     {
         for (const auto& entity : entities)
         {
@@ -56,7 +56,7 @@ namespace Merlin
         }
     }
 
-    void Scene::OnUpdate(float time_step)
+    void GameScene::OnUpdate(float time_step)
     {
         for (const auto& entity : entities)
         {

@@ -10,6 +10,7 @@ set(MERLIN_CORE_SOURCE
     Merlin/Core/layer_stack.cpp
 )
 set(MERLIN_CORE_INCLUDE
+    Merlin/Core/core.hpp
     Merlin/Core/logger.hpp
     Merlin/Core/application.hpp
     Merlin/Core/app_events.hpp
@@ -41,6 +42,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/transform.cpp
 )
 set(MERLIN_RENDER_INCLUDE
+    Merlin/Render/render.hpp
     Merlin/Render/graphics_context.hpp
     Merlin/Render/vertex_buffer.hpp
     Merlin/Render/index_buffer.hpp
@@ -62,11 +64,12 @@ source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 # SCENE
 #=============================
 set(MERLIN_SCENE_SOURCE
-    Merlin/Scene/scene.cpp
+    Merlin/Scene/game_scene.cpp
     Merlin/Scene/entity.cpp
 )
 set(MERLIN_SCENE_INCLUDE
     Merlin/Scene/scene.hpp
+    Merlin/Scene/game_scene.hpp
     Merlin/Scene/entity.hpp
     Merlin/Scene/component.hpp
     Merlin/Scene/core_components.hpp

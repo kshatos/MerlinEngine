@@ -1,23 +1,12 @@
 #include <sstream>
-#include "Merlin/Core/logger.hpp"
-#include "Merlin/Core/window.hpp"
-#include "Merlin/Render/vertex_buffer.hpp"
-#include "Merlin/Render/index_buffer.hpp"
-#include "Merlin/Render/buffer_layout.hpp"
-#include "Merlin/Render/vertex_array.hpp"
-#include "Merlin/Render/texture2d.hpp"
-#include "Merlin/Render/shader.hpp"
-#include "Merlin/Render/renderer.hpp"
-#include "Merlin/Render/perspective_camera.hpp"
+#include <glm/gtc/random.hpp>
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <backends/imgui_impl_opengl3.h>
-#include "Merlin/Core/application.hpp"
-#include "Merlin/Core/input.hpp"
+#include "Merlin/Core/core.hpp"
+#include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
-#include "Merlin/Scene/core_components.hpp"
-#include "Merlin/Render/frame_buffer.hpp"
-#include <glm/gtc/random.hpp>
+
 
 using namespace Merlin;
 
@@ -296,7 +285,7 @@ public:
 
 class SceneLayer : public Layer
 {
-    Scene scene;
+    GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
     SceneLayer()
