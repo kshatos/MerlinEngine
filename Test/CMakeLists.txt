@@ -13,6 +13,7 @@ enable_testing()
 add_executable(
   Test
   source/transform_test.cpp
+  source/mesh_test.cpp
 )
 target_link_libraries(
     Test

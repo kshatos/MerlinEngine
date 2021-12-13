@@ -57,6 +57,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/perspective_camera.hpp
     Merlin/Render/transform.hpp
     Merlin/Render/lighting.hpp
+    Merlin/Render/mesh.hpp
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 
