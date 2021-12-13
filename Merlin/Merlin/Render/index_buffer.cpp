@@ -4,8 +4,8 @@
 
 namespace Merlin
 {
-    IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count)
+    std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
-        return new OpenGLIndexBuffer(indices, count);
+        return std::make_shared<OpenGLIndexBuffer>(indices, count);
     }
 }

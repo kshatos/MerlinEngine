@@ -58,6 +58,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/transform.hpp
     Merlin/Render/lighting.hpp
     Merlin/Render/mesh.hpp
+    Merlin/Render/mesh_vertex.hpp
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 

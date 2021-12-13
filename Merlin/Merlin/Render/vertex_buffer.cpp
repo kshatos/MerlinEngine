@@ -4,8 +4,8 @@
 
 namespace Merlin
 {
-    VertexBuffer* VertexBuffer::Create(float* vertices, size_t size)
+    std::shared_ptr<VertexBuffer> VertexBuffer::Create(float* vertices, size_t size)
     {
-        return new OpenGLVertexBuffer(vertices, size);
+        return std::make_shared<OpenGLVertexBuffer>(vertices, size);
     }
 }

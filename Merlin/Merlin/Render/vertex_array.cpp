@@ -4,8 +4,8 @@
 
 namespace Merlin
 {
-    VertexArray* VertexArray::Create()
+    std::shared_ptr<VertexArray> VertexArray::Create()
     {
-        return new OpenGLVertexArray();
+        return std::make_shared<OpenGLVertexArray>();
     }
 }
