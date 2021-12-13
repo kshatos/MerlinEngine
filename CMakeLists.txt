@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(MerlinEngine)
 
-set(ASSET_DIR ${CMAKE_SOURCE_DIR}/Assets)
+set(ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Assets)
 
 option(BUILD_DEMO "Build the demo program" ON)
 option(BUILD_TESTS "Build the test program" ON)
@@ -11,12 +11,12 @@ if(ENABLE_MERLIN_LOGGING)
     add_compile_definitions(MERLIN_USE_LOGGING)
 endif()
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/Merlin)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Merlin)
 
 if(BUILD_DEMO)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/Demo)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Demo)
 endif()
 
 if (BUILD_TESTS)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/Test)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/Test)
 endif()
