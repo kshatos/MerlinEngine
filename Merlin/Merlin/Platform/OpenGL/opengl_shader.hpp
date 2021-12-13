@@ -13,6 +13,10 @@ namespace Merlin
         bool CompilationSucceeded(std::string name, int shader_id);
 
     public:
+        static OpenGLShader* CreateFromFiles(
+            const std::string& vertex_path,
+            const std::string& fragment_path);
+
         OpenGLShader(
             const std::string& vertex_source,
             const std::string& fragment_source);
