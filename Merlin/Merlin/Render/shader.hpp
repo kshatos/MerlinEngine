@@ -2,6 +2,7 @@
 #define SHADER_HPP
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
 
 
 namespace Merlin
@@ -9,7 +10,12 @@ namespace Merlin
     class Shader
     {
     public:
-        static Shader* Create(const std::string& vertex_source, const std::string& fragment_source);
+        static std::shared_ptr<Shader> CreateFromSource(
+            const std::string& vertex_source,
+            const std::string& fragment_source);
+        static std::shared_ptr<Shader> CreateFromFiles(
+            const std::string& vertex_path,
+            const std::string& fragment_path);
 
         virtual ~Shader() {}
         virtual void Bind() = 0;

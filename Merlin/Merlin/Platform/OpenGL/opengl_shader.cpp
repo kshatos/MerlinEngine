@@ -1,12 +1,48 @@
 #include <glad/glad.h>
 #include "Merlin/Platform/OpenGL/opengl_shader.hpp"
 #include "Merlin/Core/logger.hpp"
-#include <sstream>
 #include<glm/gtc/type_ptr.hpp>
+#include <fstream>
+#include <sstream>
 
 
 namespace Merlin
 {
+    OpenGLShader* OpenGLShader::CreateFromFiles(
+        const std::string& vertex_path,
+        const std::string& fragment_path)
+    {
+        std::string vertex_source;
+        std::string fragment_source;
+
+        {
+            std::ifstream file(vertex_path, std::ios::in);
+            if (file)
+            {
+                std::stringstream string_stream;
+                string_stream << file.rdbuf();
+                vertex_source = string_stream.str();
+            }
+            else
+            {
+                ME_LOG_ERROR("Unable to load vertex shader at: " + vertex_path);
+            }
+        }
+        {
+            std::ifstream file(fragment_path, std::ios::in);
+            if (file)
+            {
+                std::stringstream string_stream;
+                string_stream << file.rdbuf();
+                fragment_source = string_stream.str();
+            }
+            else
+                ME_LOG_ERROR("Unable to load fragment shader at: " + fragment_path);
+        }
+
+        return new OpenGLShader(vertex_source, fragment_source);
+    }
+
     OpenGLShader::OpenGLShader(
         const std::string& vertex_source,
         const std::string& fragment_source)
