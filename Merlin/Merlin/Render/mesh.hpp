@@ -2,18 +2,10 @@
 #define MESH_HPP
 #include <vector>
 #include <stdint.h>
-#include <glm/glm.hpp>
 
 
 namespace Merlin
 {
-    struct VertexPosNormUV
-    {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 uv;
-    };
-
     template<typename VertexType>
     class Mesh
     {
@@ -79,7 +71,7 @@ namespace Merlin
             m_indices.assign(indices, indices + count);
         }
 
-        inline VertexType* GetVertexDataPointer() { return m_vertices.data(); }
+        inline float* GetVertexDataPointer() { return (float*)m_vertices.data(); }
 
         inline uint32_t* GetIndexDataPointer() { return m_indices.data(); }
 

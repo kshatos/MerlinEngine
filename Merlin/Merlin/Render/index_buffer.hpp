@@ -1,6 +1,7 @@
 #ifndef INDEX_BUFFER_HPP
 #define INDEX_BUFFER_HPP
 #include <stdint.h>
+#include <memory>
 
 
 namespace Merlin
@@ -8,7 +9,7 @@ namespace Merlin
     class IndexBuffer
     {
     public:
-        static IndexBuffer* Create(uint32_t* indices, uint32_t count);
+        static std::shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 
         virtual ~IndexBuffer() {}
         virtual void Bind() = 0;
