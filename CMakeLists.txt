@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(MerlinEngine)
 
-set(ASSET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Assets)
+set(MERLIN_ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Assets" CACHE PATH "Merlin core asset path")
 
 option(BUILD_DEMO "Build the demo program" ON)
 option(BUILD_TESTS "Build the test program" ON)

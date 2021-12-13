@@ -21,5 +21,5 @@ target_link_libraries(Demo
 
 add_custom_command(
     TARGET Demo PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSET_DIR} $<TARGET_FILE_DIR:Demo>/Assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MERLIN_ASSET_DIR} $<TARGET_FILE_DIR:Demo>/Assets
 )
