@@ -2,6 +2,7 @@
 #define RENDER_API_HPP
 #include <glm/glm.hpp>
 #include "Merlin/Render/vertex_array.hpp"
+#include "Merlin/Render/skybox.hpp"
 
 
 namespace Merlin

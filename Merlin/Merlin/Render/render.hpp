@@ -11,9 +11,11 @@
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
+#include "Merlin/Render/cubemap.hpp"
 #include "Merlin/Render/transform.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/mesh.hpp"
 #include "Merlin/Render/mesh_vertex.hpp"
+#include "Merlin/Render/skybox.hpp"
 #endif

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include "Merlin/Render/camera.hpp"
 #include "Merlin/Render/lighting.hpp"
+#include "Merlin/Render/skybox.hpp"
 
 
 namespace Merlin
@@ -38,6 +39,7 @@ namespace Merlin
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
         static void SetClearColor(const glm::vec4& color);
         static void Clear();
+        static void Submit(const std::shared_ptr<Skybox>& skybox);
         static void Submit(
             const std::shared_ptr<Shader>& shader,
             const std::shared_ptr<VertexArray>& vertex_array,
