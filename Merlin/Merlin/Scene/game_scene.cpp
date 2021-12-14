@@ -45,6 +45,11 @@ namespace Merlin
             }
         }
 
+        if (m_skybox)
+        {
+            Renderer::Submit(m_skybox);
+        }
+
         Renderer::EndScene();
     }
 

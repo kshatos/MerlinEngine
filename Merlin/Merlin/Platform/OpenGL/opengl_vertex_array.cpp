@@ -64,14 +64,16 @@ namespace Merlin
             index++;
         }
         glBindVertexArray(0);
+        buffer->UnBind();
     }
 
     void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)
     {
         m_index_buffer = buffer;
-
         glBindVertexArray(m_id);
         buffer->Bind();
+        glBindVertexArray(0);
+        buffer->UnBind();
     }
 
     const std::shared_ptr<IndexBuffer>& OpenGLVertexArray::GetIndexBuffer()

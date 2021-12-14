@@ -70,6 +70,7 @@ std::shared_ptr<VertexArray> main_varray;
 std::shared_ptr<Texture2D> main_texture;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> main_shader;
+std::shared_ptr<Shader> skybox_shader;
 
 class SpinningComponent : public Component
 {
@@ -142,30 +143,39 @@ public:
 
         main_cubemap = Cubemap::Create(
             std::vector<std::string>
-            {
-                ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
+        {
+            ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
-            });
+        });
 
         main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
+        skybox_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\skybox.vert",
+            ".\\Assets\\Shaders\\skybox.frag");
+
         main_shader->Bind();
         main_shader->SetUniformInt("u_Texture", 0);
+        main_shader->UnBind();
 
         Mesh<Vertex_XNUV> mesh;
         mesh.SetVertexData(verts, sizeof(verts) / sizeof(Vertex_XNUV));
         mesh.SetIndexData(tris, sizeof(tris) / sizeof(uint32_t));
         main_varray = UploadMesh(mesh);
 
+        auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
+        skybox->SetShader(skybox_shader);
+        scene.SetSkybox(skybox);
+
         // Initialize camera
-        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 20.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 10.0f));
+        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 0.0f));
         scene.SetCamera(camera);
 
         // Add entities to the scene

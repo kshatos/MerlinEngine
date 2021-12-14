@@ -41,6 +41,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/camera.cpp
     Merlin/Render/perspective_camera.cpp
     Merlin/Render/transform.cpp
+    Merlin/Render/skybox.cpp
 )
 set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
@@ -61,6 +62,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/lighting.hpp
     Merlin/Render/mesh.hpp
     Merlin/Render/mesh_vertex.hpp
+    Merlin/Render/skybox.hpp
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 

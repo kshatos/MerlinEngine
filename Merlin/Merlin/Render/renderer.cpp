@@ -65,6 +65,28 @@ namespace Merlin
         m_render_impl->Clear();
     }
 
+    void Renderer::Submit(const std::shared_ptr<Skybox>& skybox)
+    {
+        auto& cubemap = skybox->GetCubemap();
+        auto& varray =skybox->GetVertexArray();
+        auto& shader = skybox->GetShader();
+
+        cubemap->Bind();
+
+        shader->Bind();
+        shader->SetUniformFloat3("u_viewPos", m_scene_data->view_pos);
+        shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(m_scene_data->view_matrix)));
+        shader->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
+
+        varray->Bind();
+
+        m_render_impl->DrawTriangles(varray);
+
+        varray->UnBind();
+        shader->UnBind();
+        cubemap->UnBind();
+    }
+
     void Renderer::Submit(
         const std::shared_ptr<Shader>& shader,
         const std::shared_ptr<VertexArray>& vertex_array,
@@ -109,6 +131,9 @@ namespace Merlin
 
         vertex_array->Bind();
         m_render_impl->DrawTriangles(vertex_array);
+
+        vertex_array->UnBind();
+        shader->UnBind();
     }
 
 }
