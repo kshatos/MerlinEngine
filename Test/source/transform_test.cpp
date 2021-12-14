@@ -17,7 +17,7 @@ TEST(TransformTest, test_create)
     };
 
     Transform t(pos, sca, rot);
-    
+
     ASSERT_EQ(pos, t.GetPosition());
     ASSERT_EQ(sca, t.GetScale());
     ASSERT_EQ(rot, t.GetOrientation());
@@ -43,7 +43,7 @@ TEST(TransformTest, test_tranlate)
     ASSERT_EQ(t_mat, t.GetTransformationMatrix());
 }
 
-TEST(TransformTest, test_scale)
+TEST(TransformTest, test_scale_vector)
 {
     auto direction = glm::vec3(1.0, 2.0, 3.0);
     auto t_mat = glm::mat4{
@@ -79,6 +79,60 @@ TEST(TransformTest, test_rotate)
     ASSERT_EQ(glm::vec3(1.0f, 1.0f, 1.0f), t.GetScale());
     ASSERT_EQ(direction, t.GetOrientation());
     ASSERT_EQ(t_mat, t.GetTransformationMatrix());
+}
+
+TEST(TransformTest, test_frame_vectors)
+{
+    Transform t;
+    ASSERT_EQ(t.Forward(), glm::vec3(0.0, 0.0, -1.0));
+    ASSERT_EQ(t.Up(), glm::vec3(0.0, 1.0, 0.0));
+    ASSERT_EQ(t.Right(), glm::vec3(1.0, 0.0, 0.0));
+
+    t.Rotate(glm::vec3(0.0, 1.0, 0.0), glm::pi<float>()/2.0);
+
+    auto forward_error = t.Forward() - glm::vec3(-1.0, 0.0, 0.0);
+    auto up_error = t.Up() - glm::vec3(0.0, 1.0, 0.0);
+    auto right_error = t.Right() - glm::vec3(0.0, 0.0, -1.0);
+
+    ASSERT_NEAR(glm::dot(forward_error, forward_error), 0.0f, 1.0e-6);
+    ASSERT_NEAR(glm::dot(up_error, up_error), 0.0f, 1.0e-6);
+    ASSERT_NEAR(glm::dot(right_error, right_error), 0.0f, 1.0e-6);
+}
+
+TEST(TransformTest, test_look_at)
+{
+    Transform t;
+
+    t.LookAt(glm::vec3(-2.0, 0.0, 0.0));
+
+    auto forward_error = t.Forward() - glm::vec3(-1.0, 0.0, 0.0);
+    auto right_error = t.Right() - glm::vec3(0.0, 0.0, -1.0);
+    auto up_error = t.Up() - glm::vec3(0.0, 1.0, 0.0);
+
+    ASSERT_NEAR(glm::length(forward_error), 0.0f, 1.0e-6f);
+    ASSERT_NEAR(glm::length(right_error), 0.0f, 1.0e-6f);
+    ASSERT_NEAR(glm::length(up_error), 0.0f, 1.0e-6f);
+}
+
+TEST(TransformTest, test_rotate_around)
+{
+    Transform t;
+    t.Translate(glm::vec3(1.0f, 0.0f, 0.0f));
+    t.RotateAround(
+        glm::vec3(0.0),
+        glm::vec3(0.0, 1.0, 0.0),
+        glm::pi<float>() / 2.0);
+
+
+    auto forward_error = t.Forward() - glm::vec3(-1.0f, 0.0f, 0.0f);
+    auto right_error = t.Right() - glm::vec3(0.0f, 0.0f, -1.0f);
+    auto up_error = t.Up() - glm::vec3(0.0f, 1.0f, 0.0f);
+    auto position_error = t.GetPosition() - glm::vec3(0.0f, 0.0f, -1.0f);
+
+    ASSERT_NEAR(glm::length(forward_error), 0.0f, 1.0e-6f);
+    ASSERT_NEAR(glm::length(right_error), 0.0f, 1.0e-6f);
+    ASSERT_NEAR(glm::length(up_error), 0.0f, 1.0e-6f);
+    ASSERT_NEAR(glm::length(position_error), 0.0f, 1.0e-6f);
 }
 
 TEST(TransformTest, test_composition)

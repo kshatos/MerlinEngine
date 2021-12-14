@@ -43,7 +43,9 @@ namespace Merlin
             glm::vec3 position,
             glm::vec3 axis,
             float angle_radians);
-        void LookAt(glm::vec3 target_position);
+        void LookAt(
+            glm::vec3 target_position,
+            glm::vec3 new_up = glm::vec3(0.0f, 1.0f, 0.0f));
     };
 }
 #endif

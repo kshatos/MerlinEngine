@@ -129,10 +129,10 @@ namespace Merlin
         m_orientation *= rotation;
     }
 
-    void Transform::LookAt(glm::vec3 target_position)
+    void Transform::LookAt(glm::vec3 target_position, glm::vec3 new_up)
     {
         auto direction = glm::normalize(target_position - m_position);
-        m_orientation = glm::quatLookAt(direction, Up());
+        m_orientation = glm::quatLookAt(direction, new_up);
     }
 
 }
