@@ -7,10 +7,7 @@
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
 
-
 using namespace Merlin;
-
-bool is_running = true;
 
 
 Vertex_XNUV verts[]
@@ -71,6 +68,7 @@ uint32_t tris[]
 std::shared_ptr<Camera> camera;
 std::shared_ptr<VertexArray> main_varray;
 std::shared_ptr<Texture2D> main_texture;
+std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> main_shader;
 
 class SpinningComponent : public Component
@@ -141,6 +139,17 @@ public:
                 TextureWrapMode::Repeat,
                 TextureWrapMode::Repeat,
                 TextureFilterMode::Linear));
+
+        main_cubemap = Cubemap::Create(
+            std::vector<std::string>
+            {
+                ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
+            });
 
         main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",

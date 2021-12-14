@@ -34,6 +34,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/buffer_layout.cpp
     Merlin/Render/vertex_array.cpp
     Merlin/Render/texture2d.cpp
+    Merlin/Render/cubemap.cpp
     Merlin/Render/shader.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
@@ -50,6 +51,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/frame_buffer.hpp
     Merlin/Render/vertex_array.hpp
     Merlin/Render/texture2d.hpp
+    Merlin/Render/cubemap.hpp
     Merlin/Render/shader.hpp
     Merlin/Render/render_api.hpp
     Merlin/Render/renderer.hpp
@@ -88,6 +90,7 @@ set(MERLIN_OPENGL_SOURCE
     Merlin/Platform/OpenGL/opengl_vertex_array.cpp
     Merlin/Platform/OpenGL/opengl_frame_buffer.cpp
     Merlin/Platform/OpenGL/opengl_texture2d.cpp
+    Merlin/Platform/OpenGL/opengl_cubemap.cpp
     Merlin/Platform/OpenGL/opengl_shader.cpp
     Merlin/Platform/OpenGL/opengl_render_api.cpp
 )
@@ -98,6 +101,7 @@ set(MERLIN_OPENGL_INCLUDE
     Merlin/Platform/OpenGL/opengl_vertex_array.hpp
     Merlin/Platform/OpenGL/opengl_frame_buffer.hpp
     Merlin/Platform/OpenGL/opengl_texture2d.hpp
+    Merlin/Platform/OpenGL/opengl_cubemap.hpp
     Merlin/Platform/OpenGL/opengl_shader.hpp
     Merlin/Platform/OpenGL/opengl_render_api.hpp
 )
