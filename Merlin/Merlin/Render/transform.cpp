@@ -26,6 +26,21 @@ namespace Merlin
     {
     }
 
+    void Transform::SetPosition(glm::vec3 position)
+    {
+        m_position = position;
+    }
+
+    void Transform::SetScale(glm::vec3 scale)
+    {
+        m_scale = scale;
+    }
+
+    void Transform::SetOrientation(glm::vec3 orientation)
+    {
+        m_orientation = orientation;
+    }
+
     const glm::vec3& Transform::GetPosition()
     {
         return m_position;
@@ -55,6 +70,21 @@ namespace Merlin
         return m_transform_matrix;
     }
 
+    glm::vec3 Transform::Forward()
+    {
+        return m_orientation * glm::vec3(0.0, 0.0, -1.0);
+    }
+
+    glm::vec3 Transform::Up()
+    {
+        return m_orientation * glm::vec3(0.0, 1.0, 0.0);
+    }
+
+    glm::vec3 Transform::Right()
+    {
+        return m_orientation * glm::vec3(1.0, 0.0, 0.0);
+    }
+
     void Transform::Translate(glm::vec3 direction)
     {
         m_position += direction;
@@ -67,10 +97,42 @@ namespace Merlin
         m_transform_matrix_is_dirty = true;
     }
 
+    void Transform::Scale(float factor)
+    {
+        m_scale *= factor;
+        m_transform_matrix_is_dirty = true;
+    }
+
     void Transform::Rotate(glm::quat direction)
     {
         m_orientation *= direction;
         m_transform_matrix_is_dirty = true;
+    }
+
+    void Transform::Rotate(glm::vec3 axis, float angle_radians)
+    {
+        glm::quat rotation = glm::angleAxis(angle_radians, axis);
+        m_orientation *= rotation;
+    }
+
+    void Transform::RotateAround(
+        glm::vec3 position,
+        glm::vec3 axis,
+        float angle_radians)
+    {
+        glm::quat rotation = glm::angleAxis(angle_radians, axis);
+
+        auto relative_pos = m_position - position;
+        relative_pos = rotation * relative_pos;
+
+        m_position = position + relative_pos;
+        m_orientation *= rotation;
+    }
+
+    void Transform::LookAt(glm::vec3 target_position)
+    {
+        auto direction = glm::normalize(target_position - m_position);
+        m_orientation = glm::quatLookAt(direction, Up());
     }
 
 }
