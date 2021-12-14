@@ -164,8 +164,8 @@ namespace Merlin
             m_y_scroll_delta(y_scroll) {}
         static AppEventType GetStaticType() { return AppEventType::MouseScrolled; }
         inline AppEventType GetType() override { return AppEventType::MouseScrolled; }
-        inline float GetXScrollDelta() { return m_x_scroll_delta; }
-        inline float GetYScrollDelta() { return m_y_scroll_delta; }
+        inline float GetXScrollDelta() const { return m_x_scroll_delta; }
+        inline float GetYScrollDelta() const { return m_y_scroll_delta; }
         std::string ToString() override
         {
             std::ostringstream oss;

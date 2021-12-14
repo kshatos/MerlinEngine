@@ -2,6 +2,7 @@
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Render/renderer.hpp"
 #include "Merlin/Core/imgui_layer.hpp"
+#include "Merlin/Core/input.hpp"
 #include "GLFW/glfw3.h"
 
 
@@ -44,6 +45,8 @@ namespace Merlin
             return true;
         });
 
+        Input::HandleEvent(app_event);
+
         // Dispatch events to layers allowing them to block
         for (auto& layer : m_layer_stack)
         {
@@ -59,6 +62,7 @@ namespace Merlin
         {
             layer->OnUpdate(time_step);
         }
+        Input::EndFrame();
     }
 
     void Application::Run()

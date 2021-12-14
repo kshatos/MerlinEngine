@@ -277,16 +277,6 @@ public:
     virtual void HandleEvent(AppEvent& app_event) override
     {
         ME_LOG_INFO(app_event.ToString());
-
-        app_event.Dispatch<MouseScrolledEvent>(
-            [this](MouseScrolledEvent& e)
-        {
-            float th = e.GetYScrollDelta() * 1.0e-1f;
-            float c = glm::cos(th);
-            float s = glm::sin(th);
-            camera->GetTransform().Rotate(glm::quat(c, 0.0f, s, 0.0f));
-            return true;
-        });
     }
 
     void MoveCamera(float time_step)
@@ -304,6 +294,12 @@ public:
             camera->GetTransform().Translate(glm::vec3(0.0f, speed * time_step, 0.0f));
         if (Input::GetKeyDown(Key::X))
             camera->GetTransform().Translate(glm::vec3(0.0f, -speed * time_step, 0.0f));
+        {
+            float th = Input::GetMouseScrollDelta().y * 1.0e-1f;
+            float c = glm::cos(th);
+            float s = glm::sin(th);
+            camera->GetTransform().Rotate(glm::quat(c, 0.0f, s, 0.0f));
+        }
     }
 };
 
