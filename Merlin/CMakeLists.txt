@@ -35,6 +35,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/vertex_array.cpp
     Merlin/Render/texture2d.cpp
     Merlin/Render/cubemap.cpp
+    Merlin/Render/cubemap_data.cpp
     Merlin/Render/shader.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
@@ -53,6 +54,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/vertex_array.hpp
     Merlin/Render/texture2d.hpp
     Merlin/Render/cubemap.hpp
+    Merlin/Render/cubemap_data.hpp
     Merlin/Render/shader.hpp
     Merlin/Render/render_api.hpp
     Merlin/Render/renderer.hpp
