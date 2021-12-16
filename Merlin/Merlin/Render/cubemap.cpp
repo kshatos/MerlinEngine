@@ -8,4 +8,10 @@ namespace Merlin
     {
         return std::make_shared<OpenGLCubemap>(face_paths);
     }
+    
+    std::shared_ptr<Cubemap> Cubemap::Create(uint32_t resolution, uint32_t channel_count)
+    {
+        return std::make_shared<OpenGLCubemap>(resolution, channel_count);
+    }
+
 }

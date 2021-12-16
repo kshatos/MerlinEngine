@@ -8,12 +8,21 @@ namespace Merlin
 {
     class OpenGLCubemap : public Cubemap
     {
+        uint32_t m_channel_count;
+        uint32_t m_resolution;
         uint32_t m_id;
     public:
         OpenGLCubemap(const std::vector<std::string>& face_paths);
+        OpenGLCubemap(uint32_t resolution, uint32_t channel_count);
         ~OpenGLCubemap();
+
+        inline virtual uint32_t GetResolution() override { return m_resolution; }
+        inline virtual uint32_t GetChannelCount() override { return m_channel_count; }
+
         void Bind() override;
         void UnBind() override;
+
+        virtual void SetFaceData(CubeFace face, float* data) override;
     };
 }
 #endif
