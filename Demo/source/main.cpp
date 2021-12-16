@@ -151,6 +151,8 @@ public:
                 {
                     auto point = cube_data->GetPixelCubePoint(face, i, j);
                     point = glm::normalize(point);
+                    point *= 0.5f;
+                    point += 0.5f;
                     cube_data->GetPixel(face, i, j, 0) = point.x;
                     cube_data->GetPixel(face, i, j, 1) = point.y;
                     cube_data->GetPixel(face, i, j, 2) = point.z;
