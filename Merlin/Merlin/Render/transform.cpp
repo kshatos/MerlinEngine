@@ -113,6 +113,7 @@ namespace Merlin
     {
         glm::quat rotation = glm::angleAxis(angle_radians, axis);
         m_orientation *= rotation;
+        m_transform_matrix_is_dirty = true;
     }
 
     void Transform::RotateAround(
@@ -127,12 +128,14 @@ namespace Merlin
 
         m_position = position + relative_pos;
         m_orientation *= rotation;
+        m_transform_matrix_is_dirty = true;
     }
 
     void Transform::LookAt(glm::vec3 target_position, glm::vec3 new_up)
     {
         auto direction = glm::normalize(target_position - m_position);
         m_orientation = glm::quatLookAt(direction, new_up);
+        m_transform_matrix_is_dirty = true;
     }
 
 }
