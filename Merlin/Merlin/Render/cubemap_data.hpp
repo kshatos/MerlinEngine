@@ -3,21 +3,11 @@
 #include <array>
 #include <vector>
 #include <glm/glm.hpp>
+#include "Merlin/Render/cubemap.hpp"
 
 
 namespace Merlin
 {
-    enum CubeFace : uint32_t
-    {
-        PositiveX = 0,
-        NegativeX,
-        PositiveY,
-        NegativeY,
-        PositiveZ,
-        NegativeZ,
-        End,
-        Begin = PositiveX,
-    };
 
     class CubemapData
     {
@@ -44,6 +34,9 @@ namespace Merlin
             uint32_t j,
             uint32_t channel);
     };
+
+
+    std::shared_ptr<Cubemap> UploadCubemap(std::shared_ptr<CubemapData> data);
 
 }
 #endif

@@ -141,6 +141,24 @@ public:
                 TextureWrapMode::Repeat,
                 TextureFilterMode::Linear));
 
+        auto cube_data = std::make_shared<CubemapData>(100, 3);
+        for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
+        {
+            auto face = static_cast<CubeFace>(face_id);
+            for (int j = 0; j < 100; ++j)
+            {
+                for (int i = 0; i < 100; ++i)
+                {
+                    auto point = cube_data->GetPixelCubePoint(face, i, j);
+                    point = glm::normalize(point);
+                    cube_data->GetPixel(face, i, j, 0) = point.x;
+                    cube_data->GetPixel(face, i, j, 1) = point.y;
+                    cube_data->GetPixel(face, i, j, 2) = point.z;
+                }
+            }
+        }
+        auto custom_cubemap = UploadCubemap(cube_data);
+
         main_cubemap = Cubemap::Create(
             std::vector<std::string>
         {
@@ -169,7 +187,7 @@ public:
         mesh.SetIndexData(tris, sizeof(tris) / sizeof(uint32_t));
         main_varray = UploadMesh(mesh);
 
-        auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
+        auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
         skybox->SetShader(skybox_shader);
         scene.SetSkybox(skybox);
 

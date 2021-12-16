@@ -38,20 +38,20 @@ namespace Merlin
         v = 2.0f * v - 1.0f;
         switch (face)
         {
-            case PositiveX:
-                return glm::vec3(+1.0f, -v, -u);
-            case NegativeX:
-                return glm::vec3(-1.0f, -v, +u);
-            case PositiveY:
-                return glm::vec3(+u, +1.0f, +v);
-            case NegativeY:
-                return glm::vec3(+u, -1.0f, -v);
-            case PositiveZ:
-                return glm::vec3(+u, -v, +1.0f);
-            case NegativeZ:
-                return glm::vec3(-u, -v, -1.0f);
-            default:
-                return glm::vec3(0.0);
+        case PositiveX:
+            return glm::vec3(+1.0f, -v, -u);
+        case NegativeX:
+            return glm::vec3(-1.0f, -v, +u);
+        case PositiveY:
+            return glm::vec3(+u, +1.0f, +v);
+        case NegativeY:
+            return glm::vec3(+u, -1.0f, -v);
+        case PositiveZ:
+            return glm::vec3(+u, -v, +1.0f);
+        case NegativeZ:
+            return glm::vec3(-u, -v, -1.0f);
+        default:
+            return glm::vec3(0.0);
         }
     }
 
@@ -59,6 +59,19 @@ namespace Merlin
     {
         auto index = PixelIndex(face, 0, 0, 0);
         return &m_data[index];
+    }
+
+    std::shared_ptr<Cubemap> UploadCubemap(std::shared_ptr<CubemapData> data)
+    {
+        auto cubemap = Cubemap::Create(data->GetResolution(), data->GetChannelCount());
+
+        for (uint32_t face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
+        {
+            auto face = static_cast<CubeFace>(face_id);
+            cubemap->SetFaceData(face, data->GetFaceDataPointer(face));
+        }
+
+        return cubemap;
     }
 
 }
