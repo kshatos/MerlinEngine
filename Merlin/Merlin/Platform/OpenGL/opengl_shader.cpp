@@ -93,6 +93,40 @@ namespace Merlin
         glUseProgram(0);
     }
 
+    void OpenGLShader::SetUniform(
+        const std::string& name,
+        ShaderDataType type,
+        void* value)
+    {
+        switch (type)
+        {
+        case Merlin::ShaderDataType::Float:
+            SetUniformFloat(name, *(float*)value);
+            break;
+        case Merlin::ShaderDataType::Float2:
+            SetUniformFloat2(name, *(glm::vec2*)value);
+            break;
+        case Merlin::ShaderDataType::Float3:
+            SetUniformFloat3(name, *(glm::vec3*)value);
+            break;
+        case Merlin::ShaderDataType::Float4:
+            SetUniformFloat4(name, *(glm::vec4*)value);
+            break;
+        case Merlin::ShaderDataType::Mat3:
+            SetUniformMat3(name, *(glm::mat3*)value);
+            break;
+        case Merlin::ShaderDataType::Mat4:
+            SetUniformMat4(name, *(glm::mat4*)value);
+            break;
+        case Merlin::ShaderDataType::Int:
+            SetUniformInt(name, *(int*)value);
+            break;
+        default:
+            ME_LOG_ERROR("Unable to set uniform, invalid type");
+            break;
+        }
+    }
+
     void OpenGLShader::SetUniformMat4(const std::string& name, glm::mat4 value)
     {
         auto location = glGetUniformLocation(m_id, name.c_str());
@@ -128,7 +162,6 @@ namespace Merlin
         auto location = glGetUniformLocation(m_id, name.c_str());
         glUniform1f(location, value);
     }
-
 
     void OpenGLShader::SetUniformInt(const std::string& name, int value)
     {

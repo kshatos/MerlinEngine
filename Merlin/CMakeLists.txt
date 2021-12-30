@@ -37,6 +37,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/cubemap.cpp
     Merlin/Render/cubemap_data.cpp
     Merlin/Render/shader.cpp
+    Merlin/Render/material.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
     Merlin/Render/camera.cpp
@@ -56,6 +57,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/cubemap.hpp
     Merlin/Render/cubemap_data.hpp
     Merlin/Render/shader.hpp
+    Merlin/Render/material.hpp
     Merlin/Render/render_api.hpp
     Merlin/Render/renderer.hpp
     Merlin/Render/camera.hpp

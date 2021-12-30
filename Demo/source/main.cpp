@@ -71,6 +71,7 @@ std::shared_ptr<Texture2D> main_texture;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> main_shader;
 std::shared_ptr<Shader> skybox_shader;
+std::shared_ptr<Material> main_material;
 
 class SpinningComponent : public Component
 {
@@ -179,6 +180,11 @@ public:
         skybox_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\skybox.vert",
             ".\\Assets\\Shaders\\skybox.frag");
+
+        main_material = std::make_shared<Material>(
+            main_shader,
+            BufferLayout{},
+            std::vector<std::string>{"u_Texture"});
 
         main_shader->Bind();
         main_shader->SetUniformInt("u_Texture", 0);
