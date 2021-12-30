@@ -14,10 +14,11 @@ namespace Merlin
             if (item.name != name)
                 continue;
             if (item.type != type)
-                return false;
+                continue;
             element = item;
             return true;
         }
+        return false;
     }
 
     void Material::SetUniformFloat(
@@ -30,6 +31,10 @@ namespace Merlin
             float* location = (float*)(m_uniformData + item.offset);
             *location = data;
         }
+        else
+        {
+            m_shader->SetUniformFloat(name, data);
+        }
     }
 
     void Material::SetUniformFloat2(const std::string& name, const glm::vec2& data)
@@ -39,6 +44,10 @@ namespace Merlin
         {
             glm::vec2* location = (glm::vec2*)(m_uniformData + item.offset);
             *location = data;
+        }
+        else
+        {
+            m_shader->SetUniformFloat2(name, data);
         }
     }
 
@@ -50,6 +59,10 @@ namespace Merlin
             glm::vec3* location = (glm::vec3*)(m_uniformData + item.offset);
             *location = data;
         }
+        else
+        {
+            m_shader->SetUniformFloat3(name, data);
+        }
     }
 
     void Material::SetUniformFloat4(const std::string& name, const glm::vec4& data)
@@ -59,6 +72,10 @@ namespace Merlin
         {
             glm::vec4* location = (glm::vec4*)(m_uniformData + item.offset);
             *location = data;
+        }
+        else
+        {
+            m_shader->SetUniformFloat4(name, data);
         }
     }
 
@@ -70,6 +87,10 @@ namespace Merlin
             glm::mat3* location = (glm::mat3*)(m_uniformData + item.offset);
             *location = data;
         }
+        else
+        {
+            m_shader->SetUniformMat3(name, data);
+        }
     }
 
     void Material::SetUniformMat4(const std::string& name, const glm::mat4& data)
@@ -80,6 +101,10 @@ namespace Merlin
             glm::mat4* location = (glm::mat4*)(m_uniformData + item.offset);
             *location = data;
         }
+        else
+        {
+            m_shader->SetUniformMat4(name, data);
+        }
     }
 
     void Material::SetUniformInt(const std::string& name, const uint32_t& data)
@@ -89,6 +114,20 @@ namespace Merlin
         {
             uint32_t* location = (uint32_t*)(m_uniformData + item.offset);
             *location = data;
+        }
+        else
+        {
+            m_shader->SetUniformInt(name, data);
+        }
+    }
+
+    void Material::SetTexture(std::string name, const std::shared_ptr<Texture2D> texture)
+    {
+        for (int i = 0; i < m_textureNames.size(); ++i)
+        {
+            if (m_textureNames[i] != name)
+                continue;
+            m_textureData[i] = texture;;
         }
     }
 

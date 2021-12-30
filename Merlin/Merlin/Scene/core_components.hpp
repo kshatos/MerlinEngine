@@ -18,7 +18,7 @@ namespace Merlin
     public:
         MeshRenderComponent(Entity* parent) : Component(parent) {}
         std::shared_ptr<VertexArray> varray;
-        std::shared_ptr<Shader> shader;
+        std::shared_ptr<Material> material;
     };
 
     class PointLightComponent : public Component

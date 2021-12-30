@@ -44,6 +44,9 @@ namespace Merlin
         void SetUniformMat3(const std::string& name, const glm::mat3& data);
         void SetUniformMat4(const std::string& name, const glm::mat4& data);
         void SetUniformInt(const std::string& name, const uint32_t& data);
+
+        void SetTexture(std::string name, const std::shared_ptr<Texture2D> texture);
+
         void Bind();
         void UnBind();
 
