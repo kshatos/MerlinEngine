@@ -127,6 +127,8 @@ public:
 
 class SceneLayer : public Layer
 {
+    float m_pickedColor[3]{0.0f, 0.0f, 0.0f};
+    float m_uvOffset[2]{ 0.0f, 0.0f };
     GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
@@ -181,9 +183,14 @@ public:
 
         main_material = std::make_shared<Material>(
             main_shader,
-            BufferLayout{},
+            BufferLayout{
+                {ShaderDataType::Float3, "u_blendColor"},
+                {ShaderDataType::Float2, "u_uvOffset"}
+            },
             std::vector<std::string>{"u_Texture"});
         main_material->SetTexture("u_Texture", main_texture);
+        main_material->SetUniformFloat3("u_blendColor", glm::vec3(1.0, 0.0, 0.0));
+        main_material->SetUniformFloat2("u_uvOffset", glm::vec2(0.0, 0.0));
 
         Mesh<Vertex_XNUV> mesh;
         mesh.SetVertexData(verts, sizeof(verts) / sizeof(Vertex_XNUV));
@@ -302,10 +309,28 @@ public:
             ImGui::NewFrame();
 
             ImGui::ShowDemoWindow();
-
+            // Scene viewport
             ImGui::Begin("Scene");
             uint32_t tex_id = fbuffer->GetColorAttachmentID();
             ImGui::Image((ImTextureID)tex_id, ImVec2{ 800, 800 });
+            ImGui::End();
+
+            // Prompt
+            ImGui::Begin("Color");
+            ImGui::ColorPicker3("", m_pickedColor);
+            main_material->SetUniformFloat3(
+                "u_blendColor",
+                glm::vec3(
+                    m_pickedColor[0],
+                    m_pickedColor[1],
+                    m_pickedColor[2]));
+
+            ImGui::SliderFloat2("", m_uvOffset, 0.0f, 1.0f);
+            main_material->SetUniformFloat2(
+                "u_uvOffset",
+                glm::vec2(
+                    m_uvOffset[0],
+                    m_uvOffset[1]));
             ImGui::End();
 
             ImGui::Render();
