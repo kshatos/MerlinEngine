@@ -6,11 +6,12 @@
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
+#include "uv_sphere.hpp"
 
 using namespace Merlin;
 
 
-Vertex_XNUV verts[]
+Vertex_XNUV CubeVerts[]
 {
     // positions             // normal              // texture coords
     {-0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f},
@@ -44,7 +45,7 @@ Vertex_XNUV verts[]
     { 0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f},
 };
 
-uint32_t tris[]
+uint32_t CubeIndices[]
 {
     0, 1, 2,
     0, 2, 3,
@@ -66,7 +67,8 @@ uint32_t tris[]
 };
 
 std::shared_ptr<Camera> camera;
-std::shared_ptr<VertexArray> main_varray;
+std::shared_ptr<VertexArray> cube_varray;
+std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> skybox_shader;
 std::shared_ptr<Material> main_material;
@@ -192,10 +194,15 @@ public:
         main_material->SetUniformFloat3("u_blendColor", glm::vec3(1.0, 0.0, 0.0));
         main_material->SetUniformFloat2("u_uvOffset", glm::vec2(0.0, 0.0));
 
-        Mesh<Vertex_XNUV> mesh;
-        mesh.SetVertexData(verts, sizeof(verts) / sizeof(Vertex_XNUV));
-        mesh.SetIndexData(tris, sizeof(tris) / sizeof(uint32_t));
-        main_varray = UploadMesh(mesh);
+        Mesh<Vertex_XNUV> cubeMesh;
+        cubeMesh.SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
+        cubeMesh.SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
+        cube_varray = UploadMesh(cubeMesh);
+
+        Mesh<Vertex_XNUV> sphereMesh;
+        sphereMesh.SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNUV));
+        sphereMesh.SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
+        sphere_varray = UploadMesh(sphereMesh);
 
         auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
         skybox->SetShader(skybox_shader);
@@ -256,7 +263,7 @@ public:
                 glm::linearRand(-5.0f, 5.0f)));
             transform_comp->transform.Scale(
                 glm::vec3(glm::linearRand(0.3f, 0.8f)));
-            mesh_comp->varray = main_varray;
+            mesh_comp->varray = sphere_varray;
             mesh_comp->material = main_material;
             scene.AddEntity(entity);
         }
