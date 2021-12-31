@@ -39,7 +39,7 @@ namespace Merlin
             if (mesh_comp != nullptr && transform_comp != nullptr)
             {
                 Renderer::Submit(
-                    mesh_comp->shader,
+                    mesh_comp->material,
                     mesh_comp->varray,
                     transform_comp->transform.GetTransformationMatrix());
             }

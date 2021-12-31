@@ -67,10 +67,9 @@ uint32_t tris[]
 
 std::shared_ptr<Camera> camera;
 std::shared_ptr<VertexArray> main_varray;
-std::shared_ptr<Texture2D> main_texture;
 std::shared_ptr<Cubemap> main_cubemap;
-std::shared_ptr<Shader> main_shader;
 std::shared_ptr<Shader> skybox_shader;
+std::shared_ptr<Material> main_material;
 
 class SpinningComponent : public Component
 {
@@ -128,13 +127,15 @@ public:
 
 class SceneLayer : public Layer
 {
+    float m_pickedColor[3]{0.0f, 0.0f, 0.0f};
+    float m_uvOffset[2]{ 0.0f, 0.0f };
     GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
     SceneLayer()
     {
         // Initialize render data
-        main_texture = Texture2D::Create(
+        auto main_texture = Texture2D::Create(
             ".\\Assets\\Textures\\debug.jpg",
             Texture2DProperties(
                 TextureWrapMode::Repeat,
@@ -172,7 +173,7 @@ public:
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
-        main_shader = Shader::CreateFromFiles(
+        auto main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
@@ -180,9 +181,16 @@ public:
             ".\\Assets\\Shaders\\skybox.vert",
             ".\\Assets\\Shaders\\skybox.frag");
 
-        main_shader->Bind();
-        main_shader->SetUniformInt("u_Texture", 0);
-        main_shader->UnBind();
+        main_material = std::make_shared<Material>(
+            main_shader,
+            BufferLayout{
+                {ShaderDataType::Float3, "u_blendColor"},
+                {ShaderDataType::Float2, "u_uvOffset"}
+            },
+            std::vector<std::string>{"u_Texture"});
+        main_material->SetTexture("u_Texture", main_texture);
+        main_material->SetUniformFloat3("u_blendColor", glm::vec3(1.0, 0.0, 0.0));
+        main_material->SetUniformFloat2("u_uvOffset", glm::vec2(0.0, 0.0));
 
         Mesh<Vertex_XNUV> mesh;
         mesh.SetVertexData(verts, sizeof(verts) / sizeof(Vertex_XNUV));
@@ -248,8 +256,8 @@ public:
                 glm::linearRand(-5.0f, 5.0f)));
             transform_comp->transform.Scale(
                 glm::vec3(glm::linearRand(0.3f, 0.8f)));
-            mesh_comp->shader = main_shader;
             mesh_comp->varray = main_varray;
+            mesh_comp->material = main_material;
             scene.AddEntity(entity);
         }
 
@@ -287,7 +295,6 @@ public:
             fbuffer->Bind();
             Renderer::Clear();
             Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
-            main_texture->Bind();
             scene.RenderScene();
             fbuffer->UnBind();
         }
@@ -302,10 +309,28 @@ public:
             ImGui::NewFrame();
 
             ImGui::ShowDemoWindow();
-
+            // Scene viewport
             ImGui::Begin("Scene");
             uint32_t tex_id = fbuffer->GetColorAttachmentID();
             ImGui::Image((ImTextureID)tex_id, ImVec2{ 800, 800 });
+            ImGui::End();
+
+            // Prompt
+            ImGui::Begin("Color");
+            ImGui::ColorPicker3("", m_pickedColor);
+            main_material->SetUniformFloat3(
+                "u_blendColor",
+                glm::vec3(
+                    m_pickedColor[0],
+                    m_pickedColor[1],
+                    m_pickedColor[2]));
+
+            ImGui::SliderFloat2("", m_uvOffset, 0.0f, 1.0f);
+            main_material->SetUniformFloat2(
+                "u_uvOffset",
+                glm::vec2(
+                    m_uvOffset[0],
+                    m_uvOffset[1]));
             ImGui::End();
 
             ImGui::Render();

@@ -38,6 +38,8 @@ uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
 
 uniform sampler2D u_Texture;
 uniform vec3 u_viewPos;
+uniform vec3 u_blendColor;
+uniform vec2 u_uvOffset;
 
 in vec3 Pos;
 in vec3 Normal;
@@ -107,7 +109,7 @@ vec3 CalcSpotLight(
 
 void main()
 {
-    vec3 albedo = vec3(texture(u_Texture, TexCoord));
+    vec3 albedo = vec3(texture(u_Texture, TexCoord + u_uvOffset));
     vec3 result = vec3(0.0f);
 
     for (int i=0; i<u_nPointLights; i++)
@@ -123,5 +125,5 @@ void main()
         result += albedo * CalcSpotLight(u_spotLights[i], Normal, Pos);
     }
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result * u_blendColor, 1.0);
 }

@@ -13,6 +13,7 @@ namespace Merlin
     class RenderAPI;
     class VertexArray;
     class Shader;
+    class Material;
 
     class Renderer
     {
@@ -40,10 +41,10 @@ namespace Merlin
         static void SetClearColor(const glm::vec4& color);
         static void Clear();
         static void Submit(const std::shared_ptr<Skybox>& skybox);
-        static void Submit(
-            const std::shared_ptr<Shader>& shader,
+        static void Renderer::Submit(
+            const std::shared_ptr<Material>& material,
             const std::shared_ptr<VertexArray>& vertex_array,
-            const glm::mat4& transform);
+            const glm::mat4& model_matrix);
     };
 }
 

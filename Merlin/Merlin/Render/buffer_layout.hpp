@@ -34,7 +34,16 @@ namespace Merlin
         uint32_t size;
         bool normalized;
 
-        BufferElement(ShaderDataType _type, const std::string _name, bool _normalized=false) :
+        BufferElement() :
+            name(""),
+            type(ShaderDataType::None),
+            offset(0),
+            size(0),
+            normalized(false)
+        {
+        }
+
+        BufferElement(ShaderDataType _type, const std::string _name, bool _normalized = false) :
             name(_name),
             type(_type),
             offset(0),
