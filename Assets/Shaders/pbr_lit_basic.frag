@@ -13,7 +13,7 @@ uniform vec3 u_viewPos;
 struct PointLight
 {
     vec3 position;
-    float intensity;
+    float radiantFlux;
     float range;
     vec3 color;
 };
@@ -21,6 +21,7 @@ struct PointLight
 struct DirectionalLight
 {
     vec3 direction;
+    float irradiance;
     vec3 color;
 };
 
@@ -28,8 +29,9 @@ struct SpotLight
 {
     vec3 position;
     vec3 direction;
-    float cutoff;
-    float intensity;
+    float cutoffAngle;
+    float falloffRatio;
+    float radiantIntensity;
     float range;
     vec3 color;
 };
@@ -104,8 +106,83 @@ vec3 BRDF(
 
     vec3 f = diffuse + specular;
 
-    return f * cosNL * 2;
+    return f * cosNL;
 }
+
+//////////////////////////////
+// LIGHTING MODEL
+//////////////////////////////
+float PunctualLightAttenuation(float separation, float range)
+{
+    float separation2 = separation * separation;
+    float relativeRange = min(1.0, separation / range);
+    float relativeRange4 = relativeRange * relativeRange * relativeRange * relativeRange;
+
+    return 1.0 / (separation2 + 1.0e-6) * (1.0 - relativeRange4);
+}
+
+float SpotLightAttenuation(
+    SpotLight light,
+    vec3 lightDir)
+{
+    float cosDL = dot(-light.direction, lightDir);
+    float cosTMin = cos(light.cutoffAngle * (1.0 - light.falloffRatio));
+    float cosTMax = cos(light.cutoffAngle);
+    
+    if (cosDL >= cosTMin)
+        return 1.0;
+    if (cosDL <= cosTMax)
+        return 0.0;
+    return smoothstep(0.0, 1.0, (cosDL - cosTMax) / (cosTMin - cosTMax));
+}
+
+vec3 PointLightReflectedRadiance(
+    PointLight light,
+    PBRSurfaceData surface)
+{
+    float separation = length(light.position - surface.position);
+    vec3 viewDir = normalize(u_viewPos - surface.position);
+    vec3 lightDir = normalize(light.position - surface.position);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    vec3 f = BRDF(viewDir, lightDir, halfwayDir, surface);
+    vec3 L0 = light.color * light.radiantFlux / (4.0 * PI);
+    float A = PunctualLightAttenuation(separation, light.range);
+
+    return L0 * A * f;
+}
+
+vec3 DirectionalLightReflectedRadiance(
+    DirectionalLight light,
+    PBRSurfaceData surface)
+{
+    vec3 viewDir = normalize(u_viewPos - surface.position);
+    vec3 lightDir = -normalize(light.direction);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    vec3 f = BRDF(viewDir, lightDir, halfwayDir, surface);
+    vec3 L0 = light.color * light.irradiance ;
+
+    return f * L0;
+}
+
+vec3 SpotLightReflectedRadiance(
+    SpotLight light,
+    PBRSurfaceData surface)
+{
+    float separation = length(light.position - surface.position);
+    vec3 viewDir = normalize(u_viewPos - surface.position);
+    vec3 lightDir = normalize(light.position - surface.position);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    vec3 f = BRDF(viewDir, lightDir, halfwayDir, surface);
+    vec3 L0 = light.color * light.radiantIntensity / (4.0 * PI);
+    float A = PunctualLightAttenuation(separation, light.range);
+    float l = SpotLightAttenuation(light, lightDir);
+
+    return L0 * A * l * f;
+}
+
 
 
 //////////////////////////////
@@ -133,26 +210,22 @@ void main()
 
     // Accumulate lighting contributions
     vec3 result = vec3(0.0f);
-    for (int i=0; i<u_nPointLights; i++) {}
-    for (int i=0; i<u_nDirectionalLights; i++) {}
-    for (int i=0; i<u_nSpotLights; i++) {}
-
-    for (int i=0; i<3; i++)
+    for (int i = 0; i < u_nPointLights; i++)
     {
-        float x = (-1.0f + i) * 20.0;
-        vec3 lightPos = vec3(x, 0.0, 50.0);
-        
-        float distance = length(lightPos - surface.position);
-        vec3 viewDir = normalize(u_viewPos - surface.position);
-        vec3 lightDir = normalize(lightPos - surface.position);
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-
-        result += BRDF(viewDir, lightDir, halfwayDir, surface);
+        result += PointLightReflectedRadiance(u_pointLights[i], surface);
+    }
+    for (int i=0; i < u_nDirectionalLights; i++)
+    {
+        result += DirectionalLightReflectedRadiance(u_directionalLights[i], surface);
+    }
+    for (int i = 0; i < u_nSpotLights; i++)
+    {
+        result += SpotLightReflectedRadiance(u_spotLights[i], surface);
     }
 
     result += vec3(0.03) * surface.albedo;
     
-
+    // HDR Tonemap and gamma correction
     result = result / (result + vec3(1.0));
     result = pow(result, vec3(1.0/2.2)); 
 

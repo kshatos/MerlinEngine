@@ -221,28 +221,26 @@ public:
 
         // Add entities to the scene
         {
-            /*
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.cutoff = glm::cos(glm::pi<float>() / 10);
-            light_comp->data.intensity = 1.0f;
-            light_comp->data.range = 2.0f;
+            light_comp->data.cutoffAngle = glm::pi<float>() / 10;
+            light_comp->data.falloffRatio = 0.25f;
+            light_comp->data.radiantIntensity = 20.0f;
+            light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
 
             scene.AddEntity(entity);
-            */
         }
         {
-            /*
             auto entity = std::make_shared<Entity>();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
-            light_comp->data.color = glm::vec3(0.8, 0.8, 0.8);
-            light_comp->data.direction = glm::vec3(0.2, 0.2, 0.2);
+            light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
+            light_comp->data.irradiance = 3.0f;
+            light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
 
             scene.AddEntity(entity);
-            */
         }
         for (int i = 0; i < 4; ++i)
         {
@@ -254,8 +252,8 @@ public:
                 5.0f));
             auto light_comp = entity->AddComponent<PointLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.intensity = 1.0f;
-            light_comp->data.range = 2.0f;
+            light_comp->data.radiantFlux = 10.0f;
+            light_comp->data.range = 50.0f;
 
             scene.AddEntity(entity);
         }

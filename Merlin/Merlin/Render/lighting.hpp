@@ -8,7 +8,7 @@ namespace Merlin
     struct PointLightData
     {
         glm::vec3 position;
-        float intensity;
+        float radiantFlux;
         float range;
         glm::vec3 color;
     };
@@ -16,6 +16,7 @@ namespace Merlin
     struct DirectionalLightData
     {
         glm::vec3 direction;
+        float irradiance;
         glm::vec3 color;
     };
 
@@ -23,8 +24,9 @@ namespace Merlin
     {
         glm::vec3 position;
         glm::vec3 direction;
-        float cutoff;
-        float intensity;
+        float cutoffAngle;
+        float falloffRatio;
+        float radiantIntensity;
         float range;
         glm::vec3 color;
     };
