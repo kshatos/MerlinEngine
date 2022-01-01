@@ -129,8 +129,9 @@ public:
 
 class SceneLayer : public Layer
 {
-    float m_pickedColor[3]{0.0f, 0.0f, 0.0f};
-    float m_uvOffset[2]{ 0.0f, 0.0f };
+    float m_pickedColor[3]{ 0.0f, 0.0f, 0.0f };
+    float m_pickedRoughness = 0.0;
+    float m_pickedMetalic = 0.0;
     GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
@@ -175,6 +176,10 @@ public:
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
+        auto pbr_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\pbr_lit_basic.vert",
+            ".\\Assets\\Shaders\\pbr_lit_basic.frag");
+
         auto main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
@@ -184,15 +189,16 @@ public:
             ".\\Assets\\Shaders\\skybox.frag");
 
         main_material = std::make_shared<Material>(
-            main_shader,
+            pbr_shader,
             BufferLayout{
-                {ShaderDataType::Float3, "u_blendColor"},
-                {ShaderDataType::Float2, "u_uvOffset"}
+                {ShaderDataType::Float3, "u_albedo"},
+                {ShaderDataType::Float, "u_roughness"},
+                {ShaderDataType::Float, "u_metalic"}
             },
-            std::vector<std::string>{"u_Texture"});
-        main_material->SetTexture("u_Texture", main_texture);
-        main_material->SetUniformFloat3("u_blendColor", glm::vec3(1.0, 0.0, 0.0));
-        main_material->SetUniformFloat2("u_uvOffset", glm::vec2(0.0, 0.0));
+            std::vector<std::string>{});
+        main_material->SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
+        main_material->SetUniformFloat("u_roughness", 0.0f);
+        main_material->SetUniformFloat("u_metalic", 0.0f);
 
         Mesh<Vertex_XNUV> cubeMesh;
         cubeMesh.SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
@@ -204,17 +210,18 @@ public:
         sphereMesh.SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         sphere_varray = UploadMesh(sphereMesh);
 
-        auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
-        skybox->SetShader(skybox_shader);
-        scene.SetSkybox(skybox);
+        //auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
+        //skybox->SetShader(skybox_shader);
+        //scene.SetSkybox(skybox);
 
         // Initialize camera
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 0.0f));
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 5.0f));
         scene.SetCamera(camera);
 
         // Add entities to the scene
         {
+            /*
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
@@ -225,23 +232,26 @@ public:
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
 
             scene.AddEntity(entity);
+            */
         }
         {
+            /*
             auto entity = std::make_shared<Entity>();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.8, 0.8, 0.8);
             light_comp->data.direction = glm::vec3(0.2, 0.2, 0.2);
 
             scene.AddEntity(entity);
+            */
         }
         for (int i = 0; i < 4; ++i)
         {
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             transform_comp->transform.Translate(glm::vec3(
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f)));
+                glm::linearRand(-2.0f, 2.0f),
+                glm::linearRand(-2.0f, 2.0f),
+                5.0f));
             auto light_comp = entity->AddComponent<PointLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
             light_comp->data.intensity = 1.0f;
@@ -250,21 +260,17 @@ public:
             scene.AddEntity(entity);
         }
 
-        for (int i = 0; i < 600; ++i)
         {
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            auto spin_comp = entity->AddComponent<SpinningComponent>();
+            //auto spin_comp = entity->AddComponent<SpinningComponent>();
 
-            transform_comp->transform.Translate(glm::vec3(
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f)));
-            transform_comp->transform.Scale(
-                glm::vec3(glm::linearRand(0.3f, 0.8f)));
+            transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
+
             mesh_comp->varray = sphere_varray;
             mesh_comp->material = main_material;
+
             scene.AddEntity(entity);
         }
 
@@ -294,7 +300,7 @@ public:
                 0, 0,
                 Application::Get().GeMaintWindow()->GetWidth(),
                 Application::Get().GeMaintWindow()->GetHeight());
-            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+            Renderer::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
             Renderer::Clear();
         }
 
@@ -324,22 +330,25 @@ public:
 
             // Prompt
             ImGui::Begin("Color");
-            ImGui::ColorPicker3("", m_pickedColor);
+
+            ImGui::ColorPicker3("Albedo", m_pickedColor);
             main_material->SetUniformFloat3(
-                "u_blendColor",
+                "u_albedo",
                 glm::vec3(
                     m_pickedColor[0],
                     m_pickedColor[1],
                     m_pickedColor[2]));
 
-            ImGui::SliderFloat2("", m_uvOffset, 0.0f, 1.0f);
-            main_material->SetUniformFloat2(
-                "u_uvOffset",
-                glm::vec2(
-                    m_uvOffset[0],
-                    m_uvOffset[1]));
+            ImGui::SliderFloat("Roughness", &m_pickedRoughness, 0.0f, 1.0f);
+            main_material->SetUniformFloat("u_roughness", m_pickedRoughness);
+
+            ImGui::SliderFloat("Metalic", &m_pickedMetalic, 0.0f, 1.0f);
+            main_material->SetUniformFloat("u_metalic", m_pickedMetalic);
+
             ImGui::End();
 
+
+            // Finish
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
