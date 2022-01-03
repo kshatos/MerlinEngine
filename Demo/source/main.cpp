@@ -72,6 +72,7 @@ std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> skybox_shader;
 std::shared_ptr<Material> main_material;
+std::shared_ptr<Material> pbr_texture_material;
 
 class SpinningComponent : public Component
 {
@@ -138,12 +139,18 @@ public:
     SceneLayer()
     {
         // Initialize render data
+        auto texProps = Texture2DProperties(
+            TextureWrapMode::Repeat,
+            TextureWrapMode::Repeat,
+            TextureFilterMode::Linear);
         auto main_texture = Texture2D::Create(
-            ".\\Assets\\Textures\\debug.jpg",
-            Texture2DProperties(
-                TextureWrapMode::Repeat,
-                TextureWrapMode::Repeat,
-                TextureFilterMode::Linear));
+            ".\\Assets\\Textures\\debug.jpg", texProps);
+        auto pbr_albedo_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
+        auto pbr_roughness_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
+        auto pbr_metalic_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
         for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
@@ -169,16 +176,20 @@ public:
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
+            ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
         auto pbr_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\pbr_lit_basic.vert",
             ".\\Assets\\Shaders\\pbr_lit_basic.frag");
+
+        auto pbr_texture_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\pbr_lit_texture.vert",
+            ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
         auto main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",
@@ -187,6 +198,19 @@ public:
         skybox_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\skybox.vert",
             ".\\Assets\\Shaders\\skybox.frag");
+
+        pbr_texture_material = std::make_shared<Material>(
+            pbr_texture_shader,
+            BufferLayout{},
+            std::vector<std::string>{
+                "u_albedoTexture",
+                "u_roughnessTexture",
+                "u_metalicTexture"
+            }
+        );
+        pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
+        pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
+        pbr_texture_material->SetTexture("u_metalicTexture", pbr_metalic_texture);
 
         main_material = std::make_shared<Material>(
             pbr_shader,
@@ -210,7 +234,7 @@ public:
         sphereMesh.SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         sphere_varray = UploadMesh(sphereMesh);
 
-        //auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
+        //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
         //skybox->SetShader(skybox_shader);
         //scene.SetSkybox(skybox);
 
@@ -227,7 +251,7 @@ public:
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
             light_comp->data.cutoffAngle = glm::pi<float>() / 10;
             light_comp->data.falloffRatio = 0.25f;
-            light_comp->data.radiantIntensity = 20.0f;
+            light_comp->data.radiantIntensity = 10.0f;
             light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
 
@@ -237,7 +261,7 @@ public:
             auto entity = std::make_shared<Entity>();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
-            light_comp->data.irradiance = 3.0f;
+            light_comp->data.irradiance = 5.0f;
             light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
 
             scene.AddEntity(entity);
@@ -252,7 +276,7 @@ public:
                 5.0f));
             auto light_comp = entity->AddComponent<PointLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.radiantFlux = 10.0f;
+            light_comp->data.radiantFlux = 50.0f;
             light_comp->data.range = 50.0f;
 
             scene.AddEntity(entity);
@@ -267,7 +291,7 @@ public:
             transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
 
             mesh_comp->varray = sphere_varray;
-            mesh_comp->material = main_material;
+            mesh_comp->material = pbr_texture_material;
 
             scene.AddEntity(entity);
         }

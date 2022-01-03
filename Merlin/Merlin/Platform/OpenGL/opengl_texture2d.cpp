@@ -39,10 +39,29 @@ namespace Merlin
         }
     }
 
+    GLenum GetGLChannelFormat(const uint32_t& channel_count)
+    {
+        switch (channel_count)
+        {
+        case 1:
+            return GL_RED;
+        case 2:
+            return GL_RG;
+        case 3:
+            return GL_RGB;
+        case 4:
+            return GL_RGBA;
+        default:
+            ME_LOG_ERROR("Invalid number of texture channels.");
+            return GL_NONE;
+        }
+    }
+
     void OpenGLTexture2D::Init(
         void* data,
         uint32_t width,
         uint32_t height,
+        uint32_t channel_count,
         Texture2DProperties props)
     {
         m_width = width;
@@ -58,7 +77,8 @@ namespace Merlin
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_mode);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_mode);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        auto gl_channel_format = GetGLChannelFormat(channel_count);
+        glTexImage2D(GL_TEXTURE_2D, 0, gl_channel_format, m_width, m_height, 0, gl_channel_format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
@@ -66,12 +86,12 @@ namespace Merlin
         const std::string& filepath,
         Texture2DProperties props)
     {
-        int width, height, nrChannels;
+        int width, height, channel_count;
         stbi_set_flip_vertically_on_load(1);
-        unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+        unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channel_count, 0);
         if (data)
         {
-            Init(data, width, height, props);
+            Init(data, width, height, channel_count, props);
         }
         else
         {
@@ -84,9 +104,10 @@ namespace Merlin
         void* data,
         uint32_t width,
         uint32_t height,
+        uint32_t channel_count,
         Texture2DProperties props)
     {
-        Init(data, width, height, props);
+        Init(data, width, height, channel_count, props);
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()

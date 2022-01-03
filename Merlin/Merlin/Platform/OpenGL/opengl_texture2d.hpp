@@ -16,6 +16,7 @@ namespace Merlin
             void* data,
             uint32_t width,
             uint32_t height,
+            uint32_t channel_count,
             Texture2DProperties props);
     public:
         OpenGLTexture2D(
@@ -25,6 +26,7 @@ namespace Merlin
             void* data,
             uint32_t width,
             uint32_t height,
+            uint32_t channel_count,
             Texture2DProperties props);
         ~OpenGLTexture2D();
         inline uint32_t GetWidth() override { return m_width; }
