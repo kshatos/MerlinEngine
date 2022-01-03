@@ -222,15 +222,16 @@ public:
         main_material->SetUniformFloat("u_roughness", 0.0f);
         main_material->SetUniformFloat("u_metalic", 0.0f);
 
-        Mesh<Vertex_XNUV> cubeMesh;
-        cubeMesh.SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
-        cubeMesh.SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
+        auto cubeMesh = std::make_shared<Mesh<Vertex_XNUV>>();
+        cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
+        cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
         cube_varray = UploadMesh(cubeMesh);
 
-        Mesh<Vertex_XNUV> sphereMesh;
-        sphereMesh.SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNUV));
-        sphereMesh.SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
+        auto sphereMesh =  std::make_shared<Mesh<Vertex_XNTBUV>>();
+        sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
+        sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         sphere_varray = UploadMesh(sphereMesh);
+        CalculateUVFrame<Vertex_XNTBUV>(sphereMesh);
 
         //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
         //skybox->SetShader(skybox_shader);

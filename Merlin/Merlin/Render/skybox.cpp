@@ -60,12 +60,12 @@ namespace Merlin
 
     Skybox::Skybox(const std::shared_ptr<Cubemap>& cubemap, float scale) : m_cubemap(cubemap)
     {
-        Mesh<Vertex_XNUV> mesh;
-        mesh.SetVertexData(cubemap_verts, sizeof(cubemap_verts) / sizeof(Vertex_XNUV));
-        mesh.SetIndexData(cubemap_triangles, sizeof(cubemap_triangles) / sizeof(uint32_t));
-        for (int i = 0; i < mesh.GetVertexCount(); i++)
+        auto mesh = std::make_shared<Mesh<Vertex_XNUV>>();
+        mesh->SetVertexData(cubemap_verts, sizeof(cubemap_verts) / sizeof(Vertex_XNUV));
+        mesh->SetIndexData(cubemap_triangles, sizeof(cubemap_triangles) / sizeof(uint32_t));
+        for (int i = 0; i < mesh->GetVertexCount(); i++)
         {
-            mesh.GetVertex(i).position *= scale;
+            mesh->GetVertex(i).position *= scale;
         }
         m_varray = UploadMesh(mesh);
     }
