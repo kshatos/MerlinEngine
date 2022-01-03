@@ -149,6 +149,8 @@ public:
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
         auto pbr_metalic_texture = Texture2D::Create(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
+        auto pbr_normal_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
         for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
@@ -203,12 +205,14 @@ public:
             std::vector<std::string>{
                 "u_albedoTexture",
                 "u_roughnessTexture",
-                "u_metalicTexture"
+                "u_metalicTexture",
+                "u_normalTexture"
             }
         );
         pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
         pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
         pbr_texture_material->SetTexture("u_metalicTexture", pbr_metalic_texture);
+        pbr_texture_material->SetTexture("u_normalTexture", pbr_normal_texture);
 
         main_material = std::make_shared<Material>(
             pbr_shader,
@@ -231,7 +235,6 @@ public:
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         sphere_varray = UploadMesh(sphereMesh);
-        CalculateUVFrame<Vertex_XNTBUV>(sphereMesh);
 
         //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
         //skybox->SetShader(skybox_shader);
@@ -346,7 +349,7 @@ public:
             // Scene viewport
             ImGui::Begin("Scene");
             uint32_t tex_id = fbuffer->GetColorAttachmentID();
-            ImGui::Image((ImTextureID)tex_id, ImVec2{ 800, 800 });
+            ImGui::Image((ImTextureID)tex_id, ImVec2{ 900, 900 });
             ImGui::End();
 
             // Prompt
