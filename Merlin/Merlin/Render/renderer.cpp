@@ -43,6 +43,11 @@ namespace Merlin
         m_scene_data->spot_lights.push_back(light);
     }
 
+    void Renderer::SetAmbientLighting(float ambient_radiance)
+    {
+        m_scene_data->ambient_radiance = ambient_radiance;
+    }
+
     void Renderer::EndScene()
     {
     }
@@ -100,12 +105,15 @@ namespace Merlin
         material->SetUniformMat4("u_ViewMatrix", m_scene_data->view_matrix);
         material->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
 
+
+        material->SetUniformFloat("u_ambientRadiance", m_scene_data->ambient_radiance);
+
         material->SetUniformInt("u_nPointLights", m_scene_data->point_lights.size());
         for (int i = 0; i < m_scene_data->point_lights.size(); ++i)
         {
             const auto& light = m_scene_data->point_lights[i];
             material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
-            material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].intensity", light.intensity);
+            material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiantFlux);
             material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
             material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
         }
@@ -115,6 +123,7 @@ namespace Merlin
         {
             const auto& light = m_scene_data->directional_lights[i];
             material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
+            material->SetUniformFloat("u_directionalLights[" + std::to_string(i) + "].irradiance", light.irradiance);
             material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
         }
 
@@ -124,8 +133,9 @@ namespace Merlin
             const auto& light = m_scene_data->spot_lights[i];
             material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
             material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
-            material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoff", light.cutoff);
-            material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].intensity", light.intensity);
+            material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoffAngle);
+            material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloffRatio);
+            material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiantIntensity);
             material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
             material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
         }

@@ -16,9 +16,10 @@ namespace Merlin
         void* data,
         uint32_t width,
         uint32_t height,
+        uint32_t channel_count,
         Texture2DProperties props)
     {
-        return std::make_shared<OpenGLTexture2D>(data, width, height, props);
+        return std::make_shared<OpenGLTexture2D>(data, width, height, channel_count, props);
     }
 
 }

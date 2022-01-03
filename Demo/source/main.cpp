@@ -6,11 +6,12 @@
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
+#include "uv_sphere.hpp"
 
 using namespace Merlin;
 
 
-Vertex_XNUV verts[]
+Vertex_XNUV CubeVerts[]
 {
     // positions             // normal              // texture coords
     {-0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f},
@@ -44,7 +45,7 @@ Vertex_XNUV verts[]
     { 0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f},
 };
 
-uint32_t tris[]
+uint32_t CubeIndices[]
 {
     0, 1, 2,
     0, 2, 3,
@@ -66,10 +67,12 @@ uint32_t tris[]
 };
 
 std::shared_ptr<Camera> camera;
-std::shared_ptr<VertexArray> main_varray;
+std::shared_ptr<VertexArray> cube_varray;
+std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Shader> skybox_shader;
 std::shared_ptr<Material> main_material;
+std::shared_ptr<Material> pbr_texture_material;
 
 class SpinningComponent : public Component
 {
@@ -127,20 +130,25 @@ public:
 
 class SceneLayer : public Layer
 {
-    float m_pickedColor[3]{0.0f, 0.0f, 0.0f};
-    float m_uvOffset[2]{ 0.0f, 0.0f };
+    float m_ambientRadiance = 0.0f;
     GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
     SceneLayer()
     {
         // Initialize render data
+        auto texProps = Texture2DProperties(
+            TextureWrapMode::Repeat,
+            TextureWrapMode::Repeat,
+            TextureFilterMode::Linear);
         auto main_texture = Texture2D::Create(
-            ".\\Assets\\Textures\\debug.jpg",
-            Texture2DProperties(
-                TextureWrapMode::Repeat,
-                TextureWrapMode::Repeat,
-                TextureFilterMode::Linear));
+            ".\\Assets\\Textures\\debug.jpg", texProps);
+        auto pbr_albedo_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
+        auto pbr_roughness_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
+        auto pbr_metalic_texture = Texture2D::Create(
+            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
         for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
@@ -166,12 +174,20 @@ public:
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
+            ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
+
+        auto pbr_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\pbr_lit_basic.vert",
+            ".\\Assets\\Shaders\\pbr_lit_basic.frag");
+
+        auto pbr_texture_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\pbr_lit_texture.vert",
+            ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
         auto main_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\basic_lit.vert",
@@ -181,29 +197,48 @@ public:
             ".\\Assets\\Shaders\\skybox.vert",
             ".\\Assets\\Shaders\\skybox.frag");
 
+        pbr_texture_material = std::make_shared<Material>(
+            pbr_texture_shader,
+            BufferLayout{},
+            std::vector<std::string>{
+                "u_albedoTexture",
+                "u_roughnessTexture",
+                "u_metalicTexture"
+            }
+        );
+        pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
+        pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
+        pbr_texture_material->SetTexture("u_metalicTexture", pbr_metalic_texture);
+
         main_material = std::make_shared<Material>(
-            main_shader,
+            pbr_shader,
             BufferLayout{
-                {ShaderDataType::Float3, "u_blendColor"},
-                {ShaderDataType::Float2, "u_uvOffset"}
+                {ShaderDataType::Float3, "u_albedo"},
+                {ShaderDataType::Float, "u_roughness"},
+                {ShaderDataType::Float, "u_metalic"}
             },
-            std::vector<std::string>{"u_Texture"});
-        main_material->SetTexture("u_Texture", main_texture);
-        main_material->SetUniformFloat3("u_blendColor", glm::vec3(1.0, 0.0, 0.0));
-        main_material->SetUniformFloat2("u_uvOffset", glm::vec2(0.0, 0.0));
+            std::vector<std::string>{});
+        main_material->SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
+        main_material->SetUniformFloat("u_roughness", 0.0f);
+        main_material->SetUniformFloat("u_metalic", 0.0f);
 
-        Mesh<Vertex_XNUV> mesh;
-        mesh.SetVertexData(verts, sizeof(verts) / sizeof(Vertex_XNUV));
-        mesh.SetIndexData(tris, sizeof(tris) / sizeof(uint32_t));
-        main_varray = UploadMesh(mesh);
+        Mesh<Vertex_XNUV> cubeMesh;
+        cubeMesh.SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
+        cubeMesh.SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
+        cube_varray = UploadMesh(cubeMesh);
 
-        auto skybox = std::make_shared<Skybox>(custom_cubemap, 15.0);
-        skybox->SetShader(skybox_shader);
-        scene.SetSkybox(skybox);
+        Mesh<Vertex_XNUV> sphereMesh;
+        sphereMesh.SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNUV));
+        sphereMesh.SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
+        sphere_varray = UploadMesh(sphereMesh);
+
+        //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
+        //skybox->SetShader(skybox_shader);
+        //scene.SetSkybox(skybox);
 
         // Initialize camera
         camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 0.0f));
+        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 5.0f));
         scene.SetCamera(camera);
 
         // Add entities to the scene
@@ -212,9 +247,10 @@ public:
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.cutoff = glm::cos(glm::pi<float>() / 10);
-            light_comp->data.intensity = 1.0f;
-            light_comp->data.range = 2.0f;
+            light_comp->data.cutoffAngle = glm::pi<float>() / 10;
+            light_comp->data.falloffRatio = 0.25f;
+            light_comp->data.radiantIntensity = 10.0f;
+            light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
 
             scene.AddEntity(entity);
@@ -222,8 +258,9 @@ public:
         {
             auto entity = std::make_shared<Entity>();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
-            light_comp->data.color = glm::vec3(0.8, 0.8, 0.8);
-            light_comp->data.direction = glm::vec3(0.2, 0.2, 0.2);
+            light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
+            light_comp->data.irradiance = 5.0f;
+            light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
 
             scene.AddEntity(entity);
         }
@@ -232,32 +269,28 @@ public:
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             transform_comp->transform.Translate(glm::vec3(
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f)));
+                glm::linearRand(-2.0f, 2.0f),
+                glm::linearRand(-2.0f, 2.0f),
+                5.0f));
             auto light_comp = entity->AddComponent<PointLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.intensity = 1.0f;
-            light_comp->data.range = 2.0f;
+            light_comp->data.radiantFlux = 50.0f;
+            light_comp->data.range = 50.0f;
 
             scene.AddEntity(entity);
         }
 
-        for (int i = 0; i < 600; ++i)
         {
             auto entity = std::make_shared<Entity>();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            auto spin_comp = entity->AddComponent<SpinningComponent>();
+            //auto spin_comp = entity->AddComponent<SpinningComponent>();
 
-            transform_comp->transform.Translate(glm::vec3(
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f),
-                glm::linearRand(-5.0f, 5.0f)));
-            transform_comp->transform.Scale(
-                glm::vec3(glm::linearRand(0.3f, 0.8f)));
-            mesh_comp->varray = main_varray;
-            mesh_comp->material = main_material;
+            transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
+
+            mesh_comp->varray = sphere_varray;
+            mesh_comp->material = pbr_texture_material;
+
             scene.AddEntity(entity);
         }
 
@@ -287,7 +320,7 @@ public:
                 0, 0,
                 Application::Get().GeMaintWindow()->GetWidth(),
                 Application::Get().GeMaintWindow()->GetHeight());
-            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+            Renderer::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
             Renderer::Clear();
         }
 
@@ -317,22 +350,13 @@ public:
 
             // Prompt
             ImGui::Begin("Color");
-            ImGui::ColorPicker3("", m_pickedColor);
-            main_material->SetUniformFloat3(
-                "u_blendColor",
-                glm::vec3(
-                    m_pickedColor[0],
-                    m_pickedColor[1],
-                    m_pickedColor[2]));
 
-            ImGui::SliderFloat2("", m_uvOffset, 0.0f, 1.0f);
-            main_material->SetUniformFloat2(
-                "u_uvOffset",
-                glm::vec2(
-                    m_uvOffset[0],
-                    m_uvOffset[1]));
+            ImGui::SliderFloat("Roughness", &m_ambientRadiance, 0.0f, 1.0f);
+            Renderer::SetAmbientLighting(m_ambientRadiance);
+
             ImGui::End();
 
+            // Finish
             ImGui::Render();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }

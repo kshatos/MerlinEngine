@@ -4,16 +4,22 @@ set(DEMO_SRC
 )
 
 set(DEMO_INC
+    include/uv_sphere.hpp
 )
 
 add_executable(Demo
     ${DEMO_SRC}
-    ${DEMOC_INC}
+    ${DEMO_INC}
 )
 
 
 set_property(TARGET Demo PROPERTY CXX_STANDARD 17)
 set_property(TARGET Demo PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:Demo>)
+
+target_include_directories(Demo
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 target_link_libraries(Demo
     Merlin
