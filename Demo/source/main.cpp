@@ -130,9 +130,7 @@ public:
 
 class SceneLayer : public Layer
 {
-    float m_pickedColor[3]{ 0.0f, 0.0f, 0.0f };
-    float m_pickedRoughness = 0.0;
-    float m_pickedMetalic = 0.0;
+    float m_ambientRadiance = 0.0f;
     GameScene scene;
     std::shared_ptr<FrameBuffer> fbuffer;
 public:
@@ -353,22 +351,10 @@ public:
             // Prompt
             ImGui::Begin("Color");
 
-            ImGui::ColorPicker3("Albedo", m_pickedColor);
-            main_material->SetUniformFloat3(
-                "u_albedo",
-                glm::vec3(
-                    m_pickedColor[0],
-                    m_pickedColor[1],
-                    m_pickedColor[2]));
-
-            ImGui::SliderFloat("Roughness", &m_pickedRoughness, 0.0f, 1.0f);
-            main_material->SetUniformFloat("u_roughness", m_pickedRoughness);
-
-            ImGui::SliderFloat("Metalic", &m_pickedMetalic, 0.0f, 1.0f);
-            main_material->SetUniformFloat("u_metalic", m_pickedMetalic);
+            ImGui::SliderFloat("Roughness", &m_ambientRadiance, 0.0f, 1.0f);
+            Renderer::SetAmbientLighting(m_ambientRadiance);
 
             ImGui::End();
-
 
             // Finish
             ImGui::Render();

@@ -25,6 +25,7 @@ namespace Merlin
             std::vector<PointLightData> point_lights;
             std::vector<DirectionalLightData> directional_lights;
             std::vector<SpotLightData> spot_lights;
+            float ambient_radiance;
         };
 
         static std::unique_ptr <SceneData> m_scene_data;
@@ -35,6 +36,7 @@ namespace Merlin
         static void AddLight(const PointLightData& light);
         static void AddLight(const DirectionalLightData& light);
         static void AddLight(const SpotLightData& light);
+        static void SetAmbientLighting(float ambient_radiance);
         static void EndScene();
 
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

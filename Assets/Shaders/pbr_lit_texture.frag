@@ -36,6 +36,8 @@ struct SpotLight
     vec3 color;
 };
 
+uniform float u_ambientRadiance;
+
 #define MAX_POINT_LIGHTS 8
 uniform int u_nPointLights;
 uniform PointLight u_pointLights[MAX_POINT_LIGHTS];
@@ -224,7 +226,7 @@ void main()
         result += SpotLightReflectedRadiance(u_spotLights[i], surface);
     }
 
-    result += vec3(0.05) * surface.albedo;
+    result += vec3(u_ambientRadiance) * surface.albedo;
     
     // HDR Tonemap and gamma correction
     result = result / (result + vec3(1.0));

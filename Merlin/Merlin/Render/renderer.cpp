@@ -43,6 +43,11 @@ namespace Merlin
         m_scene_data->spot_lights.push_back(light);
     }
 
+    void Renderer::SetAmbientLighting(float ambient_radiance)
+    {
+        m_scene_data->ambient_radiance = ambient_radiance;
+    }
+
     void Renderer::EndScene()
     {
     }
@@ -99,6 +104,9 @@ namespace Merlin
         material->SetUniformMat4("u_ModelMatrix", model_matrix);
         material->SetUniformMat4("u_ViewMatrix", m_scene_data->view_matrix);
         material->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
+
+
+        material->SetUniformFloat("u_ambientRadiance", m_scene_data->ambient_radiance);
 
         material->SetUniformInt("u_nPointLights", m_scene_data->point_lights.size());
         for (int i = 0; i < m_scene_data->point_lights.size(); ++i)
