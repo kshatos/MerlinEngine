@@ -18,6 +18,7 @@
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/mesh.hpp"
 #include "Merlin/Render/mesh_vertex.hpp"
+#include "Merlin/Render/mesh_utils.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Render/cubemap_data.hpp"
 #endif

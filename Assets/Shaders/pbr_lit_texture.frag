@@ -193,9 +193,12 @@ vec3 SpotLightReflectedRadiance(
 uniform sampler2D u_albedoTexture;
 uniform sampler2D u_roughnessTexture;
 uniform sampler2D u_metalicTexture;
+uniform sampler2D u_normalTexture;
 
 in vec3 Pos;
 in vec3 Normal;
+in vec3 Tangent;
+in vec3 Bitangent;
 in vec2 TexCoord;
 out vec4 FragColor;
 
@@ -203,9 +206,17 @@ out vec4 FragColor;
 void main()
 {
     // Get surface properties
+    mat3 TBN = mat3(
+        normalize(Tangent),
+        normalize(Bitangent),
+        normalize(Normal));
+    vec3 normal = texture(u_normalTexture, TexCoord).xyz;
+    normal  = normal * 2.0 - 1.0;
+    normal = normalize(TBN * normal);
+
     PBRSurfaceData surface;
     surface.position = Pos;
-    surface.normal = normalize(Normal);
+    surface.normal = normal;
     surface.albedo = pow(texture(u_albedoTexture, TexCoord).rgb, vec3(2.2));
     surface.metallic = texture(u_metalicTexture, TexCoord).r;
     surface.roughness = texture(u_roughnessTexture, TexCoord).r;
