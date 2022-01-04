@@ -54,6 +54,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/buffer_layout.hpp
     Merlin/Render/frame_buffer.hpp
     Merlin/Render/vertex_array.hpp
+    Merlin/Render/texture.hpp
     Merlin/Render/texture2d.hpp
     Merlin/Render/cubemap.hpp
     Merlin/Render/cubemap_data.hpp

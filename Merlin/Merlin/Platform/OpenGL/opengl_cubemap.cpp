@@ -82,14 +82,14 @@ namespace Merlin
         glDeleteTextures(1, &m_id);
     }
 
-    void OpenGLCubemap::Bind()
+    void OpenGLCubemap::Bind(uint32_t slot)
     {
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+        glBindTextureUnit(slot, m_id);
     }
 
-    void OpenGLCubemap::UnBind()
+    void OpenGLCubemap::UnBind(uint32_t slot)
     {
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        glBindTextureUnit(slot, 0);
     }
 
     void OpenGLCubemap::SetFaceData(CubeFace face, float* data)

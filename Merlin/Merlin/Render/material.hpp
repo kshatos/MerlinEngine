@@ -15,7 +15,7 @@ namespace Merlin
         BufferLayout m_uniformLayout;
         std::vector<std::string> m_textureNames;
         char* m_uniformData;
-        std::vector<std::shared_ptr<Texture2D>> m_textureData;
+        std::vector<std::shared_ptr<Texture>> m_textureData;
     public:
         Material(
             std::shared_ptr<Shader> shader,
@@ -45,7 +45,7 @@ namespace Merlin
         void SetUniformMat4(const std::string& name, const glm::mat4& data);
         void SetUniformInt(const std::string& name, const uint32_t& data);
 
-        void SetTexture(std::string name, const std::shared_ptr<Texture2D> texture);
+        void SetTexture(std::string name, const std::shared_ptr<Texture>& texture);
 
         void Bind();
         void UnBind();

@@ -77,7 +77,7 @@ namespace Merlin
         auto& varray =skybox->GetVertexArray();
         auto& shader = skybox->GetShader();
 
-        cubemap->Bind();
+        cubemap->Bind(0);
 
         shader->Bind();
         shader->SetUniformFloat3("u_viewPos", m_scene_data->view_pos);
@@ -90,7 +90,7 @@ namespace Merlin
 
         varray->UnBind();
         shader->UnBind();
-        cubemap->UnBind();
+        cubemap->UnBind(0);
     }
 
     void Renderer::Submit(

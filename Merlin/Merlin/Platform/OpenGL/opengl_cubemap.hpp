@@ -19,8 +19,8 @@ namespace Merlin
         inline virtual uint32_t GetResolution() override { return m_resolution; }
         inline virtual uint32_t GetChannelCount() override { return m_channel_count; }
 
-        void Bind() override;
-        void UnBind() override;
+        void Bind(uint32_t slot=0) override;
+        void UnBind(uint32_t slot = 0) override;
 
         virtual void SetFaceData(CubeFace face, float* data) override;
     };
