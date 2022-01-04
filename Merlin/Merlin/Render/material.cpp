@@ -121,7 +121,7 @@ namespace Merlin
         }
     }
 
-    void Material::SetTexture(std::string name, const std::shared_ptr<Texture2D> texture)
+    void Material::SetTexture(std::string name, const std::shared_ptr<Texture>& texture)
     {
         for (int i = 0; i < m_textureNames.size(); ++i)
         {
