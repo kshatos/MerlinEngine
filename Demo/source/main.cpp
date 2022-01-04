@@ -234,6 +234,7 @@ public:
         auto sphereMesh =  std::make_shared<Mesh<Vertex_XNTBUV>>();
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
+        CalculateTangentFrame(sphereMesh);
         sphere_varray = UploadMesh(sphereMesh);
 
         //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
@@ -345,7 +346,6 @@ public:
             ImGui_ImplOpenGL3_NewFrame();
             ImGui::NewFrame();
 
-            ImGui::ShowDemoWindow();
             // Scene viewport
             ImGui::Begin("Scene");
             uint32_t tex_id = fbuffer->GetColorAttachmentID();
@@ -353,11 +353,9 @@ public:
             ImGui::End();
 
             // Prompt
-            ImGui::Begin("Color");
-
-            ImGui::SliderFloat("Roughness", &m_ambientRadiance, 0.0f, 1.0f);
+            ImGui::Begin("Settings");
+            ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
             Renderer::SetAmbientLighting(m_ambientRadiance);
-
             ImGui::End();
 
             // Finish
