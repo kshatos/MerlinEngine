@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include "Merlin/Render/texture.hpp"
 
 
 namespace Merlin
@@ -19,7 +20,7 @@ namespace Merlin
         Begin = PositiveX,
     };
 
-    class Cubemap
+    class Cubemap : public Texture
     {
     public:
         static std::shared_ptr<Cubemap> Create(const std::vector<std::string>& face_paths);
@@ -29,9 +30,6 @@ namespace Merlin
 
         virtual uint32_t GetResolution() = 0;
         virtual uint32_t GetChannelCount() = 0;
-
-        virtual void Bind() = 0;
-        virtual void UnBind() = 0;
 
         virtual void SetFaceData(CubeFace face, float* data) = 0;
     };

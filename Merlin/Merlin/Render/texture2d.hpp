@@ -1,8 +1,9 @@
-#ifndef TEXTURE_HPP
-#define TEXTURE_HPP
+#ifndef TEXTURE2D_HPP
+#define TEXTURE2D_HPP
 #include <stdint.h>
 #include <memory>
 #include <string>
+#include "Merlin/Render/texture.hpp"
 
 
 namespace Merlin
@@ -47,14 +48,12 @@ namespace Merlin
         }
     };
 
-    class Texture2D
+    class Texture2D : public Texture
     {
     public:
         virtual ~Texture2D() {}
         virtual uint32_t GetWidth() = 0;
         virtual uint32_t GetHeight() = 0;
-        virtual void Bind(uint32_t slot=0) = 0;
-        virtual void UnBind(uint32_t slot=0) = 0;
 
         static std::shared_ptr<Texture2D> Create(
             const std::string& filepath,
