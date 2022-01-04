@@ -13,6 +13,7 @@ namespace Merlin
         Transform transform;
     };
 
+    class Material;
     class MeshRenderComponent : public Component
     {
     public:
