@@ -6,10 +6,25 @@
 
 namespace Merlin
 {
+    enum class ColorBufferFormat
+    {
+        NONE,
+        RGBA8
+    };
+
+    enum class DepthBufferFormat
+    {
+        NONE,
+        DEPTH24_STENCIL8
+    };
+
+
     struct FrameBufferParameters
     {
         uint32_t width;
         uint32_t height;
+        ColorBufferFormat color_buffer_format;
+        DepthBufferFormat depth_buffer_format;
     };
 
     class FrameBuffer

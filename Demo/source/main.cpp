@@ -307,6 +307,8 @@ public:
         FrameBufferParameters fb_params;
         fb_params.width = 800;
         fb_params.height = 800;
+        fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
+        fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
         fbuffer = FrameBuffer::Create(fb_params);
     }
 
