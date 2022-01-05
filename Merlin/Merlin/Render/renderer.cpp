@@ -26,6 +26,7 @@ namespace Merlin
         m_scene_data->point_lights.clear();
         m_scene_data->directional_lights.clear();
         m_scene_data->spot_lights.clear();
+        m_scene_data->mesh_render_data.clear();
     }
 
     void Renderer::AddLight(const PointLightData& light)
@@ -50,6 +51,14 @@ namespace Merlin
 
     void Renderer::EndScene()
     {
+        for (const auto& item : m_scene_data->mesh_render_data)
+        {
+            Draw(item);
+        }
+        if (m_scene_data->skybox)
+        {
+            Draw(m_scene_data->skybox);
+        }
     }
 
     void Renderer::SetViewport(
@@ -71,10 +80,24 @@ namespace Merlin
         m_render_impl->Clear();
     }
 
-    void Renderer::Submit(const std::shared_ptr<Skybox>& skybox)
+    void Renderer::SetSkybox(const std::shared_ptr<Skybox>& skybox)
+    {
+        m_scene_data->skybox = skybox;
+    }
+
+    void Renderer::Submit(
+        const std::shared_ptr<Material>& material,
+        const std::shared_ptr<VertexArray>& vertex_array,
+        const glm::mat4& model_matrix)
+    {
+        m_scene_data->mesh_render_data.emplace_back(
+            material, vertex_array, model_matrix);
+    }
+
+    void Renderer::Draw(const std::shared_ptr<Skybox>& skybox)
     {
         auto& cubemap = skybox->GetCubemap();
-        auto& varray =skybox->GetVertexArray();
+        auto& varray = skybox->GetVertexArray();
         auto& shader = skybox->GetShader();
 
         cubemap->Bind(0);
@@ -93,18 +116,18 @@ namespace Merlin
         cubemap->UnBind(0);
     }
 
-    void Renderer::Submit(
-        const std::shared_ptr<Material>& material,
-        const std::shared_ptr<VertexArray>& vertex_array,
-        const glm::mat4& model_matrix)
+    void Renderer::Draw(const MeshRenderData& data)
     {
+        const auto& material = data.material;
+        const auto& vertex_array = data.vertex_array;
+        const auto& model_matrix = data.model_matrix;
+
         material->Bind();
         material->SetUniformFloat3("u_viewPos", m_scene_data->view_pos);
         material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
         material->SetUniformMat4("u_ModelMatrix", model_matrix);
         material->SetUniformMat4("u_ViewMatrix", m_scene_data->view_matrix);
         material->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
-
 
         material->SetUniformFloat("u_ambientRadiance", m_scene_data->ambient_radiance);
 

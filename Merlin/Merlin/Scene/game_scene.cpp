@@ -11,6 +11,7 @@ namespace Merlin
     void GameScene::RenderScene()
     {
         Renderer::BeginScene(m_camera);
+
         for (const auto& entity : m_entities)
         {
             auto point_light_comp = entity->GetComponent<PointLightComponent>();
@@ -32,6 +33,11 @@ namespace Merlin
             }
         }
 
+        if (m_skybox)
+        {
+            Renderer::SetSkybox(m_skybox);
+        }
+
         for (const auto& entity : m_entities)
         {
             auto mesh_comp = entity->GetComponent<MeshRenderComponent>();
@@ -43,11 +49,6 @@ namespace Merlin
                     mesh_comp->varray,
                     transform_comp->transform.GetTransformationMatrix());
             }
-        }
-
-        if (m_skybox)
-        {
-            Renderer::Submit(m_skybox);
         }
 
         Renderer::EndScene();
