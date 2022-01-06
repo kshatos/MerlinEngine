@@ -66,7 +66,7 @@ uint32_t CubeIndices[]
     20, 22, 23
 };
 
-std::shared_ptr<Camera> camera;
+std::shared_ptr<TransformComponent> camera_transform;
 std::shared_ptr<VertexArray> cube_varray;
 std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
@@ -123,7 +123,7 @@ public:
 
     virtual void OnUpdate(float time_step) override
     {
-        transform_comp->transform = camera->GetTransform();
+        transform_comp->transform = camera_transform->transform;
     }
 
 };
@@ -241,12 +241,17 @@ public:
         //skybox->SetShader(skybox_shader);
         //scene.SetSkybox(skybox);
 
-        // Initialize camera
-        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 5.0f));
-        scene.SetCamera(camera);
-
         // Add entities to the scene
+        {
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto camera_component = entity->AddComponent<CameraComponent>();
+            auto camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
+            transform_comp->transform.Translate(glm::vec3(0.0f, 0.0f, 5.0f));
+            camera_component->data.camera = camera;
+            camera_transform = transform_comp;
+            scene.SetCamera(camera_component);
+        }
         {
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
@@ -283,12 +288,12 @@ public:
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            //auto spin_comp = entity->AddComponent<SpinningComponent>();
+            auto spin_comp = entity->AddComponent<SpinningComponent>();
 
             transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
 
-            mesh_comp->varray = sphere_varray;
-            mesh_comp->material = pbr_texture_material;
+            mesh_comp->data.vertex_array = sphere_varray;
+            mesh_comp->data.material = pbr_texture_material;
         }
 
         scene.OnAwake();
@@ -365,26 +370,26 @@ public:
 
     void MoveCamera(float time_step)
     {
-        const auto& up = camera->GetTransform().Up();
-        const auto& right = camera->GetTransform().Right();
-        const auto& forward = camera->GetTransform().Forward();
+        const auto& up = camera_transform->transform.Up();
+        const auto& right = camera_transform->transform.Right();
+        const auto& forward = camera_transform->transform.Forward();
         float speed = 5.0e-1f;
         if (Input::GetKeyDown(Key::LEFT_SHIFT))
             speed *= 2.0f;
         if (Input::GetKeyDown(Key::W))
-            camera->GetTransform().Translate(+forward * speed * time_step);
+            camera_transform->transform.Translate(+forward * speed * time_step);
         if (Input::GetKeyDown(Key::A))
-            camera->GetTransform().Translate(-right * speed * time_step);
+            camera_transform->transform.Translate(-right * speed * time_step);
         if (Input::GetKeyDown(Key::S))
-            camera->GetTransform().Translate(-forward * speed * time_step);
+            camera_transform->transform.Translate(-forward * speed * time_step);
         if (Input::GetKeyDown(Key::D))
-            camera->GetTransform().Translate(+right * speed * time_step);
+            camera_transform->transform.Translate(+right * speed * time_step);
         if (Input::GetKeyDown(Key::Z))
-            camera->GetTransform().Translate(+up * speed * time_step);
+            camera_transform->transform.Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
-            camera->GetTransform().Translate(-up * speed * time_step);
+            camera_transform->transform.Translate(-up * speed * time_step);
 
-        camera->GetTransform().Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
+        camera_transform->transform.Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
 };
 

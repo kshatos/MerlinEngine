@@ -16,12 +16,9 @@ namespace Merlin
         m_scene_data = std::make_unique<Renderer::SceneData>();
     }
 
-    void Renderer::BeginScene(
-        const std::shared_ptr<Camera>& camera)
+    void Renderer::BeginScene(const CameraRenderData& camera)
     {
-        m_scene_data->view_pos = camera->GetTransform().GetPosition();
-        m_scene_data->view_matrix = camera->GetViewMatrix();
-        m_scene_data->projection_matrix = camera->GetProjectionMatrix();
+        m_scene_data->camera = camera;
 
         m_scene_data->point_lights.clear();
         m_scene_data->directional_lights.clear();
@@ -85,13 +82,9 @@ namespace Merlin
         m_scene_data->skybox = skybox;
     }
 
-    void Renderer::Submit(
-        const std::shared_ptr<Material>& material,
-        const std::shared_ptr<VertexArray>& vertex_array,
-        const glm::mat4& model_matrix)
+    void Renderer::Submit(const MeshRenderData& data)
     {
-        m_scene_data->mesh_render_data.emplace_back(
-            material, vertex_array, model_matrix);
+        m_scene_data->mesh_render_data.push_back(data);
     }
 
     void Renderer::Draw(const std::shared_ptr<Skybox>& skybox)
@@ -103,9 +96,9 @@ namespace Merlin
         cubemap->Bind(0);
 
         shader->Bind();
-        shader->SetUniformFloat3("u_viewPos", m_scene_data->view_pos);
-        shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(m_scene_data->view_matrix)));
-        shader->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
+        shader->SetUniformFloat3("u_viewPos", m_scene_data->camera.view_pos);
+        shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(m_scene_data->camera.view_matrix)));
+        shader->SetUniformMat4("u_ProjectionMatrix", m_scene_data->camera.projection_matrix);
 
         varray->Bind();
 
@@ -123,11 +116,11 @@ namespace Merlin
         const auto& model_matrix = data.model_matrix;
 
         material->Bind();
-        material->SetUniformFloat3("u_viewPos", m_scene_data->view_pos);
+        material->SetUniformFloat3("u_viewPos", m_scene_data->camera.view_pos);
         material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
         material->SetUniformMat4("u_ModelMatrix", model_matrix);
-        material->SetUniformMat4("u_ViewMatrix", m_scene_data->view_matrix);
-        material->SetUniformMat4("u_ProjectionMatrix", m_scene_data->projection_matrix);
+        material->SetUniformMat4("u_ViewMatrix", m_scene_data->camera.view_matrix);
+        material->SetUniformMat4("u_ProjectionMatrix", m_scene_data->camera.projection_matrix);
 
         material->SetUniformFloat("u_ambientRadiance", m_scene_data->ambient_radiance);
 

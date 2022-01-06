@@ -4,8 +4,8 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Merlin/Render/camera.hpp"
-#include "Merlin/Render/lighting.hpp"
 #include "Merlin/Render/skybox.hpp"
+#include "Merlin/Render/scene_render_data.hpp"
 
 
 namespace Merlin
@@ -17,32 +17,9 @@ namespace Merlin
 
     class Renderer
     {
-        struct MeshRenderData
-        {
-            std::shared_ptr<Material> material;
-            std::shared_ptr<VertexArray> vertex_array;
-            glm::mat4 model_matrix;
-
-            MeshRenderData() :
-                material(nullptr),
-                vertex_array(nullptr),
-                model_matrix(glm::mat4(0.0)) {}
-
-            MeshRenderData(
-                std::shared_ptr<Material> _material,
-                std::shared_ptr<VertexArray> _vertex_array,
-                glm::mat4 _model_matrix)
-                :
-                material(_material),
-                vertex_array(_vertex_array),
-                model_matrix(_model_matrix) {}
-        };
-
         struct SceneData
         {
-            glm::vec3 view_pos;
-            glm::mat4 view_matrix;
-            glm::mat4 projection_matrix;
+            CameraRenderData camera;
             std::vector<PointLightData> point_lights;
             std::vector<DirectionalLightData> directional_lights;
             std::vector<SpotLightData> spot_lights;
@@ -59,16 +36,13 @@ namespace Merlin
         static void Clear();
 
         static void Init();
-        static void BeginScene(const std::shared_ptr<Camera>& camera);
+        static void BeginScene(const CameraRenderData& camera);
         static void AddLight(const PointLightData& light);
         static void AddLight(const DirectionalLightData& light);
         static void AddLight(const SpotLightData& light);
         static void SetAmbientLighting(float ambient_radiance);
         static void SetSkybox(const std::shared_ptr<Skybox>& skybox);
-        static void Submit(
-            const std::shared_ptr<Material>& material,
-            const std::shared_ptr<VertexArray>& vertex_array,
-            const glm::mat4& model_matrix);
+        static void Submit(const MeshRenderData& data);
         static void EndScene();
     private:
         static void Draw(const std::shared_ptr<Skybox>& skybox);

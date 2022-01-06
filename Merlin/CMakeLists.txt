@@ -61,11 +61,11 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/shader.hpp
     Merlin/Render/material.hpp
     Merlin/Render/render_api.hpp
+    Merlin/Render/scene_render_data.hpp
     Merlin/Render/renderer.hpp
     Merlin/Render/camera.hpp
     Merlin/Render/perspective_camera.hpp
     Merlin/Render/transform.hpp
-    Merlin/Render/lighting.hpp
     Merlin/Render/mesh.hpp
     Merlin/Render/mesh_vertex.hpp
     Merlin/Render/mesh_utils.hpp

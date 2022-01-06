@@ -10,7 +10,7 @@ namespace Merlin
 {
     void GameScene::RenderScene()
     {
-        Renderer::BeginScene(m_camera);
+        Renderer::BeginScene(m_camera->data);
 
         for (const auto& entity : m_entities)
         {
@@ -44,10 +44,7 @@ namespace Merlin
             auto transform_comp = entity->GetComponent<TransformComponent>();
             if (mesh_comp != nullptr && transform_comp != nullptr)
             {
-                Renderer::Submit(
-                    mesh_comp->material,
-                    mesh_comp->varray,
-                    transform_comp->transform.GetTransformationMatrix());
+                Renderer::Submit(mesh_comp->data);
             }
         }
 
