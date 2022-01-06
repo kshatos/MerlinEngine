@@ -12,6 +12,7 @@ namespace Merlin
 {
     class GameScene
     {
+        SceneRenderData render_data;
         std::shared_ptr<CameraComponent> m_camera;
         std::shared_ptr<Skybox> m_skybox;
         std::vector<std::shared_ptr<Entity>> m_entities;
@@ -22,6 +23,8 @@ namespace Merlin
         void RenderScene();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
+    private:
+        void OnComponentAdded(std::shared_ptr<Component> component);
     };
 }
 

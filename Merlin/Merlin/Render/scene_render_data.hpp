@@ -69,7 +69,7 @@ namespace Merlin
 
     struct SceneRenderData
     {
-        CameraRenderData camera;
+        CameraRenderData* camera;
         std::vector<PointLightData*> point_lights;
         std::vector<DirectionalLightData*> directional_lights;
         std::vector<SpotLightData*> spot_lights;
