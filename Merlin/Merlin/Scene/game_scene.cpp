@@ -54,6 +54,13 @@ namespace Merlin
         Renderer::EndScene();
     }
 
+    std::shared_ptr<Entity> GameScene::CreateEntity()
+    {
+        auto entity = std::shared_ptr<Entity>(new Entity());
+        m_entities.push_back(entity);
+        return entity;
+    }
+
     void GameScene::OnAwake()
     {
         for (const auto& entity : m_entities)

@@ -248,7 +248,7 @@ public:
 
         // Add entities to the scene
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -257,21 +257,17 @@ public:
             light_comp->data.radiantIntensity = 10.0f;
             light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
-
-            scene.AddEntity(entity);
         }
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
             light_comp->data.irradiance = 5.0f;
             light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
-
-            scene.AddEntity(entity);
         }
         for (int i = 0; i < 4; ++i)
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             transform_comp->transform.Translate(glm::vec3(
                 glm::linearRand(-2.0f, 2.0f),
@@ -281,12 +277,10 @@ public:
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
             light_comp->data.radiantFlux = 50.0f;
             light_comp->data.range = 50.0f;
-
-            scene.AddEntity(entity);
         }
 
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
             //auto spin_comp = entity->AddComponent<SpinningComponent>();
@@ -295,8 +289,6 @@ public:
 
             mesh_comp->varray = sphere_varray;
             mesh_comp->material = pbr_texture_material;
-
-            scene.AddEntity(entity);
         }
 
         scene.OnAwake();

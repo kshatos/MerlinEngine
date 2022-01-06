@@ -32,6 +32,10 @@ namespace Merlin
 
         void OnAwake();
         void OnUpdate(float time_step);
+    private:
+        friend class GameScene;
+        Entity() {};
+
     };
 }
 

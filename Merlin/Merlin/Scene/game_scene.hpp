@@ -16,7 +16,7 @@ namespace Merlin
     public:
         inline void SetCamera(std::shared_ptr<Camera> camera) { m_camera = camera; }
         inline void SetSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
-        inline void AddEntity(std::shared_ptr<Entity> entity) { m_entities.push_back(entity); }
+        std::shared_ptr<Entity> CreateEntity();
         void RenderScene();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
