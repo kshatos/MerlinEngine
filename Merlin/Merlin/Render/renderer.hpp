@@ -12,6 +12,7 @@ namespace Merlin
 
     class Renderer
     {
+        static std::shared_ptr<Shader> m_shadow_shader;
         static std::unique_ptr<RenderAPI> m_render_impl;
     public:
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);

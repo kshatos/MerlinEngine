@@ -6,6 +6,7 @@
 
 namespace Merlin
 {
+    std::shared_ptr<Shader> Renderer::m_shadow_shader = nullptr;
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
 
     void Renderer::RenderScene(const SceneRenderData& scene)
@@ -24,6 +25,9 @@ namespace Merlin
     {
         m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create());
         m_render_impl->Init();
+        m_shadow_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\shadow.vert",
+            ".\\Assets\\Shaders\\shadow.frag");
     }
 
     void Renderer::SetViewport(
