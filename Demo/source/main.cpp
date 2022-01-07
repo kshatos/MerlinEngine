@@ -237,20 +237,24 @@ public:
         CalculateTangentFrame(sphereMesh);
         sphere_varray = UploadMesh(sphereMesh);
 
-        //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
-        //skybox->SetShader(skybox_shader);
-        //scene.SetSkybox(skybox);
-
         // Add entities to the scene
         {
+            FrameBufferParameters fb_params;
+            fb_params.width = 800;
+            fb_params.height = 800;
+            fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
+            fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
+            fbuffer = FrameBuffer::Create(fb_params);
+
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto camera_component = entity->AddComponent<CameraComponent>();
             auto camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
             transform_comp->transform.Translate(glm::vec3(0.0f, 0.0f, 5.0f));
             camera_component->data.camera = camera;
+            camera_component->data.frame_buffer = fbuffer;
+            camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
             camera_transform = transform_comp;
-            scene.SetCamera(camera_component);
         }
         {
             auto entity = scene.CreateEntity();
@@ -283,7 +287,6 @@ public:
             light_comp->data.radiantFlux = 50.0f;
             light_comp->data.range = 50.0f;
         }
-
         {
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
@@ -301,12 +304,6 @@ public:
 
     virtual void OnAttach()override
     {
-        FrameBufferParameters fb_params;
-        fb_params.width = 800;
-        fb_params.height = 800;
-        fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
-        fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-        fbuffer = FrameBuffer::Create(fb_params);
     }
 
     virtual void OnDetatch() override {}
@@ -328,12 +325,8 @@ public:
             Renderer::Clear();
         }
 
-        {// Render scene to framebuffer
-            fbuffer->Bind();
-            Renderer::Clear();
-            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+        {// Render scene
             scene.RenderScene();
-            fbuffer->UnBind();
         }
 
         {// Render GUI to main window
@@ -354,7 +347,7 @@ public:
             // Prompt
             ImGui::Begin("Settings");
             ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
-            Renderer::SetAmbientLighting(m_ambientRadiance);
+            scene.SetAmbientLight(m_ambientRadiance);
             ImGui::End();
 
             // Finish

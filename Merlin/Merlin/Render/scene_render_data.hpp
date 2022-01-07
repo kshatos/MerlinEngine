@@ -15,6 +15,7 @@ namespace Merlin
         std::shared_ptr<Camera> camera;
         std::shared_ptr<Skybox> skybox;
         std::shared_ptr<FrameBuffer> frame_buffer;
+        glm::vec4 clear_color;
         glm::vec3 view_pos;
         glm::mat4 view_matrix;
         glm::mat4 projection_matrix;
@@ -70,6 +71,7 @@ namespace Merlin
     struct SceneRenderData
     {
         CameraRenderData* camera;
+        float ambient_light_radiance;
         std::vector<PointLightData*> point_lights;
         std::vector<DirectionalLightData*> directional_lights;
         std::vector<SpotLightData*> spot_lights;

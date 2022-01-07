@@ -12,17 +12,14 @@ namespace Merlin
 {
     class GameScene
     {
-        SceneRenderData render_data;
-        std::shared_ptr<CameraComponent> m_camera;
-        std::shared_ptr<Skybox> m_skybox;
         std::vector<std::shared_ptr<Entity>> m_entities;
+        SceneRenderData m_render_data;
     public:
-        inline void SetCamera(std::shared_ptr<CameraComponent> camera) { m_camera = camera; }
-        inline void SetSkybox(std::shared_ptr<Skybox> skybox) { m_skybox = skybox; }
         std::shared_ptr<Entity> CreateEntity();
         void RenderScene();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
+        inline void SetAmbientLight(float radiance) { m_render_data.ambient_light_radiance = radiance; }
     private:
         void OnComponentAdded(std::shared_ptr<Component> component);
     };
