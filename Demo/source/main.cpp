@@ -310,7 +310,7 @@ public:
 
     virtual void OnUpdate(float time_step) override
     {
-        ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
+        //ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
 
         scene.OnUpdate(time_step);
         MoveCamera(time_step);
@@ -340,8 +340,10 @@ public:
 
             // Scene viewport
             ImGui::Begin("Scene");
-            uint32_t tex_id = fbuffer->GetColorAttachmentID();
-            ImGui::Image((ImTextureID)tex_id, ImVec2{ 900, 900 });
+            auto s_buffer = Renderer::GetShadowBuffer();
+            auto s_buffer_params = s_buffer->GetParameters();
+            uint32_t tex_id = s_buffer->GetDepthAttachmentID();
+            ImGui::Image((ImTextureID)tex_id, ImVec2{ (float)s_buffer_params.width, (float)s_buffer_params.height });
             ImGui::End();
 
             // Prompt

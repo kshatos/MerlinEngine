@@ -6,20 +6,27 @@
 
 namespace Merlin
 {
+    glm::mat4 GetLightMatrix(
+        const CameraRenderData& camera_data,
+        const DirectionalLightData& light_data)
+    {
+        auto distance = 10.0f;
+        auto projection_matrix = glm::ortho(
+            -distance, +distance,
+            -distance, +distance,
+            +00.01f, +2 * distance);
+
+        Transform t;
+        t.LookAt(light_data.direction);
+        t.Translate(camera_data.view_pos - light_data.direction * distance);
+        auto view_matrix = glm::inverse(t.GetTransformationMatrix());
+
+        return projection_matrix * view_matrix;
+    }
+
     std::shared_ptr<Shader> Renderer::m_shadow_shader = nullptr;
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
-
-    void Renderer::RenderScene(const SceneRenderData& scene)
-    {
-        if (scene.camera == nullptr)
-            return;
-        scene.camera->frame_buffer->Bind();
-        m_render_impl->SetClearColor(scene.camera->clear_color);
-        m_render_impl->Clear();
-        DrawMeshes(scene);
-        DrawSkybox(scene);
-        scene.camera->frame_buffer->UnBind();
-    }
+    std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
     void Renderer::Init()
     {
@@ -28,6 +35,13 @@ namespace Merlin
         m_shadow_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\shadow.vert",
             ".\\Assets\\Shaders\\shadow.frag");
+        m_shadow_buffer = FrameBuffer::Create(
+            FrameBufferParameters
+            {
+                1024, 1024,
+                ColorBufferFormat::NONE,
+                DepthBufferFormat::DEPTH32
+            });
     }
 
     void Renderer::SetViewport(
@@ -133,6 +147,65 @@ namespace Merlin
             varray->UnBind();
             shader->UnBind();
             cubemap->UnBind(0);
+        }
+    }
+
+    void Renderer::DrawMeshShadows(const SceneRenderData& scene)
+    {
+        if (scene.directional_lights.size() < 1)
+            return;
+
+        auto& light_data = *scene.directional_lights[0];
+        auto& camera_data = *scene.camera;
+
+        auto light_matrix = GetLightMatrix(camera_data, light_data);
+
+        m_shadow_shader->Bind();
+        for (const auto& mesh_pointer : scene.meshes)
+        {
+            MeshRenderData& data = *mesh_pointer;
+
+            const auto& vertex_array = data.vertex_array;
+            const auto& model_matrix = data.model_matrix;
+
+            m_shadow_shader->SetUniformMat4("u_ModelMatrix", model_matrix);
+            m_shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
+
+            vertex_array->Bind();
+            m_render_impl->DrawTriangles(vertex_array);
+
+            vertex_array->UnBind();
+        }
+        m_shadow_shader->UnBind();
+    }
+
+    void Renderer::RenderScene(const SceneRenderData& scene)
+    {
+        if (scene.camera == nullptr)
+            return;
+
+        // Shadow map depth pass
+        {
+            auto buffer_params = m_shadow_buffer->GetParameters();
+            m_shadow_buffer->Bind();
+            m_render_impl->SetViewport(0, 0, buffer_params.width, buffer_params.height);
+            m_render_impl->SetClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+            m_render_impl->Clear();
+            DrawMeshShadows(scene);
+            m_shadow_buffer->UnBind();
+        }
+
+        // Final lighting pass
+        {
+            auto buffer = scene.camera->frame_buffer;
+            auto buffer_params = buffer->GetParameters();
+            buffer->Bind();
+            m_render_impl->SetViewport(0, 0, buffer_params.width, buffer_params.height);
+            m_render_impl->SetClearColor(scene.camera->clear_color);
+            m_render_impl->Clear();
+            DrawMeshes(scene);
+            DrawSkybox(scene);
+            buffer->UnBind();
         }
     }
 
