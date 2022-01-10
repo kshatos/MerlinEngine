@@ -269,7 +269,6 @@ public:
             light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
             */
-
         }
         {
             auto entity = scene.CreateEntity();

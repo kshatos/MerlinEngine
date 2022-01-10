@@ -25,7 +25,21 @@ namespace Merlin
         }
     }
 
-    GLenum GetOpenGLFilterMode(TextureFilterMode mode)
+    GLenum GetOpenGLMinFilterMode(TextureFilterMode mode)
+    {
+        switch (mode)
+        {
+        case Merlin::TextureFilterMode::Nearest:
+            return GL_NEAREST_MIPMAP_NEAREST;
+        case Merlin::TextureFilterMode::Linear:
+            return GL_LINEAR_MIPMAP_LINEAR;
+        default:
+            ME_LOG_ERROR("Unkown TextureFilterMode wrap type given");
+            return GL_NONE;
+        }
+    }
+
+    GLenum GetOpenGLMagFilterMode(TextureFilterMode mode)
     {
         switch (mode)
         {
@@ -73,9 +87,10 @@ namespace Merlin
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetOpenGLWrapMode(props.s_wrap_mode));
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetOpenGLWrapMode(props.t_wrap_mode));
 
-        auto filter_mode = GetOpenGLFilterMode(props.filter_mode);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_mode);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_mode);
+        auto min_filter_mode = GetOpenGLMinFilterMode(props.filter_mode);
+        auto mag_filter_mode = GetOpenGLMagFilterMode(props.filter_mode);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter_mode);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter_mode);
 
         auto gl_channel_format = GetGLChannelFormat(channel_count);
         glTexImage2D(GL_TEXTURE_2D, 0, gl_channel_format, m_width, m_height, 0, gl_channel_format, GL_UNSIGNED_BYTE, data);

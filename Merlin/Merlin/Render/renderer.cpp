@@ -38,7 +38,7 @@ namespace Merlin
         m_shadow_buffer = FrameBuffer::Create(
             FrameBufferParameters
             {
-                1024, 1024,
+                2048, 2048,
                 ColorBufferFormat::NONE,
                 DepthBufferFormat::DEPTH32
             });
