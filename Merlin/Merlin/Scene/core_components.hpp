@@ -1,7 +1,7 @@
 #ifndef CORE_COMPONENTS_HPP
 #define CORE_COMPONENTS_HPP
 #include "Merlin/Scene/entity.hpp"
-
+#include "Merlin/Render/scene_render_data.hpp"
 
 namespace Merlin
 {
@@ -13,13 +13,43 @@ namespace Merlin
         Transform transform;
     };
 
-    class Material;
+    class CameraComponent : public Component
+    {
+        std::shared_ptr<TransformComponent> m_transform;
+    public:
+        CameraComponent(Entity* parent) : Component(parent) {}
+        CameraRenderData data;
+        
+        void OnAwake() override
+        {
+            m_transform = m_parent->GetComponent<TransformComponent>();
+        }
+
+        void OnUpdate(float time_step) override
+        {
+            data.projection_matrix = data.camera->GetProjectionMatrix();
+            data.view_matrix = glm::inverse(m_transform->transform.GetTransformationMatrix());
+            data.view_pos = m_transform->transform.GetPosition();
+        }
+    };
+
     class MeshRenderComponent : public Component
     {
+        std::shared_ptr<TransformComponent> m_transform;
+
     public:
         MeshRenderComponent(Entity* parent) : Component(parent) {}
-        std::shared_ptr<VertexArray> varray;
-        std::shared_ptr<Material> material;
+        MeshRenderData data;
+
+        void OnAwake() override
+        {
+            m_transform = m_parent->GetComponent<TransformComponent>();
+        }
+
+        void OnUpdate(float time_step) override
+        {
+            data.model_matrix = m_transform->transform.GetTransformationMatrix();
+        }
     };
 
     class PointLightComponent : public Component

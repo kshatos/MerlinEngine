@@ -1,9 +1,22 @@
 #include <glad/glad.h>
 #include "Merlin/Platform/OpenGL/opengl_render_api.hpp"
+#include "Merlin/Core/logger.hpp"
 
 
 namespace Merlin
 {
+    void GLAPIENTRY
+        LogOpenGLErrors(GLenum source,
+            GLenum type,
+            GLuint id,
+            GLenum severity,
+            GLsizei length,
+            const GLchar* message,
+            const void* userParam)
+    {
+        ME_LOG_INFO(std::string(message));
+    }
+
     void OpenGLRenderAPI::Init()
     {
         glEnable(GL_BLEND);
@@ -13,6 +26,8 @@ namespace Merlin
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(LogOpenGLErrors, 0);
     }
 
 

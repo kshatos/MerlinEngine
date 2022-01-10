@@ -51,6 +51,16 @@ namespace Merlin
         Vertex_XNTBUV(
             float px, float py, float pz,
             float nx, float ny, float nz,
+            float u, float v) :
+            position(glm::vec3(px, py, pz)),
+            normal(glm::vec3(nx, ny, nz)),
+            tangent(glm::vec3(0.0f)),
+            bitangent(glm::vec3(0.0f)),
+            uv(glm::vec2(u, v)) {}
+
+        Vertex_XNTBUV(
+            float px, float py, float pz,
+            float nx, float ny, float nz,
             float tx, float ty, float tz,
             float bx, float by, float bz,
             float u, float v) :

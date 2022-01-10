@@ -4,7 +4,6 @@
 #include "Merlin/Render/transform.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
-#include "Merlin/Render/lighting.hpp"
 
 
 namespace Merlin

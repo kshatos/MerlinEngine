@@ -5,7 +5,6 @@
 #include "Merlin/Render/frame_buffer.hpp"
 #include "Merlin/Render/graphics_context.hpp"
 #include "Merlin/Render/index_buffer.hpp"
-#include "Merlin/Render/lighting.hpp"
 #include "Merlin/Render/perspective_camera.hpp"
 #include "Merlin/Render/render_api.hpp"
 #include "Merlin/Render/renderer.hpp"
@@ -21,4 +20,5 @@
 #include "Merlin/Render/mesh_utils.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Render/cubemap_data.hpp"
+#include "Merlin/Render/scene_render_data.hpp"
 #endif

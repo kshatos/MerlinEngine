@@ -11,7 +11,7 @@
 using namespace Merlin;
 
 
-Vertex_XNUV CubeVerts[]
+Vertex_XNTBUV CubeVerts[]
 {
     // positions             // normal              // texture coords
     {-0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f},
@@ -66,7 +66,7 @@ uint32_t CubeIndices[]
     20, 22, 23
 };
 
-std::shared_ptr<Camera> camera;
+std::shared_ptr<TransformComponent> camera_transform;
 std::shared_ptr<VertexArray> cube_varray;
 std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
@@ -123,7 +123,7 @@ public:
 
     virtual void OnUpdate(float time_step) override
     {
-        transform_comp->transform = camera->GetTransform();
+        transform_comp->transform = camera_transform->transform;
     }
 
 };
@@ -226,9 +226,10 @@ public:
         main_material->SetUniformFloat("u_roughness", 0.0f);
         main_material->SetUniformFloat("u_metalic", 0.0f);
 
-        auto cubeMesh = std::make_shared<Mesh<Vertex_XNUV>>();
+        auto cubeMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
         cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
+        CalculateTangentFrame(cubeMesh);
         cube_varray = UploadMesh(cubeMesh);
 
         auto sphereMesh =  std::make_shared<Mesh<Vertex_XNTBUV>>();
@@ -237,18 +238,28 @@ public:
         CalculateTangentFrame(sphereMesh);
         sphere_varray = UploadMesh(sphereMesh);
 
-        //auto skybox = std::make_shared<Skybox>(main_cubemap, 15.0);
-        //skybox->SetShader(skybox_shader);
-        //scene.SetSkybox(skybox);
-
-        // Initialize camera
-        camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-        camera->GetTransform().Translate(glm::vec3(0.0f, 0.0f, 5.0f));
-        scene.SetCamera(camera);
-
         // Add entities to the scene
         {
-            auto entity = std::make_shared<Entity>();
+            FrameBufferParameters fb_params;
+            fb_params.width = 1000;
+            fb_params.height = 1000;
+            fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
+            fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
+            fbuffer = FrameBuffer::Create(fb_params);
+
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto camera_component = entity->AddComponent<CameraComponent>();
+            auto camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
+            transform_comp->transform.Translate(glm::vec3(0.0f, 0.0f, 5.0f));
+            camera_component->data.camera = camera;
+            camera_component->data.frame_buffer = fbuffer;
+            camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            camera_transform = transform_comp;
+        }
+        {
+            /*
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -257,21 +268,19 @@ public:
             light_comp->data.radiantIntensity = 10.0f;
             light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
-
-            scene.AddEntity(entity);
+            */
         }
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
-            light_comp->data.irradiance = 5.0f;
-            light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
-
-            scene.AddEntity(entity);
+            light_comp->data.irradiance = 100.0f;
+            light_comp->data.direction = glm::normalize(glm::vec3(0.5, 0.5, 0.0));
         }
+        /*
         for (int i = 0; i < 4; ++i)
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             transform_comp->transform.Translate(glm::vec3(
                 glm::linearRand(-2.0f, 2.0f),
@@ -281,22 +290,29 @@ public:
             light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
             light_comp->data.radiantFlux = 50.0f;
             light_comp->data.range = 50.0f;
-
-            scene.AddEntity(entity);
         }
-
+        */
         {
-            auto entity = std::make_shared<Entity>();
+            auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            //auto spin_comp = entity->AddComponent<SpinningComponent>();
+            auto spin_comp = entity->AddComponent<SpinningComponent>();
 
             transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
 
-            mesh_comp->varray = sphere_varray;
-            mesh_comp->material = pbr_texture_material;
+            mesh_comp->data.vertex_array = cube_varray;
+            mesh_comp->data.material = pbr_texture_material;
+        }
+        {
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
 
-            scene.AddEntity(entity);
+            transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
+            transform_comp->transform.Translate(glm::vec3(0.0f, 1.5f, 0.0));
+
+            mesh_comp->data.vertex_array = cube_varray;
+            mesh_comp->data.material = pbr_texture_material;
         }
 
         scene.OnAwake();
@@ -304,17 +320,13 @@ public:
 
     virtual void OnAttach()override
     {
-        FrameBufferParameters fb_params;
-        fb_params.width = 800;
-        fb_params.height = 800;
-        fbuffer = FrameBuffer::Create(fb_params);
     }
 
     virtual void OnDetatch() override {}
 
     virtual void OnUpdate(float time_step) override
     {
-        ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
+        //ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
 
         scene.OnUpdate(time_step);
         MoveCamera(time_step);
@@ -329,12 +341,8 @@ public:
             Renderer::Clear();
         }
 
-        {// Render scene to framebuffer
-            fbuffer->Bind();
-            Renderer::Clear();
-            Renderer::SetClearColor(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
+        {// Render scene
             scene.RenderScene();
-            fbuffer->UnBind();
         }
 
         {// Render GUI to main window
@@ -348,14 +356,17 @@ public:
 
             // Scene viewport
             ImGui::Begin("Scene");
-            uint32_t tex_id = fbuffer->GetColorAttachmentID();
-            ImGui::Image((ImTextureID)tex_id, ImVec2{ 900, 900 });
+            auto s_buffer = fbuffer;// Renderer::GetShadowBuffer();
+            auto s_buffer_params = s_buffer->GetParameters();
+            uint32_t tex_id = s_buffer->GetColorAttachmentID();
+            ImGui::Image((ImTextureID)tex_id, ImVec2{ (float)s_buffer_params.width, (float)s_buffer_params.height });
             ImGui::End();
+
 
             // Prompt
             ImGui::Begin("Settings");
             ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
-            Renderer::SetAmbientLighting(m_ambientRadiance);
+            scene.SetAmbientLight(m_ambientRadiance);
             ImGui::End();
 
             // Finish
@@ -371,26 +382,26 @@ public:
 
     void MoveCamera(float time_step)
     {
-        const auto& up = camera->GetTransform().Up();
-        const auto& right = camera->GetTransform().Right();
-        const auto& forward = camera->GetTransform().Forward();
+        const auto& up = camera_transform->transform.Up();
+        const auto& right = camera_transform->transform.Right();
+        const auto& forward = camera_transform->transform.Forward();
         float speed = 5.0e-1f;
         if (Input::GetKeyDown(Key::LEFT_SHIFT))
             speed *= 2.0f;
         if (Input::GetKeyDown(Key::W))
-            camera->GetTransform().Translate(+forward * speed * time_step);
+            camera_transform->transform.Translate(+forward * speed * time_step);
         if (Input::GetKeyDown(Key::A))
-            camera->GetTransform().Translate(-right * speed * time_step);
+            camera_transform->transform.Translate(-right * speed * time_step);
         if (Input::GetKeyDown(Key::S))
-            camera->GetTransform().Translate(-forward * speed * time_step);
+            camera_transform->transform.Translate(-forward * speed * time_step);
         if (Input::GetKeyDown(Key::D))
-            camera->GetTransform().Translate(+right * speed * time_step);
+            camera_transform->transform.Translate(+right * speed * time_step);
         if (Input::GetKeyDown(Key::Z))
-            camera->GetTransform().Translate(+up * speed * time_step);
+            camera_transform->transform.Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
-            camera->GetTransform().Translate(-up * speed * time_step);
+            camera_transform->transform.Translate(-up * speed * time_step);
 
-        camera->GetTransform().Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
+        camera_transform->transform.Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
 };
 

@@ -37,6 +37,8 @@ namespace Merlin
             delete[] m_uniformData;
         }
 
+        inline int TextureCount() { return m_textureData.size(); }
+
         void SetUniformFloat(const std::string& name, const float& data);
         void SetUniformFloat2(const std::string& name, const glm::vec2& data);
         void SetUniformFloat3(const std::string& name, const glm::vec3& data);
