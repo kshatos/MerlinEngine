@@ -20,6 +20,10 @@ namespace Merlin
         inline const uint32_t& GetDepthAttachmentID() override { return m_depth_attachment_id; }
         void Bind() override;
         void UnBind() override;
+        void BindColorTexture(uint32_t slot) override;
+        void BindDepthTexture(uint32_t slot) override;
+        void UnBindColorTexture(uint32_t slot) override;
+        void UnBindDepthTexture(uint32_t slot) override;
         void Rebuild() override;
     };
 }

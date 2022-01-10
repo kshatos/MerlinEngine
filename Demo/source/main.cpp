@@ -11,7 +11,7 @@
 using namespace Merlin;
 
 
-Vertex_XNUV CubeVerts[]
+Vertex_XNTBUV CubeVerts[]
 {
     // positions             // normal              // texture coords
     {-0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f},
@@ -226,9 +226,10 @@ public:
         main_material->SetUniformFloat("u_roughness", 0.0f);
         main_material->SetUniformFloat("u_metalic", 0.0f);
 
-        auto cubeMesh = std::make_shared<Mesh<Vertex_XNUV>>();
+        auto cubeMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
         cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
+        CalculateTangentFrame(cubeMesh);
         cube_varray = UploadMesh(cubeMesh);
 
         auto sphereMesh =  std::make_shared<Mesh<Vertex_XNTBUV>>();
@@ -240,8 +241,8 @@ public:
         // Add entities to the scene
         {
             FrameBufferParameters fb_params;
-            fb_params.width = 800;
-            fb_params.height = 800;
+            fb_params.width = 1000;
+            fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
             fbuffer = FrameBuffer::Create(fb_params);
@@ -257,6 +258,7 @@ public:
             camera_transform = transform_comp;
         }
         {
+            /*
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto light_comp = entity->AddComponent<SpotLightComponent>();
@@ -266,14 +268,17 @@ public:
             light_comp->data.radiantIntensity = 10.0f;
             light_comp->data.range = 50.0f;
             auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
+            */
+
         }
         {
             auto entity = scene.CreateEntity();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
-            light_comp->data.irradiance = 5.0f;
-            light_comp->data.direction = glm::vec3(0.0, 1.0, 0.0);
+            light_comp->data.irradiance = 100.0f;
+            light_comp->data.direction = glm::normalize(glm::vec3(0.5, 0.5, 0.0));
         }
+        /*
         for (int i = 0; i < 4; ++i)
         {
             auto entity = scene.CreateEntity();
@@ -287,6 +292,7 @@ public:
             light_comp->data.radiantFlux = 50.0f;
             light_comp->data.range = 50.0f;
         }
+        */
         {
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
@@ -295,7 +301,18 @@ public:
 
             transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
 
-            mesh_comp->data.vertex_array = sphere_varray;
+            mesh_comp->data.vertex_array = cube_varray;
+            mesh_comp->data.material = pbr_texture_material;
+        }
+        {
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+
+            transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
+            transform_comp->transform.Translate(glm::vec3(0.0f, 1.5f, 0.0));
+
+            mesh_comp->data.vertex_array = cube_varray;
             mesh_comp->data.material = pbr_texture_material;
         }
 
@@ -340,11 +357,12 @@ public:
 
             // Scene viewport
             ImGui::Begin("Scene");
-            auto s_buffer = Renderer::GetShadowBuffer();
+            auto s_buffer = fbuffer;// Renderer::GetShadowBuffer();
             auto s_buffer_params = s_buffer->GetParameters();
-            uint32_t tex_id = s_buffer->GetDepthAttachmentID();
+            uint32_t tex_id = s_buffer->GetColorAttachmentID();
             ImGui::Image((ImTextureID)tex_id, ImVec2{ (float)s_buffer_params.width, (float)s_buffer_params.height });
             ImGui::End();
+
 
             // Prompt
             ImGui::Begin("Settings");

@@ -94,6 +94,27 @@ namespace Merlin
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
+
+    void OpenGLFrameBuffer::BindColorTexture(uint32_t slot)
+    {
+        glBindTextureUnit(slot, m_color_attachment_id);
+    }
+
+    void OpenGLFrameBuffer::BindDepthTexture(uint32_t slot)
+    {
+        glBindTextureUnit(slot, m_depth_attachment_id);
+    }
+
+    void OpenGLFrameBuffer::UnBindColorTexture(uint32_t slot)
+    {
+        glBindTextureUnit(slot, 0);
+    }
+
+    void OpenGLFrameBuffer::UnBindDepthTexture(uint32_t slot)
+    {
+        glBindTextureUnit(slot, 0);
+    }
+
     void OpenGLFrameBuffer::Rebuild()
     {
         glGenFramebuffers(1, &m_id);
@@ -123,8 +144,8 @@ namespace Merlin
             glBindTexture(GL_TEXTURE_2D, m_depth_attachment_id);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexImage2D(GL_TEXTURE_2D, 0, gl_internal_format, m_parameters.width, m_parameters.height, 0, gl_format, gl_type, NULL);

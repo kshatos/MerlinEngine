@@ -50,6 +50,10 @@ uniform DirectionalLight u_directionalLights[MAX_DIRECTIONAL_LIGHTS];
 uniform int u_nSpotLights;
 uniform SpotLight u_spotLights[MAX_SPOT_LIGHTS];
 
+uniform mat4 u_lightTransform;
+uniform sampler2D u_shadowBufferTexture;
+
+
 //////////////////////////////
 // PBR SURFACE MODEL
 //////////////////////////////
@@ -110,6 +114,7 @@ vec3 BRDF(
 
     return f * cosNL;
 }
+
 
 //////////////////////////////
 // LIGHTING MODEL
@@ -185,6 +190,20 @@ vec3 SpotLightReflectedRadiance(
     return L0 * A * l * f;
 }
 
+float DirectionalLightShadow(vec3 pos)
+{
+    vec4 lightSpacePos = u_lightTransform * vec4(pos, 1.0);
+
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    float closestDepth = texture(u_shadowBufferTexture, projCoords.xy).r;
+    float currentDepth = projCoords.z - 1.0e-3;
+
+    float shadow = currentDepth < closestDepth  ? 1.0 : 0.0;
+
+    return shadow;
+}
 
 
 //////////////////////////////
@@ -230,7 +249,8 @@ void main()
     }
     for (int i=0; i < u_nDirectionalLights; i++)
     {
-        result += DirectionalLightReflectedRadiance(u_directionalLights[i], surface);
+        float shadow = i==0 ? DirectionalLightShadow(surface.position) : 1.0;
+        result += shadow * DirectionalLightReflectedRadiance(u_directionalLights[i], surface);
     }
     for (int i = 0; i < u_nSpotLights; i++)
     {

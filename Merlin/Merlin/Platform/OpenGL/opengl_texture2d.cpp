@@ -122,7 +122,8 @@ namespace Merlin
     
     void OpenGLTexture2D::UnBind(uint32_t slot)
     {
-        glBindTextureUnit(slot, 0);
+        // Was causing GL_INVALID_OPERATION errors
+        //glBindTextureUnit(slot, 0);
     }
 
 }

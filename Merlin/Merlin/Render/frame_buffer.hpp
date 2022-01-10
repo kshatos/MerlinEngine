@@ -60,6 +60,10 @@ namespace Merlin
         virtual const uint32_t& GetDepthAttachmentID() = 0;
         virtual void Bind() = 0;
         virtual void UnBind() = 0;
+        virtual void BindColorTexture(uint32_t slot) = 0;
+        virtual void BindDepthTexture(uint32_t slot) = 0;
+        virtual void UnBindColorTexture(uint32_t slot) = 0;
+        virtual void UnBindDepthTexture(uint32_t slot) = 0;
         virtual void Rebuild() = 0;
     };
 }

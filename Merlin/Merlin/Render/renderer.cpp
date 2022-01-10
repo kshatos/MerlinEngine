@@ -65,7 +65,7 @@ namespace Merlin
 
     void Renderer::DrawMeshes(const SceneRenderData& scene)
     {
-        auto& camera = *scene.camera;
+        auto& camera_data = *scene.camera;
         for (const auto& mesh_pointer : scene.meshes)
         {
             MeshRenderData& data = *mesh_pointer;
@@ -75,11 +75,20 @@ namespace Merlin
             const auto& model_matrix = data.model_matrix;
 
             material->Bind();
-            material->SetUniformFloat3("u_viewPos", camera.view_pos);
+            material->SetUniformFloat3("u_viewPos", camera_data.view_pos);
             material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
             material->SetUniformMat4("u_ModelMatrix", model_matrix);
-            material->SetUniformMat4("u_ViewMatrix", camera.view_matrix);
-            material->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
+            material->SetUniformMat4("u_ViewMatrix", camera_data.view_matrix);
+            material->SetUniformMat4("u_ProjectionMatrix", camera_data.projection_matrix);
+
+            if (scene.directional_lights.size() > 0)
+            {
+                auto light_matrix = GetLightMatrix(camera_data, *scene.directional_lights[0]);
+                material->SetUniformMat4("u_lightTransform", light_matrix);
+            }
+            uint32_t shadow_slot = material->TextureCount() + 1;
+            m_shadow_buffer->BindDepthTexture(shadow_slot);
+            material->SetUniformInt("u_shadowBufferTexture", shadow_slot);
 
             material->SetUniformFloat("u_ambientRadiance", scene.ambient_light_radiance);
 
