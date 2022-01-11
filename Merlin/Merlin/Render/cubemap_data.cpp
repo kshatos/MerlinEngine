@@ -39,25 +39,7 @@ namespace Merlin
     {
         float u = (i + 0.5f) / m_resolution;
         float v = (j + 0.5f) / m_resolution;
-        u = 2.0f * u - 1.0f;
-        v = 2.0f * v - 1.0f;
-        switch (face)
-        {
-        case PositiveX:
-            return glm::vec3(+1.0f, -v, -u);
-        case NegativeX:
-            return glm::vec3(-1.0f, -v, +u);
-        case PositiveY:
-            return glm::vec3(+u, +1.0f, +v);
-        case NegativeY:
-            return glm::vec3(+u, -1.0f, -v);
-        case PositiveZ:
-            return glm::vec3(+u, -v, +1.0f);
-        case NegativeZ:
-            return glm::vec3(-u, -v, -1.0f);
-        default:
-            return glm::vec3(0.0);
-        }
+        return GetPixelCubePoint(CubemapCoordinates(face, u, v));
     }
 
     glm::vec3 CubemapData::GetPixelCubePoint(
@@ -109,32 +91,32 @@ namespace Merlin
         switch (face)
         {
         case CubeFace::PositiveX:
-            sphere_point *= +1.0f / point.x;
+            sphere_point *= +1.0f / sphere_point.x;
             u = -sphere_point.z;
             v = -sphere_point.y;
             break;
         case CubeFace::NegativeX:
-            sphere_point *= -1.0f / point.x;
+            sphere_point *= -1.0f / sphere_point.x;
             u = +sphere_point.z;
             v = -sphere_point.y;
             break;
         case CubeFace::PositiveY:
-            sphere_point *= +1.0f / point.y;
+            sphere_point *= +1.0f / sphere_point.y;
             u = sphere_point.x;
             v = sphere_point.z;
             break;
         case CubeFace::NegativeY:
-            sphere_point *= -1.0f / point.y;
+            sphere_point *= -1.0f / sphere_point.y;
             u = +sphere_point.x;
-            v = -sphere_point.y;
+            v = -sphere_point.z;
             break;
         case CubeFace::PositiveZ:
-            sphere_point *= +1.0f / point.z;
+            sphere_point *= +1.0f / sphere_point.z;
             u = +sphere_point.x;
             v = -sphere_point.y;
             break;
         case CubeFace::NegativeZ:
-            sphere_point *= -1.0f / point.z;
+            sphere_point *= -1.0f / sphere_point.z;
             u = -sphere_point.x;
             v = -sphere_point.y;
             break;
@@ -143,50 +125,6 @@ namespace Merlin
         v = 0.5f * (v + 1.0f);
 
         return CubemapCoordinates(face, u, v);
-    }
-
-    TangentFrame CubemapData::GetCubeTangentFrame(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j)
-    {
-        TangentFrame frame;
-
-        switch (face)
-        {
-        case PositiveX:
-            frame.normal = glm::vec3(1.0f, 0.0f, 0.0f);
-            frame.tangent = glm::vec3(0.0f, 0.0f, -2.0f);
-            frame.bitangent = glm::vec3(0.0f, -2.0f, 0.0f);
-            break;
-        case NegativeX:
-            frame.normal = glm::vec3(-1.0f, 0.0f, 0.0f);
-            frame.tangent = glm::vec3(0.0f, 0.0f, 2.0f);
-            frame.bitangent = glm::vec3(0.0f, -2.0f, 0.0f);
-            break;
-        case PositiveY:
-            frame.normal = glm::vec3(0.0f, 1.0f, 0.0f);
-            frame.tangent = glm::vec3(2.0f, 0.0f, 0.0f);
-            frame.bitangent = glm::vec3(0.0f, 0.0f, 2.0f);
-            break;
-        case NegativeY:
-            frame.normal = glm::vec3(0.0f, -1.0f, 0.0f);
-            frame.tangent = glm::vec3(2.0f, 0.0f, 0.0f);
-            frame.bitangent = glm::vec3(0.0f, 0.0f, -2.0f);
-            break;
-        case PositiveZ:
-            frame.normal = glm::vec3(0.0f, 0.0f, 1.0f);
-            frame.tangent = glm::vec3(2.0f, 0.0f, 0.0f);
-            frame.bitangent = glm::vec3(0.0f, -2.0f, 0.0f);
-            break;
-        case NegativeZ:
-            frame.normal = glm::vec3(0.0f, 0.0f, -1.0f);
-            frame.tangent = glm::vec3(-2.0f, 0.0f, 0.0f);
-            frame.bitangent = glm::vec3(0.0f, -2.0f, 0.0f);
-            break;
-        }
-
-        return frame;
     }
 
     float* CubemapData::GetFaceDataPointer(

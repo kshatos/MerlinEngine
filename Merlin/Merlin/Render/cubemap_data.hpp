@@ -4,7 +4,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Merlin/Render/cubemap.hpp"
-#include "Merlin//Render/mesh_utils.hpp"
+
 
 namespace Merlin
 {
@@ -50,10 +50,6 @@ namespace Merlin
             CubemapCoordinates coordinates);
         CubemapCoordinates GetPointCoordinates(
             glm::vec3 point);
-        TangentFrame GetCubeTangentFrame(
-            CubeFace face,
-            uint32_t i,
-            uint32_t j);
 
         float* GetFaceDataPointer(
             CubeFace face);

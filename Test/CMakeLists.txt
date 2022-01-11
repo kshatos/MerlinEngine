@@ -14,6 +14,7 @@ add_executable(
   Test
   source/transform_test.cpp
   source/mesh_test.cpp
+  source/cubemap_data_tests.cpp
 )
 target_link_libraries(
     Test
