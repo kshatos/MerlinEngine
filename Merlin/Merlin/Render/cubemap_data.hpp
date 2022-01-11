@@ -8,6 +8,23 @@
 
 namespace Merlin
 {
+    struct CubemapCoordinates
+    {
+        CubeFace face;
+        float u;
+        float v;
+
+        CubemapCoordinates(
+            CubeFace _face,
+            float _u,
+            float _v) :
+            face(_face),
+            u(_u),
+            v(_v)
+        {
+        }
+    };
+
 
     class CubemapData
     {
@@ -19,14 +36,24 @@ namespace Merlin
 
         inline uint32_t GetChannelCount() { return m_channel_count; }
         inline uint32_t GetResolution() { return m_resolution; }
+
         float& GetPixel(
             CubeFace face,
             uint32_t i,
             uint32_t j,
             uint32_t channel);
+        glm::vec3 GetPixelCubePoint(
+            CubeFace face,
+            uint32_t i,
+            uint32_t j);
+        glm::vec3 GetPixelCubePoint(
+            CubemapCoordinates coordinates);
+        CubemapCoordinates GetPointCoordinates(
+            glm::vec3 point);
 
-        glm::vec3 GetPixelCubePoint(CubeFace face, uint32_t i, uint32_t j);
-        float* GetFaceDataPointer(CubeFace face);
+        float* GetFaceDataPointer(
+            CubeFace face);
+
     private:
         uint32_t CubemapData::PixelIndex(
             CubeFace face,
