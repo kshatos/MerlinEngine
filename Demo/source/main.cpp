@@ -160,7 +160,7 @@ public:
             {
                 for (int i = 0; i < 100; ++i)
                 {
-                    auto point = cube_data->GetPixelCubePoint(face, i, j);
+                    auto point = CubemapData::CubePoint(cube_data->GetPixelCoordinates(face, i, j));
                     point = glm::normalize(point);
                     point *= 0.5f;
                     point += 0.5f;
