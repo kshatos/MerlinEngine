@@ -32,6 +32,9 @@ namespace Merlin
         uint32_t m_channel_count;
         uint32_t m_resolution;
     public:
+        static glm::vec3 CubePoint(CubemapCoordinates& coords);
+        static CubemapCoordinates PointCoordinates(glm::vec3& point);
+
         CubemapData(uint32_t resolution, uint32_t channel_count);
 
         inline uint32_t GetChannelCount() { return m_channel_count; }
@@ -42,26 +45,26 @@ namespace Merlin
             uint32_t i,
             uint32_t j,
             uint32_t channel);
-        glm::vec3 GetPixelCubePoint(
+        CubemapCoordinates GetPixelCoordinates(
             CubeFace face,
             uint32_t i,
             uint32_t j);
-        glm::vec3 GetPixelCubePoint(
-            CubemapCoordinates coordinates);
-        CubemapCoordinates GetPointCoordinates(
-            glm::vec3 point);
 
         float* GetFaceDataPointer(
             CubeFace face);
 
     private:
-        uint32_t CubemapData::PixelIndex(
+        uint32_t PixelIndex(
             CubeFace face,
             uint32_t i,
             uint32_t j,
             uint32_t channel);
     };
 
+    float BilinearInterpolate(
+        CubemapData& cubemap,
+        CubemapCoordinates& coords,
+        uint32_t channel);
 
     std::shared_ptr<Cubemap> UploadCubemap(std::shared_ptr<CubemapData> data);
 

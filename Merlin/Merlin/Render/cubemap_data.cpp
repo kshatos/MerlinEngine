@@ -3,47 +3,7 @@
 
 namespace Merlin
 {
-    CubemapData::CubemapData(
-        uint32_t resolution,
-        uint32_t channel_count) :
-        m_resolution(resolution),
-        m_channel_count(channel_count)
-    {
-        uint32_t size = resolution * resolution * channel_count * 6;
-        m_data.resize(size);
-    }
-
-    uint32_t CubemapData::PixelIndex(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j,
-        uint32_t channel)
-    {
-        return channel + m_channel_count * (i + m_resolution * (j + m_resolution * face));
-    }
-
-    float& CubemapData::GetPixel(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j,
-        uint32_t channel)
-    {
-        auto index = PixelIndex(face, i, j, channel);
-        return m_data[index];
-    }
-
-    glm::vec3 CubemapData::GetPixelCubePoint(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j)
-    {
-        float u = (i + 0.5f) / m_resolution;
-        float v = (j + 0.5f) / m_resolution;
-        return GetPixelCubePoint(CubemapCoordinates(face, u, v));
-    }
-
-    glm::vec3 CubemapData::GetPixelCubePoint(
-        CubemapCoordinates coordinates)
+    glm::vec3 CubemapData::CubePoint(CubemapCoordinates& coordinates)
     {
         float u = 2.0f * coordinates.u - 1.0f;
         float v = 2.0f * coordinates.v - 1.0f;
@@ -66,8 +26,7 @@ namespace Merlin
         }
     }
 
-    CubemapCoordinates CubemapData::GetPointCoordinates(
-        glm::vec3 point)
+    CubemapCoordinates CubemapData::PointCoordinates(glm::vec3& point)
     {
         // Project to sphere
         glm::vec3 sphere_point = glm::normalize(point);
@@ -127,11 +86,92 @@ namespace Merlin
         return CubemapCoordinates(face, u, v);
     }
 
+    CubemapData::CubemapData(
+        uint32_t resolution,
+        uint32_t channel_count) :
+        m_resolution(resolution),
+        m_channel_count(channel_count)
+    {
+        uint32_t size = resolution * resolution * channel_count * 6;
+        m_data.resize(size);
+    }
+
+    float& CubemapData::GetPixel(
+        CubeFace face,
+        uint32_t i,
+        uint32_t j,
+        uint32_t channel)
+    {
+        auto index = PixelIndex(face, i, j, channel);
+        return m_data[index];
+    }
+
+    CubemapCoordinates CubemapData::GetPixelCoordinates(
+        CubeFace face,
+        uint32_t i,
+        uint32_t j)
+    {
+        return CubemapCoordinates{
+            face,
+            (i + 0.5f) / m_resolution,
+            (j + 0.5f) / m_resolution
+        };
+    }
+
     float* CubemapData::GetFaceDataPointer(
         CubeFace face)
     {
         auto index = PixelIndex(face, 0, 0, 0);
         return &m_data[index];
+    }
+
+    uint32_t CubemapData::PixelIndex(
+        CubeFace face,
+        uint32_t i,
+        uint32_t j,
+        uint32_t channel)
+    {
+        return channel + m_channel_count * (i + m_resolution * (j + m_resolution * face));
+    }
+
+    float BilinearInterpolate(
+        CubemapData& cubemap,
+        CubemapCoordinates& coords,
+        uint32_t channel)
+    {
+        int n = cubemap.GetResolution();
+
+        int imin = (int)(coords.u * n - 0.5f);
+        int imax = (int)(coords.u * n + 0.5f);
+        int jmin = (int)(coords.v * n - 0.5f);
+        int jmax = (int)(coords.v * n + 0.5f);
+
+        imin = std::max(0, std::min(n - 1, imin));
+        imax = std::max(0, std::min(n - 1, imax));
+        jmin = std::max(0, std::min(n - 1, jmin));
+        jmax = std::max(0, std::min(n - 1, jmax));
+
+        float umin = (imin + 0.5f) / n;
+        float umax = (imax + 0.5f) / n;
+        float vmin = (jmin + 0.5f) / n;
+        float vmax = (jmax + 0.5f) / n;
+
+        float du = umax - umin;
+        float dv = vmax - vmin;
+
+        float u_local = du > 0.0f ? (coords.u - umin) / du : 0.5f;
+        float v_local = dv > 0.0f ? (coords.v - vmin) / dv : 0.5f;
+
+        float N00 = (1.0f - coords.u) * (1.0f - coords.v);
+        float N01 = (1.0f - coords.u) * coords.v;
+        float N10 = coords.u * (1.0f - coords.v);
+        float N11 = coords.u * coords.v;
+
+        return (
+            N00 * cubemap.GetPixel(coords.face, imin, jmin, channel) +
+            N01 * cubemap.GetPixel(coords.face, imin, jmax, channel) +
+            N10 * cubemap.GetPixel(coords.face, imax, jmin, channel) +
+            N11 * cubemap.GetPixel(coords.face, imax, jmax, channel));
     }
 
     std::shared_ptr<Cubemap> UploadCubemap(
