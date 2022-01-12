@@ -25,6 +25,8 @@ namespace Merlin
             uint32_t i,
             uint32_t j,
             uint32_t channel);
+
+        float* GetDataPointer();
     private:
 
         uint32_t PixelIndex(
@@ -32,5 +34,11 @@ namespace Merlin
             uint32_t j,
             uint32_t channel);
     };
+
+    float BilinearInterpolate(
+        Texture2DData& texture,
+        float u,
+        float v,
+        uint32_t channel);
 }
 #endif
