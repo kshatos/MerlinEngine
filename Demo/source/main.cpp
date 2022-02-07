@@ -70,7 +70,6 @@ std::shared_ptr<TransformComponent> camera_transform;
 std::shared_ptr<VertexArray> cube_varray;
 std::shared_ptr<VertexArray> sphere_varray;
 std::shared_ptr<Cubemap> main_cubemap;
-std::shared_ptr<Shader> skybox_shader;
 std::shared_ptr<Material> main_material;
 std::shared_ptr<Material> pbr_texture_material;
 
@@ -195,10 +194,6 @@ public:
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
-        skybox_shader = Shader::CreateFromFiles(
-            ".\\Assets\\Shaders\\skybox.vert",
-            ".\\Assets\\Shaders\\skybox.frag");
-
         pbr_texture_material = std::make_shared<Material>(
             pbr_texture_shader,
             BufferLayout{},
@@ -247,6 +242,8 @@ public:
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
             fbuffer = FrameBuffer::Create(fb_params);
 
+            auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
+
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto camera_component = entity->AddComponent<CameraComponent>();
@@ -255,6 +252,7 @@ public:
             camera_component->data.camera = camera;
             camera_component->data.frame_buffer = fbuffer;
             camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            camera_component->data.skybox = skybox;
             camera_transform = transform_comp;
         }
         {

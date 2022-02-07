@@ -25,6 +25,7 @@ namespace Merlin
     }
 
     std::shared_ptr<Shader> Renderer::m_shadow_shader = nullptr;
+    std::shared_ptr<Shader> Renderer::m_skybox_shader = nullptr;
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
     std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
@@ -35,6 +36,9 @@ namespace Merlin
         m_shadow_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\shadow.vert",
             ".\\Assets\\Shaders\\shadow.frag");
+        m_skybox_shader = Shader::CreateFromFiles(
+            ".\\Assets\\Shaders\\skybox.vert",
+            ".\\Assets\\Shaders\\skybox.frag");
         m_shadow_buffer = FrameBuffer::Create(
             FrameBufferParameters
             {
@@ -136,27 +140,26 @@ namespace Merlin
     {
         auto& camera = *scene.camera;
         auto skybox = camera.skybox;
+        m_skybox_shader->Bind();
         if (skybox)
         {
             auto& cubemap = skybox->GetCubemap();
             auto& varray = skybox->GetVertexArray();
-            auto& shader = skybox->GetShader();
 
             cubemap->Bind(0);
 
-            shader->Bind();
-            shader->SetUniformFloat3("u_viewPos", camera.view_pos);
-            shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
-            shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
+            m_skybox_shader->SetUniformFloat3("u_viewPos", camera.view_pos);
+            m_skybox_shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
+            m_skybox_shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
 
             varray->Bind();
 
             m_render_impl->DrawTriangles(varray);
 
             varray->UnBind();
-            shader->UnBind();
             cubemap->UnBind(0);
         }
+        m_skybox_shader->UnBind();
     }
 
     void Renderer::DrawMeshShadows(const SceneRenderData& scene)
