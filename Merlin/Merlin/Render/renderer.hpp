@@ -13,6 +13,7 @@ namespace Merlin
     class Renderer
     {
         static std::shared_ptr<Shader> m_shadow_shader;
+        static std::shared_ptr<Shader> m_skybox_shader;
         static std::unique_ptr<RenderAPI> m_render_impl;
         static std::shared_ptr<FrameBuffer> m_shadow_buffer;
     public:
