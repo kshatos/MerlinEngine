@@ -89,7 +89,7 @@ namespace Merlin
 
     void OpenGLCubemap::UnBind(uint32_t slot)
     {
-        glBindTextureUnit(slot, 0);
+        //glBindTextureUnit(slot, 0);
     }
 
     void OpenGLCubemap::SetFaceData(CubeFace face, float* data)

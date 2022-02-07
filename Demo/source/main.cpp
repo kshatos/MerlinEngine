@@ -247,6 +247,9 @@ public:
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
             fbuffer = FrameBuffer::Create(fb_params);
 
+            auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
+            skybox->SetShader(skybox_shader);
+
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto camera_component = entity->AddComponent<CameraComponent>();
@@ -255,6 +258,7 @@ public:
             camera_component->data.camera = camera;
             camera_component->data.frame_buffer = fbuffer;
             camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            camera_component->data.skybox = skybox;
             camera_transform = transform_comp;
         }
         {
