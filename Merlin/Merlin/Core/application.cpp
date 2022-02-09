@@ -10,11 +10,11 @@ namespace Merlin
 {
     Application* Application::app_instance = nullptr;
 
-    Application::Application()
+    Application::Application(const WindowProperties& properties)
     {
         Logger::Init();
 
-        m_main_window = std::unique_ptr<Window>(Window::Create(WindowProperties("asdf", 800, 800)));
+        m_main_window = std::unique_ptr<Window>(Window::Create(properties));
         m_main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 

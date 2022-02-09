@@ -18,7 +18,7 @@ namespace Merlin
     public:
         inline static Application& Get() { return *app_instance; }
        
-        Application();
+        Application(const WindowProperties& properties);
         virtual ~Application() {}
 
         void PushLayerFront(std::shared_ptr<Layer> layer);

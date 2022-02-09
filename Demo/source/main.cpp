@@ -175,11 +175,11 @@ public:
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
-            ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-            ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
-            ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
-            ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
-            ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
+                ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
         auto pbr_shader = Shader::CreateFromFiles(
@@ -198,11 +198,11 @@ public:
             pbr_texture_shader,
             BufferLayout{},
             std::vector<std::string>{
-                "u_albedoTexture",
+            "u_albedoTexture",
                 "u_roughnessTexture",
                 "u_metalicTexture",
                 "u_normalTexture"
-            }
+        }
         );
         pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
         pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
@@ -227,7 +227,7 @@ public:
         CalculateTangentFrame(cubeMesh);
         cube_varray = UploadMesh(cubeMesh);
 
-        auto sphereMesh =  std::make_shared<Mesh<Vertex_XNTBUV>>();
+        auto sphereMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         CalculateTangentFrame(sphereMesh);
@@ -406,7 +406,7 @@ public:
 class DemoApplication : public Application
 {
 public:
-    DemoApplication() : Application()
+    DemoApplication(const WindowProperties& properties) : Application(properties)
     {
         PushLayerFront(std::make_shared<SceneLayer>());
     }
@@ -415,6 +415,6 @@ public:
 
 void main()
 {
-    DemoApplication app;
+    DemoApplication app(WindowProperties{ "Demo", 800, 800 });
     app.Run();
 }
