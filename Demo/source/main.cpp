@@ -131,7 +131,9 @@ class SceneLayer : public Layer
 {
     float m_ambientRadiance = 0.0f;
     GameScene scene;
-    std::shared_ptr<FrameBuffer> fbuffer;
+    CameraRenderData* camera_data;
+    ImVec2 viewport_size{ 0, 0 };
+
 public:
     SceneLayer()
     {
@@ -240,7 +242,7 @@ public:
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-            fbuffer = FrameBuffer::Create(fb_params);
+            auto fbuffer = FrameBuffer::Create(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 
@@ -254,6 +256,8 @@ public:
             camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
             camera_component->data.skybox = skybox;
             camera_transform = transform_comp;
+
+            camera_data = &camera_component->data;
         }
         {
             /*
@@ -353,13 +357,37 @@ public:
             ImGui::NewFrame();
 
             // Scene viewport
-            ImGui::Begin("Scene");
-            auto s_buffer = fbuffer;// Renderer::GetShadowBuffer();
-            auto s_buffer_params = s_buffer->GetParameters();
-            uint32_t tex_id = s_buffer->GetColorAttachmentID();
-            ImGui::Image((ImTextureID)tex_id, ImVec2{ (float)s_buffer_params.width, (float)s_buffer_params.height });
-            ImGui::End();
+            ImGui::Begin(
+                "Viewport",
+                nullptr,
+                ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse);
 
+            auto& fbuffer = camera_data->frame_buffer;
+            auto& fbuffer_params = fbuffer->GetParameters();
+            uint32_t tex_id = fbuffer->GetColorAttachmentID();
+            ImGui::Image(
+                (ImTextureID)tex_id,
+                ImVec2{
+                    (float)fbuffer_params.width,
+                    (float)fbuffer_params.height });
+
+            auto new_size = ImGui::GetWindowSize();
+            if ((new_size.x != viewport_size.x || new_size.y != viewport_size.y) && 
+                !Input::GetMouseButtonDown(MouseButton::BUTTON_LEFT))
+            {
+                fbuffer_params.width = new_size.x; 
+                fbuffer_params.height = new_size.y;
+                fbuffer->Rebuild();
+
+                float aspect = new_size.x / new_size.y;
+
+                camera_data->camera->SetAspectRatio(aspect);
+
+                viewport_size = new_size;
+            }
+
+            ImGui::End();
 
             // Prompt
             ImGui::Begin("Settings");
