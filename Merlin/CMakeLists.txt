@@ -41,7 +41,6 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/material.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
-    Merlin/Render/camera.cpp
     Merlin/Render/perspective_camera.cpp
     Merlin/Render/transform.cpp
     Merlin/Render/mesh_utils.cpp

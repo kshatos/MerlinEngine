@@ -8,12 +8,10 @@ namespace Merlin
 {
     class Camera
     {
-        Transform m_transform;
     public:
         virtual ~Camera() {}
         virtual glm::mat4 GetProjectionMatrix() = 0;
-        glm::mat4 GetViewMatrix();
-        Transform& GetTransform();
+        virtual void SetAspectRatio(float aspect_ratio) = 0;
     };
 }
 #endif

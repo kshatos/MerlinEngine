@@ -16,6 +16,7 @@ namespace Merlin
     public:
         PerspectiveCamera(float fov, float aspect, float near, float far);
         glm::mat4 GetProjectionMatrix() override;
+        void SetAspectRatio(float aspect_ratio) override;
     };
 }
 #endif
