@@ -23,6 +23,7 @@ set(MERLIN_CORE_INCLUDE
 )
 source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 
+
 #=============================
 # RENDER
 #=============================
@@ -74,6 +75,7 @@ set(MERLIN_RENDER_INCLUDE
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 
+
 #=============================
 # SCENE
 #=============================
@@ -90,32 +92,52 @@ set(MERLIN_SCENE_INCLUDE
 )
 source_group("Scene" FILES ${MERLIN_SCENE_SOURCE} ${MERLIN_SCENE_INCLUDE})
 
+
 #=============================
 # OPENGL
 #=============================
-set(MERLIN_OPENGL_SOURCE
-    Merlin/Platform/OpenGL/opengl_context.cpp
-    Merlin/Platform/OpenGL/opengl_vertex_buffer.cpp
-    Merlin/Platform/OpenGL/opengl_index_buffer.cpp
-    Merlin/Platform/OpenGL/opengl_vertex_array.cpp
-    Merlin/Platform/OpenGL/opengl_frame_buffer.cpp
-    Merlin/Platform/OpenGL/opengl_texture2d.cpp
-    Merlin/Platform/OpenGL/opengl_cubemap.cpp
-    Merlin/Platform/OpenGL/opengl_shader.cpp
-    Merlin/Platform/OpenGL/opengl_render_api.cpp
-)
-set(MERLIN_OPENGL_INCLUDE
-    Merlin/Platform/OpenGL/opengl_context.hpp
-    Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp
-    Merlin/Platform/OpenGL/opengl_index_buffer.hpp
-    Merlin/Platform/OpenGL/opengl_vertex_array.hpp
-    Merlin/Platform/OpenGL/opengl_frame_buffer.hpp
-    Merlin/Platform/OpenGL/opengl_texture2d.hpp
-    Merlin/Platform/OpenGL/opengl_cubemap.hpp
-    Merlin/Platform/OpenGL/opengl_shader.hpp
-    Merlin/Platform/OpenGL/opengl_render_api.hpp
-)
-source_group("OpenGL" FILES ${MERLIN_OPENGL_SOURCE} ${MERLIN_OPENGL_INCLUDE})
+if(USE_OPENGL)
+    set(MERLIN_OPENGL_SOURCE
+        Merlin/Platform/OpenGL/opengl_context.cpp
+        Merlin/Platform/OpenGL/opengl_vertex_buffer.cpp
+        Merlin/Platform/OpenGL/opengl_index_buffer.cpp
+        Merlin/Platform/OpenGL/opengl_vertex_array.cpp
+        Merlin/Platform/OpenGL/opengl_frame_buffer.cpp
+        Merlin/Platform/OpenGL/opengl_texture2d.cpp
+        Merlin/Platform/OpenGL/opengl_cubemap.cpp
+        Merlin/Platform/OpenGL/opengl_shader.cpp
+        Merlin/Platform/OpenGL/opengl_render_api.cpp
+    )
+    set(MERLIN_OPENGL_INCLUDE
+        Merlin/Platform/OpenGL/opengl_context.hpp
+        Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp
+        Merlin/Platform/OpenGL/opengl_index_buffer.hpp
+        Merlin/Platform/OpenGL/opengl_vertex_array.hpp
+        Merlin/Platform/OpenGL/opengl_frame_buffer.hpp
+        Merlin/Platform/OpenGL/opengl_texture2d.hpp
+        Merlin/Platform/OpenGL/opengl_cubemap.hpp
+        Merlin/Platform/OpenGL/opengl_shader.hpp
+        Merlin/Platform/OpenGL/opengl_render_api.hpp
+    )
+    source_group("OpenGL" FILES ${MERLIN_OPENGL_SOURCE} ${MERLIN_OPENGL_INCLUDE})
+endif()
+
+
+#=============================
+# VULKAN
+#=============================
+if(USE_VULKAN)
+    set(MERLIN_VULKAN_SOURCE
+        Merlin/Platform/Vulkan/vulkan_render_api.cpp
+        Merlin/Platform/Vulkan/vulkan_context.cpp
+    )
+    set(MERLIN_VULKAN_INCLUDE
+        Merlin/Platform/Vulkan/vulkan_render_api.hpp
+        Merlin/Platform/Vulkan/vulkan_context.hpp
+    )
+    source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
+endif()
+
 
 #=============================
 # GLFW
@@ -130,15 +152,19 @@ set(MERLIN_GLFW_INCLUDE
 )
 source_group("GLFW" FILES ${MERLIN_GLFW_SOURCE} ${MERLIN_GLFW_INCLUDE})
 
+
 #=============================
 # Third Party Setup
 #=============================
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
+if(USE_OPENGL)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
+endif()
+
 
 #=============================
 # LIBRARY
@@ -147,16 +173,24 @@ set(MERLIN_SOURCE
     ${MERLIN_CORE_SOURCE}
     ${MERLIN_RENDER_SOURCE}
     ${MERLIN_SCENE_SOURCE}
-    ${MERLIN_OPENGL_SOURCE}
     ${MERLIN_GLFW_SOURCE}
 )
 set(MERLIN_INCLUDE
     ${MERLIN_CORE_INCLUDE}
     ${MERLIN_RENDER_INCLUDE}
     ${MERLIN_SCENE_INCLUDE}
-    ${MERLIN_OPENGL_INCLUDE}
     ${MERLIN_GLFW_INCLUDE}
 )
+
+if(USE_OPENGL)
+    list(APPEND MERLIN_SOURCE ${MERLIN_OPENGL_SOURCE})
+    list(APPEND MERLIN_INCLUDE ${MERLIN_OPENGL_INCLUDE})
+endif()
+
+if(USE_VULKAN)
+    list(APPEND MERLIN_SOURCE ${MERLIN_VULKAN_SOURCE})
+    list(APPEND MERLIN_INCLUDE ${MERLIN_VULKAN_INCLUDE})
+endif()
 
 add_library(Merlin STATIC
     ${MERLIN_SOURCE}
@@ -175,8 +209,24 @@ target_link_libraries(Merlin
     glm
     imgui
     PRIVATE
-    glad
     spdlog::spdlog
     glfw
     stb
 )
+
+if(USE_OPENGL)
+    target_link_libraries(Merlin
+        PRIVATE
+        glad
+    )
+endif()
+if(USE_VULKAN)
+    target_include_directories(Merlin
+    PUBLIC
+    ${Vulkan_INCLUDE_DIR}
+    )
+    target_link_libraries(Merlin
+    PUBLIC
+    ${Vulkan_LIBRARY}
+    )
+endif()
