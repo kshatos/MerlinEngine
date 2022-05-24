@@ -128,8 +128,12 @@ endif()
 #=============================
 if(USE_VULKAN)
     set(MERLIN_VULKAN_SOURCE
+        Merlin/Platform/Vulkan/vulkan_render_api.cpp
+        Merlin/Platform/Vulkan/vulkan_context.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
+        Merlin/Platform/Vulkan/vulkan_render_api.hpp
+        Merlin/Platform/Vulkan/vulkan_context.hpp
     )
     source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
 endif()
