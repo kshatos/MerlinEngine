@@ -7,38 +7,28 @@
 #include <optional>
 #include "Merlin/Render/graphics_context.hpp"
 #include "vulkan/vulkan.h"
-
+#include "vulkan_instance.hpp"
+#include "vulkan_physical_device.hpp"
+#include "vulkan_logical_device.hpp"
+#include <memory>
 
 
 namespace Merlin
 {
-    struct QueueFamilyIndices
+
+    class VulkanContext
     {
-        std::optional<uint32_t> graphicsFamily;
-    };
-
-    class VulkanContext : public GraphicsContext
-    {
-        VkInstance m_instance;
-        VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-        VkDevice m_logicalDevice;
-        VkQueue m_graphicsQueue;
-        QueueFamilyIndices m_indices;
-        VkSurfaceKHR m_surface;
-
-        bool deviceIsSuitable(const VkPhysicalDevice& device);
-        void PickPhysicalDevice();
-        void CreateInstance();
-        void CreateSurface(GLFWwindow* window);
-        VkDeviceQueueCreateInfo GetDeviceQueueInfo();
-        void CreateLogicalDevice();
-
     public:
+        std::shared_ptr<VulkanInstance> instance;
+        std::shared_ptr<VulkanPhysicalDevice> physicalDevice;
+        std::shared_ptr<VulkanLogicalDevice> logicalDevice;
+        VkSurfaceKHR surface;
 
-        VulkanContext(GLFWwindow* window);
-        ~VulkanContext();
-        virtual void Init() override;
-        virtual void SwapBuffers() override;
+        VulkanContext(void* window);
+
+    private:
+        void CreateSurface(GLFWwindow* window);
+        void PickPhysicalDevice();
     };
 }
 #endif

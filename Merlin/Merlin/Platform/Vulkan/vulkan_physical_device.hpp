@@ -3,7 +3,6 @@
 #include<vulkan/vulkan.h>
 #include <vector>
 
-
 namespace Merlin
 {
     struct VulkanPhysicalDevice
