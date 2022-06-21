@@ -29,10 +29,10 @@ namespace Merlin
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
     std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
-    void Renderer::Init(RenderBackend backend)
+    void Renderer::Init(void* windowPointer, RenderBackend backend)
     {
         m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create(backend));
-        m_render_impl->Init();
+        m_render_impl->Init(windowPointer);
 
         if (backend != RenderBackend::VULKAN)
         {

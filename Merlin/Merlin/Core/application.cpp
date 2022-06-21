@@ -25,7 +25,7 @@ namespace Merlin
         m_main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
-        Renderer::Init(properties.renderBackend);
+        Renderer::Init(m_main_window->GetNativePointer(), properties.renderBackend);
 
         if (properties.renderBackend != RenderBackend::VULKAN)
             PushLayerFront(std::make_shared<IMGUILayer>());

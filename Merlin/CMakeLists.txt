@@ -129,14 +129,12 @@ endif()
 if(ENABLE_VULKAN)
     set(MERLIN_VULKAN_SOURCE
         Merlin/Platform/Vulkan/vulkan_render_api.cpp
-        Merlin/Platform/Vulkan/vulkan_context.cpp
         Merlin/Platform/Vulkan/vulkan_instance.cpp
         Merlin/Platform/Vulkan/vulkan_physical_device.cpp
         Merlin/Platform/Vulkan/vulkan_logical_device.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
         Merlin/Platform/Vulkan/vulkan_render_api.hpp
-        Merlin/Platform/Vulkan/vulkan_context.hpp
         Merlin/Platform/Vulkan/vulkan_instance.hpp
         Merlin/Platform/Vulkan/vulkan_physical_device.hpp
         Merlin/Platform/Vulkan/vulkan_logical_device.hpp

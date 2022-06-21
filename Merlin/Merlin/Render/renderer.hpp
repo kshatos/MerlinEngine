@@ -15,7 +15,7 @@ namespace Merlin
         static std::unique_ptr<RenderAPI> m_render_impl;
         static std::shared_ptr<FrameBuffer> m_shadow_buffer;
     public:
-        static void Init(RenderBackend backend);
+        static void Init(void* windowPointer, RenderBackend backend);
         inline static std::shared_ptr<FrameBuffer> GetShadowBuffer() { return m_shadow_buffer; }
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
         static void SetClearColor(const glm::vec4& color);

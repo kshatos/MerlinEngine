@@ -17,7 +17,7 @@ namespace Merlin
         ME_LOG_INFO(std::string(message));
     }
 
-    void OpenGLRenderAPI::Init()
+    void OpenGLRenderAPI::Init(void* windowPointer)
     {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
