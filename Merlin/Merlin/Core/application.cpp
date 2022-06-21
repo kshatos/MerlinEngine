@@ -17,6 +17,7 @@ namespace Merlin
         WindowProperties windowProps
         {
             properties.appName,
+            properties.renderBackend,
             properties.windowWidth,
             properties.windowHeight
         };
@@ -26,7 +27,8 @@ namespace Merlin
 
         Renderer::Init(properties.renderBackend);
 
-        PushLayerFront(std::make_shared<IMGUILayer>());
+        if (properties.renderBackend != RenderBackend::VULKAN)
+            PushLayerFront(std::make_shared<IMGUILayer>());
 
         m_is_running = true;
         app_instance = this;

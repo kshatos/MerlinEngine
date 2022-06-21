@@ -2,19 +2,26 @@
 #define WINDOW_HPP
 #include <functional>
 #include "app_events.hpp"
-
+#include "Merlin/Render/render.hpp"
 
 namespace Merlin
 {
     struct WindowProperties
     {
+        RenderBackend renderBackend;
         std::string title;
         unsigned int width;
         unsigned int height;
 
         WindowProperties(
-            std::string _title, int _width, int _height) :
-            title(_title), width(_width), height(_height)
+            std::string _title,
+            RenderBackend _renderBackend,
+            int _width,
+            int _height) :
+            renderBackend(_renderBackend),
+            title(_title),
+            width(_width),
+            height(_height)
         {
         }
     };

@@ -1,5 +1,11 @@
 #include "Merlin/Platform/GLFW/glfw_window.hpp"
 #include "Merlin/Core/app_events.hpp"
+#ifdef MERLIN_USE_VULKAN
+#include <vulkan/vulkan.h>
+#endif
+#ifdef MERLIN_USE_OPENGL
+#include <glad/glad.h>
+#endif
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
@@ -22,6 +28,8 @@ namespace Merlin
             glfw_is_initialized = true;
         }
 
+        if (props.renderBackend == RenderBackend::VULKAN)
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
 
