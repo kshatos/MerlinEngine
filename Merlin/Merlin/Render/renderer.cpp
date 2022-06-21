@@ -29,9 +29,9 @@ namespace Merlin
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
     std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
-    void Renderer::Init()
+    void Renderer::Init(RenderBackend backend)
     {
-        m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create());
+        m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create(backend));
         m_render_impl->Init();
         m_shadow_shader = Shader::CreateFromFiles(
             ".\\Assets\\Shaders\\shadow.vert",

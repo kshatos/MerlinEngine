@@ -4,12 +4,10 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Merlin/Render/scene_render_data.hpp"
-
+#include "Merlin/Render/render_api.hpp"
 
 namespace Merlin
 {
-    class RenderAPI;
-
     class Renderer
     {
         static std::shared_ptr<Shader> m_shadow_shader;
@@ -17,7 +15,7 @@ namespace Merlin
         static std::unique_ptr<RenderAPI> m_render_impl;
         static std::shared_ptr<FrameBuffer> m_shadow_buffer;
     public:
-        static void Init();
+        static void Init(RenderBackend backend);
         inline static std::shared_ptr<FrameBuffer> GetShadowBuffer() { return m_shadow_buffer; }
         static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
         static void SetClearColor(const glm::vec4& color);

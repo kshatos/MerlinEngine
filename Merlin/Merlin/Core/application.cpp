@@ -10,15 +10,21 @@ namespace Merlin
 {
     Application* Application::app_instance = nullptr;
 
-    Application::Application(const WindowProperties& properties)
+    Application::Application(const ApplicationInfo& properties)
     {
         Logger::Init();
 
-        m_main_window = std::unique_ptr<Window>(Window::Create(properties));
+        WindowProperties windowProps
+        {
+            properties.appName,
+            properties.windowWidth,
+            properties.windowHeight
+        };
+        m_main_window = std::unique_ptr<Window>(Window::Create(windowProps));
         m_main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
-        Renderer::Init();
+        Renderer::Init(properties.renderBackend);
 
         PushLayerFront(std::make_shared<IMGUILayer>());
 

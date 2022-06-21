@@ -7,6 +7,12 @@
 
 namespace Merlin
 {
+    enum class RenderBackend
+    {
+        OPENGL,
+        VULKAN
+    };
+
     class RenderAPI
     {
     public:
@@ -17,7 +23,7 @@ namespace Merlin
         virtual void Clear() = 0;
         virtual void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) = 0;
 
-        static RenderAPI* Create();
+        static RenderAPI* Create(RenderBackend backend);
     };
 }
 
