@@ -3,10 +3,32 @@
 #include "Merlin//Core/app_events.hpp"
 #include "Merlin//Core/window.hpp"
 #include "Merlin/Core/layer_stack.hpp"
+#include "Merlin/Render/render_api.hpp"
 
 
 namespace Merlin
 {
+    struct ApplicationInfo
+    {
+        std::string appName = "";
+        RenderBackend renderBackend = RenderBackend::OPENGL;
+        int windowWidth = 800;
+        int windowHeight = 800;
+
+        ApplicationInfo(
+            std::string _appName,
+            RenderBackend _renderBackend,
+            int _windowWidth,
+            int _windowHeight) :
+            appName(_appName),
+            renderBackend(_renderBackend),
+            windowWidth(_windowWidth),
+            windowHeight(_windowHeight)
+        {
+        }
+    };
+
+
     class Application
     {
         static Application* app_instance;
@@ -18,7 +40,7 @@ namespace Merlin
     public:
         inline static Application& Get() { return *app_instance; }
        
-        Application(const WindowProperties& properties);
+        Application(const ApplicationInfo& properties);
         virtual ~Application() {}
 
         void PushLayerFront(std::shared_ptr<Layer> layer);

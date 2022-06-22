@@ -1,0 +1,30 @@
+
+set(VULKAN_TEST_SRC
+    source/main.cpp
+)
+
+set(VULKAN_TEST_INC
+)
+
+add_executable(VulkanTest
+    ${VULKAN_TEST_SRC}
+    ${VULKAN_TEST_INC}
+)
+
+
+set_property(TARGET VulkanTest PROPERTY CXX_STANDARD 17)
+set_property(TARGET VulkanTest PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:Demo>)
+
+target_include_directories(VulkanTest
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(VulkanTest
+    Merlin
+)
+
+add_custom_command(
+    TARGET VulkanTest PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MERLIN_ASSET_DIR} $<TARGET_FILE_DIR:Demo>/Assets
+)

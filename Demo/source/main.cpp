@@ -434,7 +434,7 @@ public:
 class DemoApplication : public Application
 {
 public:
-    DemoApplication(const WindowProperties& properties) : Application(properties)
+    DemoApplication(const ApplicationInfo& properties) : Application(properties)
     {
         PushLayerFront(std::make_shared<SceneLayer>());
     }
@@ -443,6 +443,13 @@ public:
 
 void main()
 {
-    DemoApplication app(WindowProperties{ "Demo", 800, 800 });
+    ApplicationInfo appInfo
+    {
+        "VulkanTest",
+        RenderBackend::OPENGL,
+        800,
+        800
+    };
+    DemoApplication app(appInfo);
     app.Run();
 }

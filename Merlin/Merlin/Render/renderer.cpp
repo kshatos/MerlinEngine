@@ -29,23 +29,27 @@ namespace Merlin
     std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
     std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
-    void Renderer::Init()
+    void Renderer::Init(void* windowPointer, RenderBackend backend)
     {
-        m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create());
-        m_render_impl->Init();
-        m_shadow_shader = Shader::CreateFromFiles(
-            ".\\Assets\\Shaders\\shadow.vert",
-            ".\\Assets\\Shaders\\shadow.frag");
-        m_skybox_shader = Shader::CreateFromFiles(
-            ".\\Assets\\Shaders\\skybox.vert",
-            ".\\Assets\\Shaders\\skybox.frag");
-        m_shadow_buffer = FrameBuffer::Create(
-            FrameBufferParameters
-            {
-                2048, 2048,
-                ColorBufferFormat::NONE,
-                DepthBufferFormat::DEPTH32
-            });
+        m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create(backend));
+        m_render_impl->Init(windowPointer);
+
+        if (backend != RenderBackend::VULKAN)
+        {
+            m_shadow_shader = Shader::CreateFromFiles(
+                ".\\Assets\\Shaders\\shadow.vert",
+                ".\\Assets\\Shaders\\shadow.frag");
+            m_skybox_shader = Shader::CreateFromFiles(
+                ".\\Assets\\Shaders\\skybox.vert",
+                ".\\Assets\\Shaders\\skybox.frag");
+            m_shadow_buffer = FrameBuffer::Create(
+                FrameBufferParameters
+                {
+                    2048, 2048,
+                    ColorBufferFormat::NONE,
+                    DepthBufferFormat::DEPTH32
+                });
+        }
     }
 
     void Renderer::SetViewport(
