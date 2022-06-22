@@ -32,6 +32,14 @@ namespace Merlin
         VkQueue graphicsQueue;
         VkQueue presentQueue;
 
+        VkSwapchainKHR swapChain;
+        VkFormat swapChainImageFormat;
+        VkExtent2D swapChainExtent;
+        std::vector<VkImage> swapChainImages;
+        std::vector<VkImageView> swapChainImageViews;
+
+        std::vector<VkFramebuffer> swapChainFramebuffers;
+
     public:
         ~VulkanRenderAPI();
         void Init(void* windowPointer) override;
@@ -40,10 +48,13 @@ namespace Merlin
         void Clear() override;
         void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) override;
     private:
+        // Setup stages
         void CreateInstance();
         void CreateSurface();
         void PickPhysicalDevice();
         void CreateLogicalDevice();
+        void CreateSwapChain();
+        void createImageViews();
 
     };
 }
