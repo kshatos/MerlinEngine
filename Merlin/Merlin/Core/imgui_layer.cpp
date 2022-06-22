@@ -1,7 +1,11 @@
 #include "Merlin/Core/imgui_layer.hpp"
 #include "imgui.h"
+#ifdef MERLIN_USE_OPENGL
 #include <backends/imgui_impl_opengl3.h>
-
+#endif
+#ifdef MERLIN_USE_VULKAN
+#include <backends/imgui_impl_vulkan.h>
+#endif
 
 namespace Merlin
 {

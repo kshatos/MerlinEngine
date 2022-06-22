@@ -96,7 +96,7 @@ source_group("Scene" FILES ${MERLIN_SCENE_SOURCE} ${MERLIN_SCENE_INCLUDE})
 #=============================
 # OPENGL
 #=============================
-if(ENABLE_OPENGL)
+if(MERLIN_ENABLE_OPENGL)
     set(MERLIN_OPENGL_SOURCE
         Merlin/Platform/OpenGL/opengl_context.cpp
         Merlin/Platform/OpenGL/opengl_vertex_buffer.cpp
@@ -126,7 +126,7 @@ endif()
 #=============================
 # VULKAN
 #=============================
-if(ENABLE_VULKAN)
+if(MERLIN_ENABLE_VULKAN)
     set(MERLIN_VULKAN_SOURCE
         Merlin/Platform/Vulkan/vulkan_render_api.cpp
         Merlin/Platform/Vulkan/vulkan_util.cpp
@@ -161,7 +161,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
-if(ENABLE_OPENGL)
+if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
 
@@ -182,12 +182,12 @@ set(MERLIN_INCLUDE
     ${MERLIN_GLFW_INCLUDE}
 )
 
-if(ENABLE_OPENGL)
+if(MERLIN_ENABLE_OPENGL)
     list(APPEND MERLIN_SOURCE ${MERLIN_OPENGL_SOURCE})
     list(APPEND MERLIN_INCLUDE ${MERLIN_OPENGL_INCLUDE})
 endif()
 
-if(ENABLE_VULKAN)
+if(MERLIN_ENABLE_VULKAN)
     list(APPEND MERLIN_SOURCE ${MERLIN_VULKAN_SOURCE})
     list(APPEND MERLIN_INCLUDE ${MERLIN_VULKAN_INCLUDE})
 endif()
@@ -214,13 +214,13 @@ target_link_libraries(Merlin
     stb
 )
 
-if(ENABLE_OPENGL)
+if(MERLIN_ENABLE_OPENGL)
     target_link_libraries(Merlin
         PRIVATE
         glad
     )
 endif()
-if(ENABLE_VULKAN)
+if(MERLIN_ENABLE_VULKAN)
     target_include_directories(Merlin
     PUBLIC
     ${Vulkan_INCLUDE_DIR}
