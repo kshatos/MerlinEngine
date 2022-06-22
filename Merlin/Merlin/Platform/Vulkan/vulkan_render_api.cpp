@@ -1,5 +1,7 @@
-#include "vulkan_render_api.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
 #include <stdexcept>
+#include <set>
 
 
 namespace Merlin
@@ -30,8 +32,15 @@ namespace Merlin
         return true;
     }
 
-
     // RENDER API
+
+    VulkanRenderAPI::~VulkanRenderAPI()
+    {
+        vkDestroyDevice(logicalDevice, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyInstance(instance, nullptr);
+    }
+
     void VulkanRenderAPI::Init(void* windowPointer)
     {
         window = (GLFWwindow*)windowPointer;
@@ -62,7 +71,7 @@ namespace Merlin
     }
 
 
-    // UITL
+    // SETUP
     void VulkanRenderAPI::CreateInstance()
     {
         VkApplicationInfo appInfo{};
@@ -124,7 +133,8 @@ namespace Merlin
         VkPhysicalDevice selectedDevice = VK_NULL_HANDLE;
         for (const auto& device : devices)
         {
-            float score = 1.0f;//evaluationFunction(device);
+            VulkanPhysicalDeviceInfo deviceInfo(device, instance, surface);
+            float score = evaluateDevice(deviceInfo);
             if (score > bestScore)
             {
                 bestScore = score;
@@ -138,6 +148,58 @@ namespace Merlin
         }
 
         physicalDevice = selectedDevice;
+    }
+
+    void VulkanRenderAPI::CreateLogicalDevice()
+    {
+        auto queueIndices = findQueueFamilies(physicalDevice, surface);
+        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+        std::set<uint32_t> uniqueQueueFamilies =
+        {
+            queueIndices.graphicsFamily.value(),
+            queueIndices.presentFamily.value()
+        };
+
+        float queuePriority = 1.0f;
+        for (auto& queueFamilyIndex : uniqueQueueFamilies)
+        {
+            VkDeviceQueueCreateInfo queueCreateInfo{};
+            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
+            queueCreateInfo.queueCount = 1;
+            queueCreateInfo.pQueuePriorities = &queuePriority;
+            queueCreateInfos.push_back(queueCreateInfo);
+        }
+
+        VkDeviceCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        createInfo.queueCreateInfoCount = queueCreateInfos.size();
+        createInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+
+        createInfo.enabledExtensionCount =
+            static_cast<uint32_t>(deviceExtensions.size());
+        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+        if (validationLayerNames.size() > 0)
+        {
+            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayerNames.size());
+            createInfo.ppEnabledLayerNames = validationLayerNames.data();
+        }
+        else
+        {
+            createInfo.enabledLayerCount = 0;
+        }
+
+        auto createResult = vkCreateDevice(
+            physicalDevice, &createInfo, nullptr, &logicalDevice);
+        if (createResult != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create logical device!");
+        }
+
+        vkGetDeviceQueue(logicalDevice, queueIndices.graphicsFamily.value(), 0, &graphicsQueue);
+        vkGetDeviceQueue(logicalDevice, queueIndices.presentFamily.value(), 0, &presentQueue);
     }
 
 }

@@ -1,9 +1,11 @@
-#include "vulkan_physical_device.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
+#include <set>
+#include <stdexcept>
 
 
 namespace Merlin
 {
-    VulkanPhysicalDevice::VulkanPhysicalDevice(
+    VulkanPhysicalDeviceInfo::VulkanPhysicalDeviceInfo(
         VkPhysicalDevice deviceHandle,
         VkInstance instance,
         VkSurfaceKHR surface)
@@ -55,5 +57,40 @@ namespace Merlin
             vkGetPhysicalDeviceSurfacePresentModesKHR(
                 deviceHandle, surface, &presentModeCount, surfacePresentModes.data());
         }
+    }
+
+    float evaluateDevice(const VulkanPhysicalDeviceInfo& info)
+    {
+        return 1.0f;
+    }
+
+    QueueFamilyIndices findQueueFamilies(
+        VkPhysicalDevice device,
+        VkSurfaceKHR surface)
+    {
+        uint32_t queueFamilyCount = 0;
+        vkGetPhysicalDeviceQueueFamilyProperties(
+            device, &queueFamilyCount, nullptr);
+        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+        vkGetPhysicalDeviceQueueFamilyProperties(
+            device, &queueFamilyCount, queueFamilies.data());
+
+        QueueFamilyIndices indices;
+        int i = 0;
+        for (const auto& familyProps : queueFamilies)
+        {
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+            if (presentSupport)
+            {
+                indices.presentFamily = i;
+            }
+
+            if (familyProps.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+                indices.graphicsFamily = i;
+            i++;
+        }
+
+        return indices;
     }
 }

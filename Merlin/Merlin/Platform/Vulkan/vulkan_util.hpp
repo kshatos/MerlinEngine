@@ -1,11 +1,13 @@
-#ifndef VULKAN_PHYSICAL_DEVICE
-#define VULKAN_PHYSICAL_DEVICE
-#include<vulkan/vulkan.h>
+#ifndef VULKAN_UTIL_HPP
+#define VULKAN_UTIL_HPP
+#include "vulkan/vulkan.h"
 #include <vector>
+#include <optional>
+
 
 namespace Merlin
 {
-    struct VulkanPhysicalDevice
+    struct VulkanPhysicalDeviceInfo
     {
         VkPhysicalDevice handle;
 
@@ -21,10 +23,22 @@ namespace Merlin
         std::vector<VkPresentModeKHR> surfacePresentModes;
 
 
-        VulkanPhysicalDevice(
+        VulkanPhysicalDeviceInfo(
             VkPhysicalDevice deviceHandle,
             VkInstance instance,
             VkSurfaceKHR surface);
     };
+
+    float evaluateDevice(const VulkanPhysicalDeviceInfo& info);
+
+    struct QueueFamilyIndices
+    {
+        std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+    };
+
+    QueueFamilyIndices findQueueFamilies(
+        VkPhysicalDevice device,
+        VkSurfaceKHR surface);
 }
 #endif
