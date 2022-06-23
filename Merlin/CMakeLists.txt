@@ -7,6 +7,7 @@ set(MERLIN_CORE_SOURCE
     Merlin/Core/window.cpp
     Merlin/Core/input.cpp
     Merlin/Core/imgui_layer.cpp
+    Merlin/Core/imgui_context.cpp
     Merlin/Core/layer_stack.cpp
 )
 set(MERLIN_CORE_INCLUDE
@@ -19,6 +20,7 @@ set(MERLIN_CORE_INCLUDE
     Merlin/Core/input.hpp
     Merlin/Core/layer.hpp
     Merlin/Core/imgui_layer.hpp
+    Merlin/Core/imgui_context.hpp
     Merlin/Core/layer_stack.hpp
 )
 source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})

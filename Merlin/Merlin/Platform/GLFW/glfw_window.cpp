@@ -33,6 +33,10 @@ namespace Merlin
         m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
 
+        m_renderApi = RenderAPI::Create(props.renderBackend);
+        m_imguiApi = std::make_shared<ImGuiAPI>();
+        m_imguiApi->Init(m_renderApi);
+
         m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
         m_context->Init();
 

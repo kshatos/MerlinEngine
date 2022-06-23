@@ -55,4 +55,9 @@ namespace Merlin
     {
         glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
+
+    RenderBackend OpenGLRenderAPI::Backend()
+    {
+        return RenderBackend::OPENGL;
+    }
 }

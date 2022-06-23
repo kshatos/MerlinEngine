@@ -77,6 +77,11 @@ namespace Merlin
     {
     }
 
+    RenderBackend VulkanRenderAPI::Backend()
+    {
+        return RenderBackend::VULKAN;
+    }
+
     // SETUP
     void VulkanRenderAPI::CreateInstance()
     {

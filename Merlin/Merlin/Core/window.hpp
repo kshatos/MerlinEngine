@@ -3,6 +3,8 @@
 #include <functional>
 #include "app_events.hpp"
 #include "Merlin/Render/render.hpp"
+#include "Merlin/Core/imgui_context.hpp"
+
 
 namespace Merlin
 {
@@ -28,6 +30,9 @@ namespace Merlin
 
     class Window
     {
+    public:
+        std::shared_ptr<RenderAPI> m_renderApi;
+        std::shared_ptr<ImGuiAPI> m_imguiApi;
     public:
         using EventCallbackFunction = std::function<void(AppEvent&)>;
 

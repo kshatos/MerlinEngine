@@ -10,13 +10,13 @@
 
 namespace Merlin
 {
-    RenderAPI* RenderAPI::Create(RenderBackend backend)
+    std::shared_ptr<RenderAPI> RenderAPI::Create(RenderBackend backend)
     {
         switch (backend)
         {
         case RenderBackend::OPENGL:
 #ifdef MERLIN_USE_OPENGL
-            return new OpenGLRenderAPI();
+            return std::make_shared<OpenGLRenderAPI>();
 #else 
             throw std::runtime_error("OpenGL API not avialable!");
             return nullptr;
@@ -24,7 +24,7 @@ namespace Merlin
             break;
         case RenderBackend::VULKAN:
 #ifdef MERLIN_USE_VULKAN
-            return new VulkanRenderAPI();
+            return  std::make_shared<VulkanRenderAPI>();
 #else 
             throw std::runtime_error("Vulkan API not avialable!");
             return nullptr;
