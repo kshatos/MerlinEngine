@@ -22,6 +22,7 @@ namespace Merlin
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
         virtual void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) = 0;
+        virtual void SwapBuffers() = 0;
         virtual RenderBackend Backend() = 0;
         static std::shared_ptr<RenderAPI> Create(RenderBackend backend);
     };

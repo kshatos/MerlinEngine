@@ -19,6 +19,11 @@ namespace Merlin
 
     void OpenGLRenderAPI::Init(void* windowPointer)
     {
+        m_window = (GLFWwindow*)windowPointer;
+
+        glfwMakeContextCurrent(m_window);
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -60,4 +65,10 @@ namespace Merlin
     {
         return RenderBackend::OPENGL;
     }
+
+    void OpenGLRenderAPI::SwapBuffers()
+    {
+        glfwSwapBuffers(m_window);;
+    }
+
 }

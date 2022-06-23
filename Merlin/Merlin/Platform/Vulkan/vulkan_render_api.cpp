@@ -77,6 +77,10 @@ namespace Merlin
     {
     }
 
+    void VulkanRenderAPI::SwapBuffers()
+    {
+    }
+
     RenderBackend VulkanRenderAPI::Backend()
     {
         return RenderBackend::VULKAN;

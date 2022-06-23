@@ -29,11 +29,13 @@ namespace Merlin
     public:
         GLFWWindowImpl(WindowProperties props);
         ~GLFWWindowImpl();
+        double CurrentTime() override;
         unsigned int GetWidth() override;
         unsigned int GetHeight() override;
         void SetEventCallback(const EventCallbackFunction& callback) override;
         void OnUpdate() override;
         void* GetNativePointer() override;
+        void HandleEvent(AppEvent& app_event) override;
     };
 }
 #endif

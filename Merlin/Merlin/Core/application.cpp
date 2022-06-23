@@ -1,9 +1,7 @@
 #include "Merlin/Core/application.hpp"
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Render/renderer.hpp"
-#include "Merlin/Core/imgui_layer.hpp"
 #include "Merlin/Core/input.hpp"
-#include "GLFW/glfw3.h"
 
 
 namespace Merlin
@@ -25,10 +23,7 @@ namespace Merlin
         m_main_window->SetEventCallback(
             [this](AppEvent& e) { return this->HandleEvent(e); });
 
-        Renderer::Init(m_main_window->GetNativePointer(), properties.renderBackend);
-
-        if (properties.renderBackend != RenderBackend::VULKAN)
-            PushLayerFront(std::make_shared<IMGUILayer>());
+        Renderer::Init(m_main_window->m_renderApi);
 
         m_is_running = true;
         app_instance = this;
@@ -55,6 +50,8 @@ namespace Merlin
 
         Input::HandleEvent(app_event);
 
+        m_main_window->HandleEvent(app_event);
+
         // Dispatch events to layers allowing them to block
         for (auto& layer : m_layer_stack)
         {
@@ -77,7 +74,7 @@ namespace Merlin
     {
         while (m_is_running)
         {
-            auto current_frame_time = glfwGetTime();
+            auto current_frame_time = m_main_window->CurrentTime();
             auto time_step = current_frame_time - m_last_frame_time;
             m_last_frame_time = current_frame_time;
 

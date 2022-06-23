@@ -6,11 +6,11 @@
 #include <backends/imgui_impl_vulkan.h>
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
 #endif
+#include "backends/imgui_impl_glfw.h"
 
 
 namespace Merlin
 {
-
     ImGuiAPI::~ImGuiAPI()
     {
         if (!initialized)
@@ -33,7 +33,7 @@ namespace Merlin
         ImGui::DestroyContext(context);
     }
 
-    void ImGuiAPI::Init(std::shared_ptr<RenderAPI> renderApi)
+    void ImGuiAPI::Init(void* window, std::shared_ptr<RenderAPI> renderApi)
     {
         backend = renderApi->Backend();
 
@@ -42,11 +42,11 @@ namespace Merlin
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         ImGui::StyleColorsDark();
 
-        InitImGuiImpl(renderApi);
+        InitImGuiImpl(window, renderApi);
         initialized = true;
     }
 
-    void ImGuiAPI::InitImGuiImpl(std::shared_ptr<RenderAPI> renderApi)
+    void ImGuiAPI::InitImGuiImpl(void* window, std::shared_ptr<RenderAPI> renderApi)
     {
         switch (renderApi->Backend())
         {
@@ -85,4 +85,36 @@ namespace Merlin
         }
     }
 
+    void ImGuiAPI::HandleEvent(AppEvent& app_event)
+    {
+        app_event.Dispatch<MouseButtonPressedEvent>(
+            [](MouseButtonPressedEvent& e)
+            {
+                auto& io = ImGui::GetIO();
+                io.MouseDown[e.GetButton()] = true;
+                return false;
+            });
+        app_event.Dispatch<MouseButtonReleasedEvent>(
+            [](MouseButtonReleasedEvent& e)
+            {
+                auto& io = ImGui::GetIO();
+                io.MouseDown[e.GetButton()] = false;
+                return false;
+            });
+        app_event.Dispatch<MouseMovedEvent>(
+            [](MouseMovedEvent& e)
+            {
+                auto& io = ImGui::GetIO();
+                io.MousePos = ImVec2(e.GetXPosition(), e.GetYPosition());
+                return false;
+            });
+        app_event.Dispatch<MouseScrolledEvent>(
+            [](MouseScrolledEvent& e)
+            {
+                auto& io = ImGui::GetIO();
+                io.MouseWheel += e.GetYScrollDelta();
+                io.MouseWheelH += e.GetXScrollDelta();
+                return false;
+            });
+    }
 }

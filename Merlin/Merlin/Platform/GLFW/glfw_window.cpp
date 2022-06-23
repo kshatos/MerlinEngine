@@ -32,17 +32,18 @@ namespace Merlin
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
+        glfwSetWindowUserPointer(m_window_ptr, &m_data);
+        SetGLFWCallbacks();
 
         m_renderApi = RenderAPI::Create(props.renderBackend);
+        m_renderApi->Init(m_window_ptr);
         m_imguiApi = std::make_shared<ImGuiAPI>();
-        m_imguiApi->Init(m_renderApi);
+        m_imguiApi->Init(m_window_ptr, m_renderApi);
 
-        m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
-        m_context->Init();
+        //m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
+        //m_context->Init();
 
-        glfwSetWindowUserPointer(m_window_ptr, &m_data);
 
-        SetGLFWCallbacks();
     }
 
     GLFWWindowImpl::~GLFWWindowImpl()
@@ -55,6 +56,11 @@ namespace Merlin
             glfwTerminate();
             glfw_is_initialized = false;
         }
+    }
+
+    double GLFWWindowImpl::CurrentTime()
+    {
+        return glfwGetTime();
     }
 
     unsigned int GLFWWindowImpl::GetWidth()
@@ -75,92 +81,97 @@ namespace Merlin
     void GLFWWindowImpl::OnUpdate()
     {
         glfwPollEvents();
-        m_context->SwapBuffers();
+        m_renderApi->SwapBuffers();
     }
 
     void GLFWWindowImpl::SetGLFWCallbacks()
     {
         glfwSetWindowSizeCallback(m_window_ptr,
             [](GLFWwindow* window, int width, int height)
-        {
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            x.width = width;
-            x.height = height;
-            WindowResizedEvent app_event(width, height);
-            x.callback(app_event);
-        });
+            {
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                x.width = width;
+                x.height = height;
+                WindowResizedEvent app_event(width, height);
+                x.callback(app_event);
+            });
 
         glfwSetWindowCloseCallback(m_window_ptr,
             [](GLFWwindow* window)
-        {
-            WindowClosedEvent app_event;
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            x.callback(app_event);
-        });
+            {
+                WindowClosedEvent app_event;
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                x.callback(app_event);
+            });
 
         glfwSetKeyCallback(m_window_ptr,
             [](GLFWwindow* window, int key, int scancode, int action, int mods)
-        {
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            switch (action)
             {
-            case GLFW_PRESS:
-            {
-                KeyPressedEvent app_event(key, 0);
-                x.callback(app_event);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                KeyReleasedEvent app_event(key);
-                x.callback(app_event);
-                break;
-            }
-            case GLFW_REPEAT:
-            {
-                KeyPressedEvent app_event(key, 1);
-                x.callback(app_event);
-                break;
-            }
-            }
-        });
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                switch (action)
+                {
+                case GLFW_PRESS:
+                {
+                    KeyPressedEvent app_event(key, 0);
+                    x.callback(app_event);
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    KeyReleasedEvent app_event(key);
+                    x.callback(app_event);
+                    break;
+                }
+                case GLFW_REPEAT:
+                {
+                    KeyPressedEvent app_event(key, 1);
+                    x.callback(app_event);
+                    break;
+                }
+                }
+            });
 
         glfwSetMouseButtonCallback(m_window_ptr,
             [](GLFWwindow* window, int button, int action, int mods)
-        {
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            switch (action)
             {
-            case GLFW_PRESS:
-            {
-                MouseButtonPressedEvent app_event(button);
-                x.callback(app_event);
-                break;
-            }
-            case GLFW_RELEASE:
-            {
-                MouseButtonReleasedEvent app_event(button);
-                x.callback(app_event);
-                break;
-            }
-            }
-        });
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                switch (action)
+                {
+                case GLFW_PRESS:
+                {
+                    MouseButtonPressedEvent app_event(button);
+                    x.callback(app_event);
+                    break;
+                }
+                case GLFW_RELEASE:
+                {
+                    MouseButtonReleasedEvent app_event(button);
+                    x.callback(app_event);
+                    break;
+                }
+                }
+            });
 
         glfwSetScrollCallback(m_window_ptr,
             [](GLFWwindow* window, double xoffset, double yoffset)
-        {
-            MouseScrolledEvent app_event((float)xoffset, (float)yoffset);
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            x.callback(app_event);
-        });
+            {
+                MouseScrolledEvent app_event((float)xoffset, (float)yoffset);
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                x.callback(app_event);
+            });
 
         glfwSetCursorPosCallback(m_window_ptr,
             [](GLFWwindow* window, double xpos, double ypos)
-        {
-            MouseMovedEvent app_event((float)xpos, (float)ypos);
-            auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
-            x.callback(app_event);
-        });
+            {
+                MouseMovedEvent app_event((float)xpos, (float)ypos);
+                auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
+                x.callback(app_event);
+            });
+    }
+
+    void GLFWWindowImpl::HandleEvent(AppEvent& app_event)
+    {
+        m_imguiApi->HandleEvent(app_event);
     }
 
     void* GLFWWindowImpl::GetNativePointer()
