@@ -1,6 +1,7 @@
 #ifndef VULKAN_RENDER_API_HPP
 #define VULKAN_RENDER_API_HPP
 #include "Merlin/Render/render_api.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
 
@@ -27,10 +28,14 @@ namespace Merlin
         VkSurfaceKHR surface;
 
         VkPhysicalDevice physicalDevice;
+        VulkanPhysicalDeviceInfo physicalDeviceInfo;
 
         VkDevice logicalDevice;
+        QueueFamilyIndices queueIndices;
         VkQueue graphicsQueue;
         VkQueue presentQueue;
+
+        VkDescriptorPool guiDescriptorPool;
 
         VkSwapchainKHR swapChain;
         VkFormat swapChainImageFormat;
@@ -41,6 +46,7 @@ namespace Merlin
         std::vector<VkFramebuffer> swapChainFramebuffers;
 
     public:
+        VulkanRenderAPI() = default;
         ~VulkanRenderAPI();
         void Init(void* windowPointer) override;
         void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
@@ -58,6 +64,7 @@ namespace Merlin
         void CreateLogicalDevice();
         void CreateSwapChain();
         void createImageViews();
+        void CreateDescriptorPool();
 
     };
 }

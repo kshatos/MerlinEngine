@@ -1,5 +1,4 @@
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
 #include <stdexcept>
 #include <set>
 
@@ -39,7 +38,7 @@ namespace Merlin
             vkDestroyImageView(logicalDevice, imageView, nullptr);
 
         vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
-
+        vkDestroyDescriptorPool(logicalDevice, guiDescriptorPool, nullptr);
         vkDestroyDevice(logicalDevice, nullptr);
         vkDestroySurfaceKHR(instance, surface, nullptr);
         vkDestroyInstance(instance, nullptr);
@@ -54,6 +53,7 @@ namespace Merlin
         CreateLogicalDevice();
         CreateSwapChain();
         createImageViews();
+        CreateDescriptorPool();
     }
 
     void VulkanRenderAPI::SetViewport(
@@ -163,11 +163,13 @@ namespace Merlin
         }
 
         physicalDevice = selectedDevice;
+        physicalDeviceInfo = VulkanPhysicalDeviceInfo(
+            selectedDevice, instance, surface);
     }
 
     void VulkanRenderAPI::CreateLogicalDevice()
     {
-        auto queueIndices = findQueueFamilies(physicalDevice, surface);
+        queueIndices = findQueueFamilies(physicalDevice, surface);
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies =
         {
@@ -315,4 +317,35 @@ namespace Merlin
         }
     }
 
+    void VulkanRenderAPI::CreateDescriptorPool()
+    {
+        std::vector<VkDescriptorPoolSize> poolSizes =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+        };
+
+        VkDescriptorPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        poolInfo.maxSets = 1000 * (uint32_t)poolSizes.size();
+        poolInfo.poolSizeCount = (uint32_t)poolSizes.size();
+        poolInfo.pPoolSizes = poolSizes.data();
+
+        auto createResult = vkCreateDescriptorPool(
+            logicalDevice, &poolInfo, nullptr, &guiDescriptorPool);
+        if (createResult != VK_SUCCESS)
+        {
+            throw std::runtime_error("failed to create descriptor pool!");
+        }
+    }
 }

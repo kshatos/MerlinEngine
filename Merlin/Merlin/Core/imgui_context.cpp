@@ -43,7 +43,7 @@ namespace Merlin
         ImGui::StyleColorsDark();
 
         InitImGuiImpl(window, renderApi);
-        initialized = true;
+        //initialized = true;
     }
 
     void ImGuiAPI::InitImGuiImpl(void* window, std::shared_ptr<RenderAPI> renderApi)
@@ -65,16 +65,21 @@ namespace Merlin
             init_info.Instance = vulkanApi->instance;
             init_info.PhysicalDevice = vulkanApi->physicalDevice;
             init_info.Device = vulkanApi->logicalDevice;
+            
+            init_info.QueueFamily = vulkanApi->queueIndices.graphicsFamily.value();
+            init_info.Queue = vulkanApi->graphicsQueue;
+            init_info.PipelineCache = VK_NULL_HANDLE; // TODO: Figure out if needed
+            init_info.DescriptorPool = vulkanApi->guiDescriptorPool;
+            init_info.Allocator = nullptr ; // TODO: Figure out if needed
+            init_info.MinImageCount = vulkanApi->swapChainImages.size();
+            init_info.ImageCount = vulkanApi->swapChainImages.size();
+            
+            init_info.CheckVkResultFn = [](VkResult err)
+            {
+                if (err != VK_SUCCESS)
+                    throw std::runtime_error("Error initializing imgui vulkan backend!");
+            };
             /*
-            init_info.QueueFamily = g_QueueFamily;
-            init_info.Queue = g_Queue;
-            init_info.PipelineCache = g_PipelineCache;
-            init_info.DescriptorPool = g_DescriptorPool;
-            init_info.Allocator = g_Allocator;
-            init_info.MinImageCount = g_MinImageCount;
-            init_info.ImageCount = wd->ImageCount;
-            init_info.CheckVkResultFn = check_vk_result;
-
             ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
             */
 
