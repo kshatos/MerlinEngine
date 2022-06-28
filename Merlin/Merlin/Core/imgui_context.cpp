@@ -79,8 +79,12 @@ namespace Merlin
                 if (err != VK_SUCCESS)
                     throw std::runtime_error("Error initializing imgui vulkan backend!");
             };
+            ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)window, true);
             ImGui_ImplVulkan_Init(&init_info, vulkanApi->imGuiRenderPass);
-            
+
+            auto commandBuffer = vulkanApi->BeginSingleTimeCommands();
+            ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+            vulkanApi->EndSingleTimeCommands(commandBuffer);
 
 #else
             throw std::runtime_error("Vulkan not usable.");
