@@ -37,6 +37,8 @@ namespace Merlin
 
         VkDescriptorPool guiDescriptorPool;
 
+        VkRenderPass imGuiRenderPass;
+
         VkSwapchainKHR swapChain;
         VkFormat swapChainImageFormat;
         VkExtent2D swapChainExtent;
@@ -65,6 +67,7 @@ namespace Merlin
         void CreateSwapChain();
         void createImageViews();
         void CreateDescriptorPool();
+        void CreateImGuiRenderPass();
 
     };
 }

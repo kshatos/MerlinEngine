@@ -43,7 +43,7 @@ namespace Merlin
         ImGui::StyleColorsDark();
 
         InitImGuiImpl(window, renderApi);
-        //initialized = true;
+        initialized = true;
     }
 
     void ImGuiAPI::InitImGuiImpl(void* window, std::shared_ptr<RenderAPI> renderApi)
@@ -79,9 +79,8 @@ namespace Merlin
                 if (err != VK_SUCCESS)
                     throw std::runtime_error("Error initializing imgui vulkan backend!");
             };
-            /*
-            ImGui_ImplVulkan_Init(&init_info, wd->RenderPass);
-            */
+            ImGui_ImplVulkan_Init(&init_info, vulkanApi->imGuiRenderPass);
+            
 
 #else
             throw std::runtime_error("Vulkan not usable.");
