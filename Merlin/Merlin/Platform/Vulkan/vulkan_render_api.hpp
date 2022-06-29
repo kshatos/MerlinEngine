@@ -37,10 +37,6 @@ namespace Merlin
         VkQueue graphicsQueue;
         VkQueue presentQueue;
 
-        VkRenderPass renderPass;
-        VkPipelineLayout pipelineLayout;
-        VkPipeline graphicsPipeline;
-
         VkCommandPool commandPool;
         std::vector<VkCommandBuffer> commandBuffers;
 
@@ -53,11 +49,14 @@ namespace Merlin
         VkExtent2D swapChainExtent;
         std::vector<VkImage> swapChainImages;
         std::vector<VkImageView> swapChainImageViews;
-        std::vector<VkFramebuffer> swapChainFramebuffers;
+        std::vector<VkFramebuffer> imGuiFramebuffers;
 
         std::vector<VkSemaphore> imageAvailableSemaphores;
         std::vector<VkSemaphore> renderFinishedSemaphores;
         std::vector<VkFence> inFlightFences;
+
+        uint32_t currentFrame = 0;
+        bool framebufferResized = false;
 
     public:
         VulkanRenderAPI() = default;
@@ -82,13 +81,17 @@ namespace Merlin
         void CreateLogicalDevice();
         void CreateSwapChain();
         void CreateImageViews();
-        void CreateRenderPass();
-        void CreateGraphicsPipeline();
         void CreateCommandPool();
         void CreateCommandBuffer();
         void CreateDescriptorPool();
         void CreateImGuiRenderPass();
+        void CreateImGuiFrameBuffers();
         void CreateSyncObjects();
+
+        // Render
+        void RecordCommandBuffer(
+            VkCommandBuffer commandBuffer,
+            uint32_t imageIndex);
     };
 }
 #endif
