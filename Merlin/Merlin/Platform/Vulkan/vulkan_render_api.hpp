@@ -92,6 +92,9 @@ namespace Merlin
         void CreateImGuiFrameBuffers();
         void CreateSyncObjects();
 
+        void RecreateSwapChain();
+        void CleanupSwapChain();
+
         // Render
         void RecordCommandBuffer(
             VkCommandBuffer commandBuffer,

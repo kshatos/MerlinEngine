@@ -68,14 +68,8 @@ namespace Merlin
         for (auto fence : inFlightFences)
             vkDestroyFence(logicalDevice, fence, nullptr);
 
-        for (auto framebuffer : imGuiFramebuffers)
-            vkDestroyFramebuffer(logicalDevice, framebuffer, nullptr);
+        CleanupSwapChain();
 
-        vkDestroyRenderPass(logicalDevice, imGuiRenderPass, nullptr);
-        for (auto imageView : swapChainImageViews)
-            vkDestroyImageView(logicalDevice, imageView, nullptr);
-
-        vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
         vkDestroyDescriptorPool(logicalDevice, guiDescriptorPool, nullptr);
         vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
 
@@ -119,19 +113,18 @@ namespace Merlin
             UINT64_MAX, imageAvailableSemaphores[currentFrame],
             VK_NULL_HANDLE, &imageIndex);
 
-        /*
         if (aquireImageResult == VK_ERROR_OUT_OF_DATE_KHR ||
             aquireImageResult == VK_SUBOPTIMAL_KHR ||
             framebufferResized)
         {
             framebufferResized = false;
-            recreateSwapChain();
+            RecreateSwapChain();
+            return;
         }
         else if (aquireImageResult != VK_SUCCESS)
         {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
-        */
 
         vkResetFences(logicalDevice, 1, &inFlightFences[currentFrame]);
 
@@ -513,7 +506,8 @@ namespace Merlin
         VkAttachmentDescription attachment = {};
         attachment.format = swapChainImageFormat;
         attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        // TODO: switch to  VK_ATTACHMENT_LOAD_OP_LOAD when other passes added
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; 
         attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -613,6 +607,39 @@ namespace Merlin
         auto commandBuffer = BeginSingleTimeCommands();
         ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
         EndSingleTimeCommands(commandBuffer);
+    }
+
+    void VulkanRenderAPI::RecreateSwapChain()
+    {
+        int width = 0;
+        int height = 0;
+        while (width == 0 || height == 0)
+        {
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
+        }
+
+        vkDeviceWaitIdle(logicalDevice);
+
+        CleanupSwapChain();
+
+        CreateSwapChain();
+        CreateImageViews();
+        CreateImGuiRenderPass();
+        CreateImGuiFrameBuffers();
+    }
+
+    void VulkanRenderAPI::CleanupSwapChain()
+    {
+        for (auto framebuffer : imGuiFramebuffers)
+            vkDestroyFramebuffer(logicalDevice, framebuffer, nullptr);
+
+        vkDestroyRenderPass(logicalDevice, imGuiRenderPass, nullptr);
+
+        for (auto imageView : swapChainImageViews)
+            vkDestroyImageView(logicalDevice, imageView, nullptr);
+
+        vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
     }
 
     VkCommandBuffer VulkanRenderAPI::BeginSingleTimeCommands() {

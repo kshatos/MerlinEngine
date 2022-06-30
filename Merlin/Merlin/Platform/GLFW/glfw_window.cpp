@@ -30,10 +30,7 @@ namespace Merlin
 
         if (props.renderBackend == RenderBackend::VULKAN)
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        if (props.renderBackend == RenderBackend::OPENGL)
-        {
-            //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        }
+
         m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
         glfwSetWindowUserPointer(m_window_ptr, &m_data);
@@ -41,11 +38,6 @@ namespace Merlin
 
         m_renderApi = RenderAPI::Create(props.renderBackend);
         m_renderApi->Init(m_window_ptr);
-
-        //m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
-        //m_context->Init();
-
-
     }
 
     GLFWWindowImpl::~GLFWWindowImpl()
