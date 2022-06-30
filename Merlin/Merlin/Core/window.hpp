@@ -3,7 +3,6 @@
 #include <functional>
 #include "app_events.hpp"
 #include "Merlin/Render/render.hpp"
-#include "Merlin/Core/imgui_context.hpp"
 
 
 namespace Merlin
@@ -32,7 +31,6 @@ namespace Merlin
     {
     public:
         std::shared_ptr<RenderAPI> m_renderApi;
-        std::shared_ptr<ImGuiAPI> m_imguiApi;
     public:
         using EventCallbackFunction = std::function<void(AppEvent&)>;
 
@@ -45,7 +43,6 @@ namespace Merlin
         virtual void SetEventCallback(const EventCallbackFunction& callback) = 0;
         virtual void OnUpdate() = 0;
         virtual void* GetNativePointer() = 0;
-        virtual void HandleEvent(AppEvent& app_event) = 0;
     };
 }
 #endif

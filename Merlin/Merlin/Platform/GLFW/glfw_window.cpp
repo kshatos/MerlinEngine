@@ -30,6 +30,10 @@ namespace Merlin
 
         if (props.renderBackend == RenderBackend::VULKAN)
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        if (props.renderBackend == RenderBackend::OPENGL)
+        {
+            //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        }
         m_window_ptr = glfwCreateWindow(
             props.width, props.height, props.title.c_str(), NULL, NULL);
         glfwSetWindowUserPointer(m_window_ptr, &m_data);
@@ -37,8 +41,6 @@ namespace Merlin
 
         m_renderApi = RenderAPI::Create(props.renderBackend);
         m_renderApi->Init(m_window_ptr);
-        m_imguiApi = std::make_shared<ImGuiAPI>();
-        m_imguiApi->Init(m_window_ptr, m_renderApi);
 
         //m_context = std::unique_ptr<GraphicsContext>(GraphicsContext::Create(m_window_ptr));
         //m_context->Init();
@@ -48,6 +50,8 @@ namespace Merlin
 
     GLFWWindowImpl::~GLFWWindowImpl()
     {
+        m_renderApi->Shutdown();
+
         glfwDestroyWindow(m_window_ptr);
 
         glfw_window_count--;
@@ -167,11 +171,6 @@ namespace Merlin
                 auto& x = *(GLFWWindowData*)glfwGetWindowUserPointer(window);
                 x.callback(app_event);
             });
-    }
-
-    void GLFWWindowImpl::HandleEvent(AppEvent& app_event)
-    {
-        m_imguiApi->HandleEvent(app_event);
     }
 
     void* GLFWWindowImpl::GetNativePointer()

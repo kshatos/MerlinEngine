@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
@@ -354,6 +355,7 @@ public:
                 (float)Application::Get().GeMaintWindow()->GetHeight());
 
             ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
             // Scene viewport

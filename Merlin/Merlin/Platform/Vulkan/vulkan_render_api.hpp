@@ -4,6 +4,7 @@
 #include "Merlin/Platform/Vulkan/vulkan_util.hpp"
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
+#include "imgui.h"
 
 
 namespace Merlin
@@ -25,6 +26,7 @@ namespace Merlin
     {
     public:
         GLFWwindow* window;
+        ImGuiContext* context;
 
         VkInstance instance;
         VkSurfaceKHR surface;
@@ -63,6 +65,7 @@ namespace Merlin
         ~VulkanRenderAPI();
         // Render API
         void Init(void* windowPointer) override;
+        void Shutdown() override;
         void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
         void SetClearColor(const glm::vec4& color) override;
         void Clear() override;
@@ -79,6 +82,7 @@ namespace Merlin
         void CreateSurface();
         void PickPhysicalDevice();
         void CreateLogicalDevice();
+        void CreateImGuiContext();
         void CreateSwapChain();
         void CreateImageViews();
         void CreateCommandPool();

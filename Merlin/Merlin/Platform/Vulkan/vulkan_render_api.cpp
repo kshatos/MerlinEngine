@@ -2,6 +2,9 @@
 #include <stdexcept>
 #include <set>
 #include <backends/imgui_impl_vulkan.h>
+#include "backends/imgui_impl_glfw.h"
+
+
 
 namespace Merlin
 {
@@ -34,23 +37,6 @@ namespace Merlin
     // RENDER API
     VulkanRenderAPI::~VulkanRenderAPI()
     {
-        for (auto semaphore : imageAvailableSemaphores)
-            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
-        for (auto semaphore : renderFinishedSemaphores)
-            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
-        for (auto fence : inFlightFences)
-            vkDestroyFence(logicalDevice, fence, nullptr);
-
-        vkDestroyRenderPass(logicalDevice, imGuiRenderPass, nullptr);
-        for (auto imageView : swapChainImageViews)
-            vkDestroyImageView(logicalDevice, imageView, nullptr);
-
-        vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
-        vkDestroyDescriptorPool(logicalDevice, guiDescriptorPool, nullptr);
-        vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
-        vkDestroyDevice(logicalDevice, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
     }
 
     void VulkanRenderAPI::Init(void* windowPointer)
@@ -68,6 +54,38 @@ namespace Merlin
         CreateCommandPool();
         CreateCommandBuffer();
         CreateSyncObjects();
+        CreateImGuiContext();
+    }
+
+    void VulkanRenderAPI::Shutdown()
+    {
+        vkDeviceWaitIdle(logicalDevice);
+
+        for (auto semaphore : imageAvailableSemaphores)
+            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
+        for (auto semaphore : renderFinishedSemaphores)
+            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
+        for (auto fence : inFlightFences)
+            vkDestroyFence(logicalDevice, fence, nullptr);
+
+        for (auto framebuffer : imGuiFramebuffers)
+            vkDestroyFramebuffer(logicalDevice, framebuffer, nullptr);
+
+        vkDestroyRenderPass(logicalDevice, imGuiRenderPass, nullptr);
+        for (auto imageView : swapChainImageViews)
+            vkDestroyImageView(logicalDevice, imageView, nullptr);
+
+        vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
+        vkDestroyDescriptorPool(logicalDevice, guiDescriptorPool, nullptr);
+        vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
+
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+
+        vkDestroyDevice(logicalDevice, nullptr);
+        vkDestroySurfaceKHR(instance, surface, nullptr);
+        vkDestroyInstance(instance, nullptr);
     }
 
     void VulkanRenderAPI::SetViewport(
@@ -490,39 +508,6 @@ namespace Merlin
         }
     }
 
-    VkCommandBuffer VulkanRenderAPI::BeginSingleTimeCommands() {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = commandPool;
-        allocInfo.commandBufferCount = 1;
-
-        VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-        return commandBuffer;
-    }
-
-    void VulkanRenderAPI::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
-        vkEndCommandBuffer(commandBuffer);
-
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
-
-        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(graphicsQueue);
-
-        vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
-    }
-
     void VulkanRenderAPI::CreateImGuiRenderPass()
     {
         VkAttachmentDescription attachment = {};
@@ -595,6 +580,72 @@ namespace Merlin
                 throw std::runtime_error("failed to create framebuffer!");
             }
         }
+    }
+
+    void VulkanRenderAPI::CreateImGuiContext()
+    {
+        IMGUI_CHECKVERSION();
+        context = ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplVulkan_InitInfo init_info = {};
+        init_info.Instance = instance;
+        init_info.PhysicalDevice = physicalDevice;
+        init_info.Device = logicalDevice;
+
+        init_info.QueueFamily = queueIndices.graphicsFamily.value();
+        init_info.Queue = graphicsQueue;
+        init_info.PipelineCache = VK_NULL_HANDLE; // TODO: Figure out if needed
+        init_info.DescriptorPool = guiDescriptorPool;
+        init_info.Allocator = nullptr; // TODO: Figure out if needed
+        init_info.MinImageCount = swapChainImages.size();
+        init_info.ImageCount = swapChainImages.size();
+
+        init_info.CheckVkResultFn = [](VkResult err)
+        {
+            if (err != VK_SUCCESS)
+                throw std::runtime_error("Error initializing imgui vulkan backend!");
+        };
+        ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)window, true);
+        ImGui_ImplVulkan_Init(&init_info, imGuiRenderPass);
+
+        auto commandBuffer = BeginSingleTimeCommands();
+        ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+        EndSingleTimeCommands(commandBuffer);
+    }
+
+    VkCommandBuffer VulkanRenderAPI::BeginSingleTimeCommands() {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = commandPool;
+        allocInfo.commandBufferCount = 1;
+
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+        return commandBuffer;
+    }
+
+    void VulkanRenderAPI::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
+        vkEndCommandBuffer(commandBuffer);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
+
+        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(graphicsQueue);
+
+        vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
     void VulkanRenderAPI::RecordCommandBuffer(

@@ -35,7 +35,6 @@ namespace Merlin
         void SetEventCallback(const EventCallbackFunction& callback) override;
         void OnUpdate() override;
         void* GetNativePointer() override;
-        void HandleEvent(AppEvent& app_event) override;
     };
 }
 #endif

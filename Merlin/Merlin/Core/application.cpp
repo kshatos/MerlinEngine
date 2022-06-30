@@ -50,8 +50,6 @@ namespace Merlin
 
         Input::HandleEvent(app_event);
 
-        m_main_window->HandleEvent(app_event);
-
         // Dispatch events to layers allowing them to block
         for (auto& layer : m_layer_stack)
         {
