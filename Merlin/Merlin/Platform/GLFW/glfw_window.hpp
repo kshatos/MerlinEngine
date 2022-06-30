@@ -29,6 +29,7 @@ namespace Merlin
     public:
         GLFWWindowImpl(WindowProperties props);
         ~GLFWWindowImpl();
+        double CurrentTime() override;
         unsigned int GetWidth() override;
         unsigned int GetHeight() override;
         void SetEventCallback(const EventCallbackFunction& callback) override;

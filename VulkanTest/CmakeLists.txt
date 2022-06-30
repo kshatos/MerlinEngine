@@ -13,7 +13,7 @@ add_executable(VulkanTest
 
 
 set_property(TARGET VulkanTest PROPERTY CXX_STANDARD 17)
-set_property(TARGET VulkanTest PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:Demo>)
+set_property(TARGET VulkanTest PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:VulkanTest>)
 
 target_include_directories(VulkanTest
     PUBLIC
@@ -26,5 +26,5 @@ target_link_libraries(VulkanTest
 
 add_custom_command(
     TARGET VulkanTest PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MERLIN_ASSET_DIR} $<TARGET_FILE_DIR:Demo>/Assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MERLIN_ASSET_DIR} $<TARGET_FILE_DIR:VulkanTest>/Assets
 )

@@ -4,6 +4,7 @@
 #include "app_events.hpp"
 #include "Merlin/Render/render.hpp"
 
+
 namespace Merlin
 {
     struct WindowProperties
@@ -29,11 +30,14 @@ namespace Merlin
     class Window
     {
     public:
+        std::shared_ptr<RenderAPI> m_renderApi;
+    public:
         using EventCallbackFunction = std::function<void(AppEvent&)>;
 
         static Window* Create(WindowProperties props);
 
         virtual ~Window() {}
+        virtual double CurrentTime() = 0;
         virtual unsigned int GetWidth() = 0;
         virtual unsigned int GetHeight() = 0;
         virtual void SetEventCallback(const EventCallbackFunction& callback) = 0;

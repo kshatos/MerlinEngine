@@ -1,6 +1,8 @@
 #include <glad/glad.h>
 #include "Merlin/Platform/OpenGL/opengl_render_api.hpp"
 #include "Merlin/Core/logger.hpp"
+#include <backends/imgui_impl_opengl3.h>
+#include "backends/imgui_impl_glfw.h"
 
 
 namespace Merlin
@@ -19,6 +21,18 @@ namespace Merlin
 
     void OpenGLRenderAPI::Init(void* windowPointer)
     {
+        m_window = (GLFWwindow*)windowPointer;
+
+        glfwMakeContextCurrent(m_window);
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
+        IMGUI_CHECKVERSION();
+        context = ImGui::CreateContext();
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)windowPointer, true);
+        ImGui_ImplOpenGL3_Init("#version 330 core");
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -30,6 +44,12 @@ namespace Merlin
         glDebugMessageCallback(LogOpenGLErrors, 0);
     }
 
+    void OpenGLRenderAPI::Shutdown()
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext(context);
+    }
 
     void OpenGLRenderAPI::SetViewport(
         uint32_t x,
@@ -55,4 +75,15 @@ namespace Merlin
     {
         glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
     }
+
+    RenderBackend OpenGLRenderAPI::Backend()
+    {
+        return RenderBackend::OPENGL;
+    }
+
+    void OpenGLRenderAPI::SwapBuffers()
+    {
+        glfwSwapBuffers(m_window);;
+    }
+
 }

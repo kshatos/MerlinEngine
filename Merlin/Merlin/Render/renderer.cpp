@@ -26,15 +26,14 @@ namespace Merlin
 
     std::shared_ptr<Shader> Renderer::m_shadow_shader = nullptr;
     std::shared_ptr<Shader> Renderer::m_skybox_shader = nullptr;
-    std::unique_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
+    std::shared_ptr<RenderAPI> Renderer::m_render_impl = nullptr;
     std::shared_ptr<FrameBuffer> Renderer::m_shadow_buffer = nullptr;
 
-    void Renderer::Init(void* windowPointer, RenderBackend backend)
+    void Renderer::Init(std::shared_ptr<RenderAPI> renderApi)
     {
-        m_render_impl = std::unique_ptr<RenderAPI>(RenderAPI::Create(backend));
-        m_render_impl->Init(windowPointer);
+        m_render_impl = renderApi;
 
-        if (backend != RenderBackend::VULKAN)
+        if (renderApi->Backend() != RenderBackend::VULKAN)
         {
             m_shadow_shader = Shader::CreateFromFiles(
                 ".\\Assets\\Shaders\\shadow.vert",

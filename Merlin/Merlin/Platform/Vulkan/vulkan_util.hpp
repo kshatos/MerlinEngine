@@ -23,6 +23,16 @@ namespace Merlin
         std::vector<VkSurfaceFormatKHR> surfaceFormats;
         std::vector<VkPresentModeKHR> surfacePresentModes;
 
+        VulkanPhysicalDeviceInfo() :
+            handle(VK_NULL_HANDLE),
+            deviceProperties(),
+            deviceFeatures(),
+            extensionProperties(),
+            queueFamilyProperties(),
+            surfaceCapabilities(),
+            surfaceFormats(),
+            surfacePresentModes()
+        {}
 
         VulkanPhysicalDeviceInfo(
             VkPhysicalDevice deviceHandle,
