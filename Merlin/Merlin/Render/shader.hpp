@@ -11,13 +11,6 @@ namespace Merlin
     class Shader
     {
     public:
-        static std::shared_ptr<Shader> CreateFromSource(
-            const std::string& vertex_source,
-            const std::string& fragment_source);
-        static std::shared_ptr<Shader> CreateFromFiles(
-            const std::string& vertex_path,
-            const std::string& fragment_path);
-
         virtual ~Shader() {}
         virtual void Bind() = 0;
         virtual void UnBind() = 0;

@@ -21,6 +21,7 @@ namespace Merlin
         static void SetClearColor(const glm::vec4& color);
         static void Clear();
         static void RenderScene(const SceneRenderData& scene);
+        static std::shared_ptr<RenderAPI> GetAPI();
 
     private:
         static void DrawMeshes(const SceneRenderData& scene);

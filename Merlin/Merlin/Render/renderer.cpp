@@ -35,10 +35,10 @@ namespace Merlin
 
         if (renderApi->Backend() != RenderBackend::VULKAN)
         {
-            m_shadow_shader = Shader::CreateFromFiles(
+            m_shadow_shader = m_render_impl->CreateShader(
                 ".\\Assets\\Shaders\\shadow.vert",
                 ".\\Assets\\Shaders\\shadow.frag");
-            m_skybox_shader = Shader::CreateFromFiles(
+            m_skybox_shader = m_render_impl->CreateShader(
                 ".\\Assets\\Shaders\\skybox.vert",
                 ".\\Assets\\Shaders\\skybox.frag");
             m_shadow_buffer = FrameBuffer::Create(
@@ -222,6 +222,11 @@ namespace Merlin
             DrawSkybox(scene);
             buffer->UnBind();
         }
+    }
+
+    std::shared_ptr<RenderAPI> Renderer::GetAPI()
+    {
+        return m_render_impl;
     }
 
 }

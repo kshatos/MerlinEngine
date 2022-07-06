@@ -113,8 +113,9 @@ namespace Merlin
         const std::string& vertex_source,
         const std::string& fragment_source)
     {
-        return std::make_shared<OpenGLShader>(
-            vertex_source, fragment_source);
+        return std::shared_ptr<OpenGLShader>(
+            OpenGLShader::CreateFromFiles(
+                vertex_source, fragment_source));
     }
 
     std::shared_ptr<Texture2D> OpenGLRenderAPI::CreateTexture2D(

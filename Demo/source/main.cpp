@@ -139,19 +139,21 @@ public:
     SceneLayer()
     {
         // Initialize render data
+        auto api = Renderer::GetAPI();
+
         auto texProps = Texture2DProperties(
             TextureWrapMode::Repeat,
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
-        auto main_texture = Texture2D::Create(
+        auto main_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\debug.jpg", texProps);
-        auto pbr_albedo_texture = Texture2D::Create(
+        auto pbr_albedo_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
-        auto pbr_roughness_texture = Texture2D::Create(
+        auto pbr_roughness_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
-        auto pbr_metalic_texture = Texture2D::Create(
+        auto pbr_metalic_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
-        auto pbr_normal_texture = Texture2D::Create(
+        auto pbr_normal_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
@@ -185,15 +187,15 @@ public:
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
-        auto pbr_shader = Shader::CreateFromFiles(
+        auto pbr_shader = api->CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_basic.vert",
             ".\\Assets\\Shaders\\pbr_lit_basic.frag");
 
-        auto pbr_texture_shader = Shader::CreateFromFiles(
+        auto pbr_texture_shader = api->CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_texture.vert",
             ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
-        auto main_shader = Shader::CreateFromFiles(
+        auto main_shader = api->CreateShader(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
