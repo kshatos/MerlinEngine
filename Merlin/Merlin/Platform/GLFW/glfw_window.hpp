@@ -1,7 +1,6 @@
 #ifndef GLFW_WINDOW_HPP
 #define GLFW_WINDOW_HPP
 #include "Merlin/Core/window.hpp"
-#include "Merlin/Render/graphics_context.hpp"
 
 
 struct GLFWwindow;
@@ -23,7 +22,6 @@ namespace Merlin
 
         GLFWwindow* m_window_ptr;
         GLFWWindowData m_data;
-        std::unique_ptr<GraphicsContext> m_context;
 
         void SetGLFWCallbacks();
     public:

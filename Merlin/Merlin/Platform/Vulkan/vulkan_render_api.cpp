@@ -175,6 +175,48 @@ namespace Merlin
         return RenderBackend::VULKAN;
     }
 
+
+    std::shared_ptr<VertexBuffer> VulkanRenderAPI::CreateVertexBuffer(
+        float* vertices, size_t size)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<IndexBuffer> VulkanRenderAPI::CreateIndexBuffer(
+        uint32_t* indices, uint32_t index_count)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<VertexArray> VulkanRenderAPI::CreateVertexArray()
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(
+        const std::string& vertex_source,
+        const std::string& fragment_source)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
+        const std::string& filepath,
+        Texture2DProperties props)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
+        void* data,
+        uint32_t width,
+        uint32_t height,
+        uint32_t channel_count,
+        Texture2DProperties props)
+    {
+        return nullptr;
+    }
+
     // SETUP
     void VulkanRenderAPI::CreateInstance()
     {

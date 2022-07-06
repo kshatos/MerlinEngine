@@ -3,6 +3,11 @@
 #include "Merlin/Core/logger.hpp"
 #include <backends/imgui_impl_opengl3.h>
 #include "backends/imgui_impl_glfw.h"
+#include "Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
+#include "Merlin/Platform/OpenGL/opengl_shader.hpp"
+#include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
 
 
 namespace Merlin
@@ -84,6 +89,51 @@ namespace Merlin
     void OpenGLRenderAPI::SwapBuffers()
     {
         glfwSwapBuffers(m_window);;
+    }
+
+
+    std::shared_ptr<VertexBuffer> OpenGLRenderAPI::CreateVertexBuffer(
+        float* vertices, size_t size)
+    {
+        return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+    }
+
+    std::shared_ptr<IndexBuffer> OpenGLRenderAPI::CreateIndexBuffer(
+        uint32_t* indices, uint32_t index_count)
+    {
+        return std::make_shared<OpenGLIndexBuffer>(indices, index_count);
+    }
+
+    std::shared_ptr<VertexArray> OpenGLRenderAPI::CreateVertexArray()
+    {
+        return std::make_shared<OpenGLVertexArray>();
+    }
+
+    std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(
+        const std::string& vertex_source,
+        const std::string& fragment_source)
+    {
+        return std::make_shared<OpenGLShader>(
+            vertex_source, fragment_source);
+    }
+
+    std::shared_ptr<Texture2D> OpenGLRenderAPI::CreateTexture2D(
+        const std::string& filepath,
+        Texture2DProperties props)
+    {
+        return std::make_shared<OpenGLTexture2D>(
+            filepath, props);
+    }
+
+    std::shared_ptr<Texture2D> OpenGLRenderAPI::CreateTexture2D(
+        void* data,
+        uint32_t width,
+        uint32_t height,
+        uint32_t channel_count,
+        Texture2DProperties props)
+    {
+        return std::make_shared<OpenGLTexture2D>(
+            data, width, height, channel_count, props);
     }
 
 }
