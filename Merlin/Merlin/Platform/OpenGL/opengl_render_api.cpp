@@ -91,7 +91,12 @@ namespace Merlin
 
     void OpenGLRenderAPI::SwapBuffers()
     {
-        glfwSwapBuffers(m_window);;
+        int left, right, bot, top;
+        glfwGetWindowFrameSize(
+            m_window, &left, &top, &right, &bot);
+        glViewport(0, 0, right-left, top-bot);
+
+        glfwSwapBuffers(m_window);
     }
 
 

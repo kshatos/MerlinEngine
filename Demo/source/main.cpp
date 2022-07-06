@@ -338,10 +338,6 @@ public:
 
         // Rendering
         {// Prepare background
-            Renderer::SetViewport(
-                0, 0,
-                Application::Get().GeMaintWindow()->GetWidth(),
-                Application::Get().GeMaintWindow()->GetHeight());
             Renderer::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
             Renderer::Clear();
         }

@@ -31,6 +31,7 @@ namespace Merlin
 #endif
             break;
         }
+        return nullptr;
     }
 
 }
