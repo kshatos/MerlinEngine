@@ -217,6 +217,24 @@ namespace Merlin
         return nullptr;
     }
 
+    std::shared_ptr<Cubemap> VulkanRenderAPI::CreateCubemap(
+        const std::vector<std::string>& face_paths)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<Cubemap> VulkanRenderAPI::CreateCubemap(
+        uint32_t resolution, uint32_t channel_count)
+    {
+        return nullptr;
+    }
+
+    std::shared_ptr<FrameBuffer> VulkanRenderAPI::CreateFramebuffer(
+        const FrameBufferParameters& state)
+    {
+        return nullptr;
+    }
+
     // SETUP
     void VulkanRenderAPI::CreateInstance()
     {

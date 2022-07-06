@@ -23,9 +23,6 @@ namespace Merlin
     class Cubemap : public Texture
     {
     public:
-        static std::shared_ptr<Cubemap> Create(const std::vector<std::string>& face_paths);
-        static std::shared_ptr<Cubemap> Create(uint32_t resolution, uint32_t channel_count);
-
         virtual ~Cubemap() {};
 
         virtual uint32_t GetResolution() = 0;

@@ -176,7 +176,7 @@ public:
         }
         auto custom_cubemap = UploadCubemap(cube_data);
 
-        main_cubemap = Cubemap::Create(
+        main_cubemap =  api->CreateCubemap(
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
@@ -245,7 +245,7 @@ public:
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-            auto fbuffer = FrameBuffer::Create(fb_params);
+            auto fbuffer = api->CreateFramebuffer(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 

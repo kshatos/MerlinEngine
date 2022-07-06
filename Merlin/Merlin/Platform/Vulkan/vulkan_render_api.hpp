@@ -90,6 +90,12 @@ namespace Merlin
             uint32_t height,
             uint32_t channel_count,
             Texture2DProperties props = Texture2DProperties()) override;
+        std::shared_ptr<Cubemap> CreateCubemap(
+            const std::vector<std::string>& face_paths) override;
+        std::shared_ptr<Cubemap> CreateCubemap(
+            uint32_t resolution, uint32_t channel_count) override;
+        std::shared_ptr<FrameBuffer> CreateFramebuffer(
+            const FrameBufferParameters& state) override;
 
         // Vulkan Specific
         VkCommandBuffer BeginSingleTimeCommands();

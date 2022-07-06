@@ -41,7 +41,7 @@ namespace Merlin
             m_skybox_shader = m_render_impl->CreateShader(
                 ".\\Assets\\Shaders\\skybox.vert",
                 ".\\Assets\\Shaders\\skybox.frag");
-            m_shadow_buffer = FrameBuffer::Create(
+            m_shadow_buffer = m_render_impl->CreateFramebuffer(
                 FrameBufferParameters
                 {
                     2048, 2048,

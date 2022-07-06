@@ -26,16 +26,9 @@ source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 # RENDER
 #=============================
 set(MERLIN_RENDER_SOURCE
-    Merlin/Render/vertex_buffer.cpp
-    Merlin/Render/index_buffer.cpp
-    Merlin/Render/frame_buffer.cpp
     Merlin/Render/buffer_layout.cpp
-    Merlin/Render/vertex_array.cpp
-    Merlin/Render/texture2d.cpp
     Merlin/Render/texture2d_data.cpp
-    Merlin/Render/cubemap.cpp
     Merlin/Render/cubemap_data.cpp
-    Merlin/Render/shader.cpp
     Merlin/Render/material.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp

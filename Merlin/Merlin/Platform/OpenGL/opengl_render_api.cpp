@@ -8,6 +8,9 @@
 #include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
 #include "Merlin/Platform/OpenGL/opengl_shader.hpp"
 #include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
+#include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"
+#include "Merlin/Platform/OpenGL/opengl_frame_buffer.hpp"
+
 
 
 namespace Merlin
@@ -135,6 +138,25 @@ namespace Merlin
     {
         return std::make_shared<OpenGLTexture2D>(
             data, width, height, channel_count, props);
+    }
+
+    std::shared_ptr<Cubemap> OpenGLRenderAPI::CreateCubemap(
+        const std::vector<std::string>& face_paths)
+    {
+        return std::make_shared<OpenGLCubemap>(face_paths);
+    }
+
+    std::shared_ptr<Cubemap> OpenGLRenderAPI::CreateCubemap(
+        uint32_t resolution, uint32_t channel_count)
+    {
+        return std::make_shared<OpenGLCubemap>(
+            resolution, channel_count);
+    }
+
+    std::shared_ptr<FrameBuffer> OpenGLRenderAPI::CreateFramebuffer(
+        const FrameBufferParameters& state)
+    {
+        return std::make_shared<OpenGLFrameBuffer>(state);
     }
 
 }

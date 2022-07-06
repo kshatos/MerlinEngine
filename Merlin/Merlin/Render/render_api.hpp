@@ -8,6 +8,7 @@
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
+#include "Merlin/Render/frame_buffer.hpp"
 
 
 namespace Merlin
@@ -41,13 +42,20 @@ namespace Merlin
             const std::string& fragment_source) = 0;
         virtual std::shared_ptr<Texture2D> CreateTexture2D(
             const std::string& filepath,
-            Texture2DProperties props = Texture2DProperties())=0;
+            Texture2DProperties props = Texture2DProperties()) = 0;
         virtual std::shared_ptr<Texture2D> CreateTexture2D(
             void* data,
             uint32_t width,
             uint32_t height,
             uint32_t channel_count,
-            Texture2DProperties props = Texture2DProperties())=0;
+            Texture2DProperties props = Texture2DProperties()) = 0;
+        virtual std::shared_ptr<Cubemap> CreateCubemap(
+            const std::vector<std::string>& face_paths) = 0;
+        virtual std::shared_ptr<Cubemap> CreateCubemap(
+            uint32_t resolution, uint32_t channel_count) = 0;
+        virtual std::shared_ptr<FrameBuffer> CreateFramebuffer(
+            const FrameBufferParameters& state)=0;
+
 
         static std::shared_ptr<RenderAPI> Create(RenderBackend backend);
     };
