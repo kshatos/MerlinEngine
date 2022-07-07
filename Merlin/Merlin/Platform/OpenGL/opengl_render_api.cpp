@@ -59,6 +59,30 @@ namespace Merlin
         ImGui::DestroyContext(context);
     }
 
+    void OpenGLRenderAPI::BeginFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void OpenGLRenderAPI::EndFrame()
+    {
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void OpenGLRenderAPI::PresentFrame()
+    {
+        int left, right, bot, top;
+        glfwGetWindowFrameSize(
+            m_window, &left, &top, &right, &bot);
+        glViewport(0, 0, right - left, top - bot);
+
+        glfwSwapBuffers(m_window);
+    }
+
+
     void OpenGLRenderAPI::SetViewport(
         uint32_t x,
         uint32_t y,
@@ -87,16 +111,6 @@ namespace Merlin
     RenderBackend OpenGLRenderAPI::Backend()
     {
         return RenderBackend::OPENGL;
-    }
-
-    void OpenGLRenderAPI::SwapBuffers()
-    {
-        int left, right, bot, top;
-        glfwGetWindowFrameSize(
-            m_window, &left, &top, &right, &bot);
-        glViewport(0, 0, right-left, top-bot);
-
-        glfwSwapBuffers(m_window);
     }
 
 

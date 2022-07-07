@@ -2,8 +2,6 @@
 #include <glm/gtc/random.hpp>
 #include <glm/glm.hpp>
 #include <imgui.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_glfw.h>
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
@@ -345,11 +343,6 @@ public:
         Renderer::RenderScene(scene.GetRenderData());
 
         {// Render GUI to main window
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            // Scene viewport
             ImGui::Begin(
                 "Viewport",
                 nullptr,
@@ -387,10 +380,6 @@ public:
             ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambientRadiance);
             ImGui::End();
-
-            // Finish
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
     }
 

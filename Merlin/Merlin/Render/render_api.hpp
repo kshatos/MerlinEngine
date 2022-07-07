@@ -25,11 +25,16 @@ namespace Merlin
         virtual ~RenderAPI() {}
         virtual void Init(void* windowPointer) = 0;
         virtual void Shutdown() = 0;
+
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
+        virtual void PresentFrame() = 0;
+
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
         virtual void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) = 0;
-        virtual void SwapBuffers() = 0;
+        
         virtual RenderBackend Backend() = 0;
 
         virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(

@@ -50,7 +50,7 @@ namespace Merlin
         void Run();
     private:
         void HandleEvent(AppEvent& app_event);
-        void OnUpdate(float time_step);
+        void UpdateLayers(float time_step);
     };
 }
 

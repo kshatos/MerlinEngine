@@ -31,7 +31,10 @@ namespace Merlin
         unsigned int GetWidth() override;
         unsigned int GetHeight() override;
         void SetEventCallback(const EventCallbackFunction& callback) override;
-        void OnUpdate() override;
+        void PollEvents() override;
+        void BeginFrame() override;
+        void EndFrame() override;
+        void PresentFrame() override;
         void* GetNativePointer() override;
     };
 }

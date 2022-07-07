@@ -82,28 +82,20 @@ namespace Merlin
         vkDestroyInstance(instance, nullptr);
     }
 
-    void VulkanRenderAPI::SetViewport(
-        uint32_t x,
-        uint32_t y,
-        uint32_t width,
-        uint32_t height)
+
+    void VulkanRenderAPI::BeginFrame()
     {
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
     }
 
-    void VulkanRenderAPI::SetClearColor(const glm::vec4& color)
+    void VulkanRenderAPI::EndFrame()
     {
+        ImGui::Render();
     }
 
-    void VulkanRenderAPI::Clear()
-    {
-    }
-
-    void VulkanRenderAPI::DrawTriangles(
-        const std::shared_ptr<VertexArray>& vertex_array)
-    {
-    }
-
-    void VulkanRenderAPI::SwapBuffers()
+    void VulkanRenderAPI::PresentFrame()
     {
         vkWaitForFences(logicalDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -169,6 +161,29 @@ namespace Merlin
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
+
+
+    void VulkanRenderAPI::SetViewport(
+        uint32_t x,
+        uint32_t y,
+        uint32_t width,
+        uint32_t height)
+    {
+    }
+
+    void VulkanRenderAPI::SetClearColor(const glm::vec4& color)
+    {
+    }
+
+    void VulkanRenderAPI::Clear()
+    {
+    }
+
+    void VulkanRenderAPI::DrawTriangles(
+        const std::shared_ptr<VertexArray>& vertex_array)
+    {
+    }
+
 
     RenderBackend VulkanRenderAPI::Backend()
     {

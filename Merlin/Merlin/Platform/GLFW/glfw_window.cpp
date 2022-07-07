@@ -74,10 +74,24 @@ namespace Merlin
         m_data.callback = callback;
     }
 
-    void GLFWWindowImpl::OnUpdate()
+    void GLFWWindowImpl::PollEvents()
     {
         glfwPollEvents();
-        m_renderApi->SwapBuffers();
+    }
+
+    void GLFWWindowImpl::BeginFrame()
+    {
+        m_renderApi->BeginFrame();
+    }
+
+    void GLFWWindowImpl::EndFrame()
+    {
+        m_renderApi->EndFrame();
+    }
+
+    void GLFWWindowImpl::PresentFrame()
+    {
+        m_renderApi->PresentFrame();
     }
 
     void GLFWWindowImpl::SetGLFWCallbacks()
