@@ -50,8 +50,6 @@ namespace Merlin
     class FrameBuffer
     {
     public:
-        static std::shared_ptr<FrameBuffer> Create(const FrameBufferParameters& state);
-
         virtual ~FrameBuffer() {}
 
         virtual const FrameBufferParameters& GetParameters() const = 0;

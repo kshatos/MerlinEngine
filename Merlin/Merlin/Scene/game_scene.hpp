@@ -16,9 +16,9 @@ namespace Merlin
         SceneRenderData m_render_data;
     public:
         std::shared_ptr<Entity> CreateEntity();
-        void RenderScene();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
+        const SceneRenderData& GetRenderData();
         inline void SetAmbientLight(float radiance) { m_render_data.ambient_light_radiance = radiance; }
     private:
         void OnComponentAdded(std::shared_ptr<Component> component);

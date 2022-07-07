@@ -1,4 +1,5 @@
 #include "Merlin/Render/cubemap_data.hpp"
+#include "Merlin/Render/renderer.hpp"
 
 
 namespace Merlin
@@ -177,7 +178,8 @@ namespace Merlin
     std::shared_ptr<Cubemap> UploadCubemap(
         std::shared_ptr<CubemapData> data)
     {
-        auto cubemap = Cubemap::Create(data->GetResolution(), data->GetChannelCount());
+        auto api = Renderer::GetAPI();
+        auto cubemap = api->CreateCubemap(data->GetResolution(), data->GetChannelCount());
 
         for (uint32_t face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
         {

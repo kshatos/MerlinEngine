@@ -54,17 +54,6 @@ namespace Merlin
         virtual ~Texture2D() {}
         virtual uint32_t GetWidth() = 0;
         virtual uint32_t GetHeight() = 0;
-
-        static std::shared_ptr<Texture2D> Create(
-            const std::string& filepath,
-            Texture2DProperties props=Texture2DProperties());
-
-        static std::shared_ptr<Texture2D> Create(
-            void* data,
-            uint32_t width,
-            uint32_t height,
-            uint32_t channel_count,
-            Texture2DProperties props = Texture2DProperties());
     };
 
 }

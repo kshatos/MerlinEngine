@@ -26,17 +26,9 @@ source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 # RENDER
 #=============================
 set(MERLIN_RENDER_SOURCE
-    Merlin/Render/graphics_context.cpp
-    Merlin/Render/vertex_buffer.cpp
-    Merlin/Render/index_buffer.cpp
-    Merlin/Render/frame_buffer.cpp
     Merlin/Render/buffer_layout.cpp
-    Merlin/Render/vertex_array.cpp
-    Merlin/Render/texture2d.cpp
     Merlin/Render/texture2d_data.cpp
-    Merlin/Render/cubemap.cpp
     Merlin/Render/cubemap_data.cpp
-    Merlin/Render/shader.cpp
     Merlin/Render/material.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
@@ -47,7 +39,6 @@ set(MERLIN_RENDER_SOURCE
 )
 set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
-    Merlin/Render/graphics_context.hpp
     Merlin/Render/vertex_buffer.hpp
     Merlin/Render/index_buffer.hpp
     Merlin/Render/buffer_layout.hpp
@@ -96,7 +87,6 @@ source_group("Scene" FILES ${MERLIN_SCENE_SOURCE} ${MERLIN_SCENE_INCLUDE})
 #=============================
 if(MERLIN_ENABLE_OPENGL)
     set(MERLIN_OPENGL_SOURCE
-        Merlin/Platform/OpenGL/opengl_context.cpp
         Merlin/Platform/OpenGL/opengl_vertex_buffer.cpp
         Merlin/Platform/OpenGL/opengl_index_buffer.cpp
         Merlin/Platform/OpenGL/opengl_vertex_array.cpp
@@ -107,7 +97,6 @@ if(MERLIN_ENABLE_OPENGL)
         Merlin/Platform/OpenGL/opengl_render_api.cpp
     )
     set(MERLIN_OPENGL_INCLUDE
-        Merlin/Platform/OpenGL/opengl_context.hpp
         Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp
         Merlin/Platform/OpenGL/opengl_index_buffer.hpp
         Merlin/Platform/OpenGL/opengl_vertex_array.hpp

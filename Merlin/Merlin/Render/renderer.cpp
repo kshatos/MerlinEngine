@@ -35,13 +35,13 @@ namespace Merlin
 
         if (renderApi->Backend() != RenderBackend::VULKAN)
         {
-            m_shadow_shader = Shader::CreateFromFiles(
+            m_shadow_shader = m_render_impl->CreateShader(
                 ".\\Assets\\Shaders\\shadow.vert",
                 ".\\Assets\\Shaders\\shadow.frag");
-            m_skybox_shader = Shader::CreateFromFiles(
+            m_skybox_shader = m_render_impl->CreateShader(
                 ".\\Assets\\Shaders\\skybox.vert",
                 ".\\Assets\\Shaders\\skybox.frag");
-            m_shadow_buffer = FrameBuffer::Create(
+            m_shadow_buffer = m_render_impl->CreateFramebuffer(
                 FrameBufferParameters
                 {
                     2048, 2048,
@@ -49,15 +49,6 @@ namespace Merlin
                     DepthBufferFormat::DEPTH32
                 });
         }
-    }
-
-    void Renderer::SetViewport(
-        uint32_t x,
-        uint32_t y,
-        uint32_t width,
-        uint32_t height)
-    {
-        m_render_impl->SetViewport(x, y, width, height);
     }
 
     void Renderer::SetClearColor(const glm::vec4& color)
@@ -222,6 +213,11 @@ namespace Merlin
             DrawSkybox(scene);
             buffer->UnBind();
         }
+    }
+
+    std::shared_ptr<RenderAPI> Renderer::GetAPI()
+    {
+        return m_render_impl;
     }
 
 }

@@ -3,7 +3,6 @@
 #include "Merlin/Render/buffer_layout.hpp"
 #include "Merlin/Render/camera.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
-#include "Merlin/Render/graphics_context.hpp"
 #include "Merlin/Render/index_buffer.hpp"
 #include "Merlin/Render/perspective_camera.hpp"
 #include "Merlin/Render/render_api.hpp"

@@ -9,8 +9,6 @@ namespace Merlin
     class IndexBuffer
     {
     public:
-        static std::shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
-
         virtual ~IndexBuffer() {}
         virtual void Bind() = 0;
         virtual void UnBind() = 0;

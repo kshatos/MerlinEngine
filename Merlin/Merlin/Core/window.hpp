@@ -41,7 +41,10 @@ namespace Merlin
         virtual unsigned int GetWidth() = 0;
         virtual unsigned int GetHeight() = 0;
         virtual void SetEventCallback(const EventCallbackFunction& callback) = 0;
-        virtual void OnUpdate() = 0;
+        virtual void PollEvents() = 0;
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
+        virtual void PresentFrame() = 0;
         virtual void* GetNativePointer() = 0;
     };
 }

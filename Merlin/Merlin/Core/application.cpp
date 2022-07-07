@@ -43,10 +43,10 @@ namespace Merlin
     {
         app_event.Dispatch<WindowClosedEvent>(
             [this](WindowClosedEvent& e)
-        {
-            m_is_running = false;
-            return true;
-        });
+            {
+                m_is_running = false;
+                return true;
+            });
 
         Input::HandleEvent(app_event);
 
@@ -59,9 +59,9 @@ namespace Merlin
         }
     }
 
-    void Application::OnUpdate(float time_step)
+    void Application::UpdateLayers(float time_step)
     {
-        for(auto & layer : m_layer_stack)
+        for (auto& layer : m_layer_stack)
         {
             layer->OnUpdate(time_step);
         }
@@ -76,8 +76,13 @@ namespace Merlin
             auto time_step = current_frame_time - m_last_frame_time;
             m_last_frame_time = current_frame_time;
 
-            OnUpdate(time_step);
-            m_main_window->OnUpdate();
+            m_main_window->PollEvents();
+
+            m_main_window->BeginFrame();
+            UpdateLayers(time_step);
+            m_main_window->EndFrame();
+
+            m_main_window->PresentFrame();
         }
     }
 

@@ -1,7 +1,6 @@
 #ifndef GLFW_WINDOW_HPP
 #define GLFW_WINDOW_HPP
 #include "Merlin/Core/window.hpp"
-#include "Merlin/Render/graphics_context.hpp"
 
 
 struct GLFWwindow;
@@ -23,7 +22,6 @@ namespace Merlin
 
         GLFWwindow* m_window_ptr;
         GLFWWindowData m_data;
-        std::unique_ptr<GraphicsContext> m_context;
 
         void SetGLFWCallbacks();
     public:
@@ -33,7 +31,10 @@ namespace Merlin
         unsigned int GetWidth() override;
         unsigned int GetHeight() override;
         void SetEventCallback(const EventCallbackFunction& callback) override;
-        void OnUpdate() override;
+        void PollEvents() override;
+        void BeginFrame() override;
+        void EndFrame() override;
+        void PresentFrame() override;
         void* GetNativePointer() override;
     };
 }

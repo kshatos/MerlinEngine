@@ -1,5 +1,4 @@
 #include "Merlin/Scene/game_scene.hpp"
-#include "Merlin/Render/renderer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/transform.hpp"
@@ -8,11 +7,6 @@
 
 namespace Merlin
 {
-    void GameScene::RenderScene()
-    {
-        Renderer::RenderScene(m_render_data);
-    }
-
     std::shared_ptr<Entity> GameScene::CreateEntity()
     {
         auto entity = std::shared_ptr<Entity>(new Entity());
@@ -20,6 +14,11 @@ namespace Merlin
             [this](std::shared_ptr<Component> component){OnComponentAdded(component); };
         m_entities.push_back(entity);
         return entity;
+    }
+
+    const SceneRenderData& GameScene::GetRenderData()
+    {
+        return m_render_data;
     }
 
     void GameScene::OnAwake()

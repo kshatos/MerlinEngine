@@ -2,7 +2,7 @@
 #define MESH_UTILS_HPP
 #include "Merlin/Render/mesh.hpp"
 #include "Merlin/Render/mesh_vertex.hpp"
-
+#include "Merlin/Render/renderer.hpp"
 
 namespace Merlin
 {
@@ -33,16 +33,18 @@ namespace Merlin
     {
         BufferLayout layout = VertexType::GetLayout();
 
-        auto vbuffer = VertexBuffer::Create(
+        auto api = Renderer::GetAPI();
+
+        auto vbuffer = api->CreateVertexBuffer(
             mesh->GetVertexDataPointer(),
             mesh->GetVertexCount() * sizeof(VertexType));
         vbuffer->SetLayout(layout);
 
-        auto ibuffer = IndexBuffer::Create(
+        auto ibuffer = api->CreateIndexBuffer(
             mesh->GetIndexDataPointer(),
             mesh->GetTriangleCount() * 3);
 
-        auto varray = VertexArray::Create();
+        auto varray = api->CreateVertexArray();
         varray->AddVertexBuffer(vbuffer);
         varray->SetIndexBuffer(ibuffer);
 

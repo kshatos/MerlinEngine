@@ -2,8 +2,6 @@
 #include <glm/gtc/random.hpp>
 #include <glm/glm.hpp>
 #include <imgui.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <backends/imgui_impl_glfw.h>
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
@@ -139,19 +137,21 @@ public:
     SceneLayer()
     {
         // Initialize render data
+        auto api = Renderer::GetAPI();
+
         auto texProps = Texture2DProperties(
             TextureWrapMode::Repeat,
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
-        auto main_texture = Texture2D::Create(
+        auto main_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\debug.jpg", texProps);
-        auto pbr_albedo_texture = Texture2D::Create(
+        auto pbr_albedo_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
-        auto pbr_roughness_texture = Texture2D::Create(
+        auto pbr_roughness_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
-        auto pbr_metalic_texture = Texture2D::Create(
+        auto pbr_metalic_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
-        auto pbr_normal_texture = Texture2D::Create(
+        auto pbr_normal_texture = api->CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
@@ -174,7 +174,7 @@ public:
         }
         auto custom_cubemap = UploadCubemap(cube_data);
 
-        main_cubemap = Cubemap::Create(
+        main_cubemap =  api->CreateCubemap(
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
@@ -185,15 +185,15 @@ public:
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
-        auto pbr_shader = Shader::CreateFromFiles(
+        auto pbr_shader = api->CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_basic.vert",
             ".\\Assets\\Shaders\\pbr_lit_basic.frag");
 
-        auto pbr_texture_shader = Shader::CreateFromFiles(
+        auto pbr_texture_shader = api->CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_texture.vert",
             ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
-        auto main_shader = Shader::CreateFromFiles(
+        auto main_shader = api->CreateShader(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
@@ -243,7 +243,7 @@ public:
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-            auto fbuffer = FrameBuffer::Create(fb_params);
+            auto fbuffer = api->CreateFramebuffer(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 
@@ -336,29 +336,13 @@ public:
 
         // Rendering
         {// Prepare background
-            Renderer::SetViewport(
-                0, 0,
-                Application::Get().GeMaintWindow()->GetWidth(),
-                Application::Get().GeMaintWindow()->GetHeight());
             Renderer::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
             Renderer::Clear();
         }
 
-        {// Render scene
-            scene.RenderScene();
-        }
+        Renderer::RenderScene(scene.GetRenderData());
 
         {// Render GUI to main window
-            auto& io = ImGui::GetIO();
-            io.DisplaySize = ImVec2(
-                (float)Application::Get().GeMaintWindow()->GetWidth(),
-                (float)Application::Get().GeMaintWindow()->GetHeight());
-
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            // Scene viewport
             ImGui::Begin(
                 "Viewport",
                 nullptr,
@@ -396,10 +380,6 @@ public:
             ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambientRadiance);
             ImGui::End();
-
-            // Finish
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         }
     }
 

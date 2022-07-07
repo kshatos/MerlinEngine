@@ -3,6 +3,14 @@
 #include "Merlin/Core/logger.hpp"
 #include <backends/imgui_impl_opengl3.h>
 #include "backends/imgui_impl_glfw.h"
+#include "Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
+#include "Merlin/Platform/OpenGL/opengl_shader.hpp"
+#include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
+#include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"
+#include "Merlin/Platform/OpenGL/opengl_frame_buffer.hpp"
+
 
 
 namespace Merlin
@@ -51,6 +59,30 @@ namespace Merlin
         ImGui::DestroyContext(context);
     }
 
+    void OpenGLRenderAPI::BeginFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void OpenGLRenderAPI::EndFrame()
+    {
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void OpenGLRenderAPI::PresentFrame()
+    {
+        int left, right, bot, top;
+        glfwGetWindowFrameSize(
+            m_window, &left, &top, &right, &bot);
+        glViewport(0, 0, right - left, top - bot);
+
+        glfwSwapBuffers(m_window);
+    }
+
+
     void OpenGLRenderAPI::SetViewport(
         uint32_t x,
         uint32_t y,
@@ -81,9 +113,69 @@ namespace Merlin
         return RenderBackend::OPENGL;
     }
 
-    void OpenGLRenderAPI::SwapBuffers()
+
+    std::shared_ptr<VertexBuffer> OpenGLRenderAPI::CreateVertexBuffer(
+        float* vertices, size_t size)
     {
-        glfwSwapBuffers(m_window);;
+        return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+    }
+
+    std::shared_ptr<IndexBuffer> OpenGLRenderAPI::CreateIndexBuffer(
+        uint32_t* indices, uint32_t index_count)
+    {
+        return std::make_shared<OpenGLIndexBuffer>(indices, index_count);
+    }
+
+    std::shared_ptr<VertexArray> OpenGLRenderAPI::CreateVertexArray()
+    {
+        return std::make_shared<OpenGLVertexArray>();
+    }
+
+    std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(
+        const std::string& vertex_source,
+        const std::string& fragment_source)
+    {
+        return std::shared_ptr<OpenGLShader>(
+            OpenGLShader::CreateFromFiles(
+                vertex_source, fragment_source));
+    }
+
+    std::shared_ptr<Texture2D> OpenGLRenderAPI::CreateTexture2D(
+        const std::string& filepath,
+        Texture2DProperties props)
+    {
+        return std::make_shared<OpenGLTexture2D>(
+            filepath, props);
+    }
+
+    std::shared_ptr<Texture2D> OpenGLRenderAPI::CreateTexture2D(
+        void* data,
+        uint32_t width,
+        uint32_t height,
+        uint32_t channel_count,
+        Texture2DProperties props)
+    {
+        return std::make_shared<OpenGLTexture2D>(
+            data, width, height, channel_count, props);
+    }
+
+    std::shared_ptr<Cubemap> OpenGLRenderAPI::CreateCubemap(
+        const std::vector<std::string>& face_paths)
+    {
+        return std::make_shared<OpenGLCubemap>(face_paths);
+    }
+
+    std::shared_ptr<Cubemap> OpenGLRenderAPI::CreateCubemap(
+        uint32_t resolution, uint32_t channel_count)
+    {
+        return std::make_shared<OpenGLCubemap>(
+            resolution, channel_count);
+    }
+
+    std::shared_ptr<FrameBuffer> OpenGLRenderAPI::CreateFramebuffer(
+        const FrameBufferParameters& state)
+    {
+        return std::make_shared<OpenGLFrameBuffer>(state);
     }
 
 }
