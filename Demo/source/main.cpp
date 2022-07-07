@@ -342,16 +342,9 @@ public:
             Renderer::Clear();
         }
 
-        {// Render scene
-            scene.RenderScene();
-        }
+        Renderer::RenderScene(scene.GetRenderData());
 
         {// Render GUI to main window
-            auto& io = ImGui::GetIO();
-            io.DisplaySize = ImVec2(
-                (float)Application::Get().GeMaintWindow()->GetWidth(),
-                (float)Application::Get().GeMaintWindow()->GetHeight());
-
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
