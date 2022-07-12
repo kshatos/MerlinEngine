@@ -4,6 +4,7 @@
 #include <glfw/glfw3.h>
 #include <vector>
 #include <optional>
+#include <stdexcept>
 
 
 namespace Merlin
@@ -72,5 +73,11 @@ namespace Merlin
     VkExtent2D chooseSwapExtent(
         const VkSurfaceCapabilitiesKHR& capabilities,
         GLFWwindow* window);
+
+    uint32_t findMemoryType(
+        uint32_t typeFilter,
+        VkMemoryPropertyFlags properties,
+        VkPhysicalDevice physicalDevice);
+
 }
 #endif

@@ -1,4 +1,5 @@
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
 #include <stdexcept>
 #include <set>
 #include <backends/imgui_impl_vulkan.h>
@@ -174,7 +175,8 @@ namespace Merlin
     std::shared_ptr<VertexBuffer> VulkanRenderAPI::CreateVertexBuffer(
         float* vertices, size_t size)
     {
-        return nullptr;
+        return std::make_shared<VulkanVertexBuffer>(
+            vertices, size, logicalDevice, physicalDevice);
     }
 
     std::shared_ptr<IndexBuffer> VulkanRenderAPI::CreateIndexBuffer(

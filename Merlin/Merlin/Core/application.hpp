@@ -33,8 +33,8 @@ namespace Merlin
     {
         static Application* app_instance;
 
-        LayerStack m_layer_stack;
         std::shared_ptr<Window> m_main_window;
+        LayerStack m_layer_stack;
         bool m_is_running;
         float m_last_frame_time = 0.0f;
     public:

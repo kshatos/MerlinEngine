@@ -11,16 +11,27 @@ using namespace Merlin;
 
 class ImGUITestLayer : public Layer
 {
-    virtual void OnAttach() {};
+    std::shared_ptr<VertexBuffer> m_vertexBuffer;
 
-    virtual void OnDetatch() {};
+public:
+    virtual void OnAttach() override
+    {
+        std::vector<float> vertices{
+            1.0, 2.0, 3.0, 4.0, 5.0
+        };
 
-    virtual void OnUpdate(float time_step)
+        m_vertexBuffer = Renderer::CreateVertexBuffer(
+            vertices.data(), vertices.size());
+    };
+
+    virtual void OnDetatch() override {};
+
+    virtual void OnUpdate(float time_step) override
     {
         ImGui::ShowDemoWindow();
     }
 
-    virtual void HandleEvent(AppEvent& app_event) {};
+    virtual void HandleEvent(AppEvent& app_event) override {};
 };
 
 
