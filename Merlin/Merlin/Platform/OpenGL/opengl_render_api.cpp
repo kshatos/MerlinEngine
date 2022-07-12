@@ -88,11 +88,6 @@ namespace Merlin
 
     void OpenGLRenderAPI::PresentFrame()
     {
-        int left, right, bot, top;
-        glfwGetWindowFrameSize(
-            m_window, &left, &top, &right, &bot);
-        glViewport(0, 0, right - left, top - bot);
-
         glfwSwapBuffers(m_window);
     }
 
@@ -141,15 +136,14 @@ namespace Merlin
 
         // Final lighting pass
         {
-            auto buffer = scene.camera->frame_buffer;
-            auto buffer_params = buffer->GetParameters();
-            buffer->Bind();
-            SetViewport(0, 0, buffer_params.width, buffer_params.height);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            int width, height;
+            glfwGetFramebufferSize(m_window, &width, &height);
+            glViewport(0, 0, width, height);
             SetClearColor(scene.camera->clear_color);
             Clear();
             DrawMeshes(scene);
             DrawSkybox(scene);
-            buffer->UnBind();
         }
     }
 
