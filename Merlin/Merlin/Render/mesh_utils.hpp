@@ -33,18 +33,16 @@ namespace Merlin
     {
         BufferLayout layout = VertexType::GetLayout();
 
-        auto api = Renderer::GetAPI();
-
-        auto vbuffer = api->CreateVertexBuffer(
+        auto vbuffer = Renderer::CreateVertexBuffer(
             mesh->GetVertexDataPointer(),
             mesh->GetVertexCount() * sizeof(VertexType));
         vbuffer->SetLayout(layout);
 
-        auto ibuffer = api->CreateIndexBuffer(
+        auto ibuffer = Renderer::CreateIndexBuffer(
             mesh->GetIndexDataPointer(),
             mesh->GetTriangleCount() * 3);
 
-        auto varray = api->CreateVertexArray();
+        auto varray = Renderer::CreateVertexArray();
         varray->AddVertexBuffer(vbuffer);
         varray->SetIndexBuffer(ibuffer);
 

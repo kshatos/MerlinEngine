@@ -137,21 +137,20 @@ public:
     SceneLayer()
     {
         // Initialize render data
-        auto api = Renderer::GetAPI();
 
         auto texProps = Texture2DProperties(
             TextureWrapMode::Repeat,
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
-        auto main_texture = api->CreateTexture2D(
+        auto main_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\debug.jpg", texProps);
-        auto pbr_albedo_texture = api->CreateTexture2D(
+        auto pbr_albedo_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
-        auto pbr_roughness_texture = api->CreateTexture2D(
+        auto pbr_roughness_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
-        auto pbr_metalic_texture = api->CreateTexture2D(
+        auto pbr_metalic_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
-        auto pbr_normal_texture = api->CreateTexture2D(
+        auto pbr_normal_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
@@ -174,7 +173,7 @@ public:
         }
         auto custom_cubemap = UploadCubemap(cube_data);
 
-        main_cubemap =  api->CreateCubemap(
+        main_cubemap = Renderer::CreateCubemap(
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
@@ -185,15 +184,15 @@ public:
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
-        auto pbr_shader = api->CreateShader(
+        auto pbr_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_basic.vert",
             ".\\Assets\\Shaders\\pbr_lit_basic.frag");
 
-        auto pbr_texture_shader = api->CreateShader(
+        auto pbr_texture_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_texture.vert",
             ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
-        auto main_shader = api->CreateShader(
+        auto main_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
@@ -243,7 +242,7 @@ public:
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-            auto fbuffer = api->CreateFramebuffer(fb_params);
+            auto fbuffer = Renderer::CreateFramebuffer(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 

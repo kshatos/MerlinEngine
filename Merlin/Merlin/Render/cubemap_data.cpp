@@ -178,8 +178,7 @@ namespace Merlin
     std::shared_ptr<Cubemap> UploadCubemap(
         std::shared_ptr<CubemapData> data)
     {
-        auto api = Renderer::GetAPI();
-        auto cubemap = api->CreateCubemap(data->GetResolution(), data->GetChannelCount());
+        auto cubemap = Renderer::CreateCubemap(data->GetResolution(), data->GetChannelCount());
 
         for (uint32_t face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
         {
