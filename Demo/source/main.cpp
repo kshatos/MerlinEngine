@@ -137,21 +137,20 @@ public:
     SceneLayer()
     {
         // Initialize render data
-        auto api = Renderer::GetAPI();
 
         auto texProps = Texture2DProperties(
             TextureWrapMode::Repeat,
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
-        auto main_texture = api->CreateTexture2D(
+        auto main_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\debug.jpg", texProps);
-        auto pbr_albedo_texture = api->CreateTexture2D(
+        auto pbr_albedo_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
-        auto pbr_roughness_texture = api->CreateTexture2D(
+        auto pbr_roughness_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
-        auto pbr_metalic_texture = api->CreateTexture2D(
+        auto pbr_metalic_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
-        auto pbr_normal_texture = api->CreateTexture2D(
+        auto pbr_normal_texture = Renderer::CreateTexture2D(
             ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
@@ -174,26 +173,26 @@ public:
         }
         auto custom_cubemap = UploadCubemap(cube_data);
 
-        main_cubemap =  api->CreateCubemap(
+        main_cubemap = Renderer::CreateCubemap(
             std::vector<std::string>
         {
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
                 ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
         });
 
-        auto pbr_shader = api->CreateShader(
+        auto pbr_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_basic.vert",
             ".\\Assets\\Shaders\\pbr_lit_basic.frag");
 
-        auto pbr_texture_shader = api->CreateShader(
+        auto pbr_texture_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\pbr_lit_texture.vert",
             ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
-        auto main_shader = api->CreateShader(
+        auto main_shader = Renderer::CreateShader(
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
@@ -243,7 +242,7 @@ public:
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
             fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
-            auto fbuffer = api->CreateFramebuffer(fb_params);
+            auto fbuffer = Renderer::CreateFramebuffer(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 
@@ -251,7 +250,7 @@ public:
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto camera_component = entity->AddComponent<CameraComponent>();
             auto camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-            transform_comp->transform.Translate(glm::vec3(0.0f, 0.0f, 5.0f));
+            transform_comp->transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
             camera_component->data.camera = camera;
             camera_component->data.frame_buffer = fbuffer;
             camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
@@ -278,7 +277,7 @@ public:
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
             light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
             light_comp->data.irradiance = 100.0f;
-            light_comp->data.direction = glm::normalize(glm::vec3(0.5, 0.5, 0.0));
+            light_comp->data.direction = glm::normalize(glm::vec3(-0.5, -0.5, 0.0));
         }
         /*
         for (int i = 0; i < 4; ++i)
@@ -301,7 +300,7 @@ public:
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
             auto spin_comp = entity->AddComponent<SpinningComponent>();
 
-            transform_comp->transform.Rotate(glm::vec3(-1.0, 0.0, 0.0), 0.5f * glm::pi<float>());
+            transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
 
             mesh_comp->data.vertex_array = cube_varray;
             mesh_comp->data.material = pbr_texture_material;
@@ -312,7 +311,6 @@ public:
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
 
             transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
-            transform_comp->transform.Translate(glm::vec3(0.0f, 1.5f, 0.0));
 
             mesh_comp->data.vertex_array = cube_varray;
             mesh_comp->data.material = pbr_texture_material;
@@ -329,53 +327,12 @@ public:
 
     virtual void OnUpdate(float time_step) override
     {
-        //ME_LOG_INFO("fps: " + std::to_string(1.0f / time_step));
-
         scene.OnUpdate(time_step);
         MoveCamera(time_step);
-
-        // Rendering
-        {// Prepare background
-            Renderer::SetClearColor(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-            Renderer::Clear();
-        }
 
         Renderer::RenderScene(scene.GetRenderData());
 
         {// Render GUI to main window
-            ImGui::Begin(
-                "Viewport",
-                nullptr,
-                ImGuiWindowFlags_NoScrollbar |
-                ImGuiWindowFlags_NoScrollWithMouse);
-
-            auto& fbuffer = camera_data->frame_buffer;
-            auto& fbuffer_params = fbuffer->GetParameters();
-            uint32_t tex_id = fbuffer->GetColorAttachmentID();
-            ImGui::Image(
-                (ImTextureID)tex_id,
-                ImVec2{
-                    (float)fbuffer_params.width,
-                    (float)fbuffer_params.height });
-
-            auto new_size = ImGui::GetWindowSize();
-            if ((new_size.x != viewport_size.x || new_size.y != viewport_size.y) && 
-                !Input::GetMouseButtonDown(MouseButton::BUTTON_LEFT))
-            {
-                fbuffer_params.width = new_size.x; 
-                fbuffer_params.height = new_size.y;
-                fbuffer->Rebuild();
-
-                float aspect = new_size.x / new_size.y;
-
-                camera_data->camera->SetAspectRatio(aspect);
-
-                viewport_size = new_size;
-            }
-
-            ImGui::End();
-
-            // Prompt
             ImGui::Begin("Settings");
             ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambientRadiance);
@@ -385,6 +342,14 @@ public:
 
     virtual void HandleEvent(AppEvent& app_event) override
     {
+        app_event.Dispatch<WindowResizedEvent>(
+            [this](WindowResizedEvent& e)
+            {
+                camera_data->camera->SetAspectRatio((float)e.GetWidth() / (float)e.GetHeight());
+                return false; 
+            }
+        );
+
         ME_LOG_INFO(app_event.ToString());
     }
 

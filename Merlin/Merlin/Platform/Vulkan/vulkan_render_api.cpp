@@ -162,34 +162,14 @@ namespace Merlin
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-
-    void VulkanRenderAPI::SetViewport(
-        uint32_t x,
-        uint32_t y,
-        uint32_t width,
-        uint32_t height)
+    void VulkanRenderAPI::RenderScene(const SceneRenderData& scene)
     {
     }
-
-    void VulkanRenderAPI::SetClearColor(const glm::vec4& color)
-    {
-    }
-
-    void VulkanRenderAPI::Clear()
-    {
-    }
-
-    void VulkanRenderAPI::DrawTriangles(
-        const std::shared_ptr<VertexArray>& vertex_array)
-    {
-    }
-
 
     RenderBackend VulkanRenderAPI::Backend()
     {
         return RenderBackend::VULKAN;
     }
-
 
     std::shared_ptr<VertexBuffer> VulkanRenderAPI::CreateVertexBuffer(
         float* vertices, size_t size)

@@ -1,4 +1,6 @@
 #include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
+#include "Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp"
+#include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
 #include <glad/glad.h>
 
 
@@ -44,10 +46,11 @@ namespace Merlin
 
     void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer)
     {
+        auto gl_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(buffer);
         m_vertex_buffers.push_back(buffer);
 
         glBindVertexArray(m_id);
-        buffer->Bind();
+        gl_buffer->Bind();
 
         const auto& layout = buffer->GetLayout();
         uint32_t index = 0;
@@ -64,16 +67,17 @@ namespace Merlin
             index++;
         }
         glBindVertexArray(0);
-        buffer->UnBind();
+        gl_buffer->UnBind();
     }
 
     void OpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)
     {
+        auto gl_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(buffer);
         m_index_buffer = buffer;
         glBindVertexArray(m_id);
-        buffer->Bind();
+        gl_buffer->Bind();
         glBindVertexArray(0);
-        buffer->UnBind();
+        gl_buffer->UnBind();
     }
 
     const std::shared_ptr<IndexBuffer>& OpenGLVertexArray::GetIndexBuffer()

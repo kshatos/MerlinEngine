@@ -14,8 +14,8 @@ namespace Merlin
     public:
         OpenGLIndexBuffer(uint32_t* indices, uint32_t index_count);
         ~OpenGLIndexBuffer();
-        void Bind() override;
-        void UnBind()override;
+        void Bind();
+        void UnBind();
         uint32_t GetCount() override;
     };
 }

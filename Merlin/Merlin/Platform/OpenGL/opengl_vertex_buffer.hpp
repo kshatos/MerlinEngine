@@ -14,8 +14,8 @@ namespace Merlin
         ~OpenGLVertexBuffer();
         void SetLayout(const BufferLayout& layout) override;
         const BufferLayout& GetLayout() const override;
-        void Bind() override;
-        void UnBind() override;
+        void Bind();
+        void UnBind();
     };
 }
 

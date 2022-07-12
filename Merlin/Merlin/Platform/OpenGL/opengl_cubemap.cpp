@@ -31,7 +31,9 @@ namespace Merlin
         int width, height, channel_count;
         for (unsigned int i = 0; i < face_paths.size(); i++)
         {
+            stbi_set_flip_vertically_on_load(0);
             unsigned char* data = stbi_load(face_paths[i].c_str(), &width, &height, &channel_count, 0);
+            
             if (data)
             {
                 auto format = GetGLDataFormat(channel_count);

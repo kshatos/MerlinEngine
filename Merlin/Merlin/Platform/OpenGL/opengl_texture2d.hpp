@@ -31,8 +31,8 @@ namespace Merlin
         ~OpenGLTexture2D();
         inline uint32_t GetWidth() override { return m_width; }
         inline uint32_t GetHeight() override { return m_height; }
-        void Bind(uint32_t slot) override;
-        void UnBind(uint32_t slot) override;
+        void Bind(uint32_t slot);
+        void UnBind(uint32_t slot);
     };
 }
 

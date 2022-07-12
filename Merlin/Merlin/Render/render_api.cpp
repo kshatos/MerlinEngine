@@ -34,4 +34,22 @@ namespace Merlin
         return nullptr;
     }
 
+
+    glm::mat4 GetLightMatrix(
+        const CameraRenderData& camera_data,
+        const DirectionalLightData& light_data)
+    {
+        auto distance = 10.0f;
+        auto projection_matrix = glm::ortho(
+            -distance, +distance,
+            -distance, +distance,
+            +00.01f, +2 * distance);
+
+        Transform t;
+        t.LookAt(light_data.direction);
+        t.Translate(camera_data.view_pos - light_data.direction * distance);
+        auto view_matrix = glm::inverse(t.GetTransformationMatrix());
+
+        return projection_matrix * view_matrix;
+    }
 }

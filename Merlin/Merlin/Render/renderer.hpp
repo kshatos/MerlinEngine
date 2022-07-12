@@ -6,26 +6,39 @@
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/render_api.hpp"
 
+
 namespace Merlin
 {
     class Renderer
     {
-        static std::shared_ptr<Shader> m_shadow_shader;
-        static std::shared_ptr<Shader> m_skybox_shader;
         static std::shared_ptr<RenderAPI> m_render_impl;
-        static std::shared_ptr<FrameBuffer> m_shadow_buffer;
     public:
         static void Init(std::shared_ptr<RenderAPI> renderApi);
-        inline static std::shared_ptr<FrameBuffer> GetShadowBuffer() { return m_shadow_buffer; }
-        static void SetClearColor(const glm::vec4& color);
-        static void Clear();
         static void RenderScene(const SceneRenderData& scene);
-        static std::shared_ptr<RenderAPI> GetAPI();
 
-    private:
-        static void DrawMeshes(const SceneRenderData& scene);
-        static void DrawSkybox(const SceneRenderData& scene);
-        static void DrawMeshShadows(const SceneRenderData& scene);
+        static std::shared_ptr<VertexBuffer> CreateVertexBuffer(
+            float* vertices, size_t size);
+        static std::shared_ptr<IndexBuffer> CreateIndexBuffer(
+            uint32_t* indices, uint32_t index_count);
+        static std::shared_ptr<VertexArray> CreateVertexArray();
+        static std::shared_ptr<Shader> CreateShader(
+            const std::string& vertex_source,
+            const std::string& fragment_source);
+        static std::shared_ptr<Texture2D> CreateTexture2D(
+            const std::string& filepath,
+            Texture2DProperties props = Texture2DProperties());
+        static std::shared_ptr<Texture2D> CreateTexture2D(
+            void* data,
+            uint32_t width,
+            uint32_t height,
+            uint32_t channel_count,
+            Texture2DProperties props = Texture2DProperties());
+        static std::shared_ptr<Cubemap> CreateCubemap(
+            const std::vector<std::string>& face_paths);
+        static std::shared_ptr<Cubemap> CreateCubemap(
+            uint32_t resolution, uint32_t channel_count);
+        static std::shared_ptr<FrameBuffer> CreateFramebuffer(
+            const FrameBufferParameters& state);
     };
 }
 

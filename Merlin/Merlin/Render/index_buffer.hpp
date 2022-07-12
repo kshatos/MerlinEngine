@@ -10,8 +10,6 @@ namespace Merlin
     {
     public:
         virtual ~IndexBuffer() {}
-        virtual void Bind() = 0;
-        virtual void UnBind() = 0;
         virtual uint32_t GetCount() = 0;
     };
 }

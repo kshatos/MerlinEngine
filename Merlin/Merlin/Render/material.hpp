@@ -11,12 +11,13 @@ namespace Merlin
 {
     class Material
     {
+    public:
         std::shared_ptr<Shader> m_shader;
         BufferLayout m_uniformLayout;
         std::vector<std::string> m_textureNames;
         char* m_uniformData;
         std::vector<std::shared_ptr<Texture>> m_textureData;
-    public:
+
         Material(
             std::shared_ptr<Shader> shader,
             BufferLayout uniformLayout,
@@ -48,9 +49,6 @@ namespace Merlin
         void SetUniformInt(const std::string& name, const uint32_t& data);
 
         void SetTexture(std::string name, const std::shared_ptr<Texture>& texture);
-
-        void Bind();
-        void UnBind();
 
     private:
         bool FindBufferElement(
