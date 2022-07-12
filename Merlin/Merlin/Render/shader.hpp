@@ -12,8 +12,6 @@ namespace Merlin
     {
     public:
         virtual ~Shader() {}
-        virtual void Bind() = 0;
-        virtual void UnBind() = 0;
 
         virtual void SetUniform(const std::string& name, ShaderDataType type, void* value) = 0;
         virtual void SetUniformMat4(const std::string& name, glm::mat4 value) = 0;

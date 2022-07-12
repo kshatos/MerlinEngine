@@ -18,12 +18,12 @@ namespace Merlin
         inline FrameBufferParameters& GetParameters() override { return m_parameters; }
         inline const uint32_t& GetColorAttachmentID() override { return m_color_attachment_id; }
         inline const uint32_t& GetDepthAttachmentID() override { return m_depth_attachment_id; }
-        void Bind() override;
-        void UnBind() override;
-        void BindColorTexture(uint32_t slot) override;
-        void BindDepthTexture(uint32_t slot) override;
-        void UnBindColorTexture(uint32_t slot) override;
-        void UnBindDepthTexture(uint32_t slot) override;
+        void Bind();
+        void UnBind();
+        void BindColorTexture(uint32_t slot);
+        void BindDepthTexture(uint32_t slot);
+        void UnBindColorTexture(uint32_t slot);
+        void UnBindDepthTexture(uint32_t slot);
         void Rebuild() override;
     };
 }

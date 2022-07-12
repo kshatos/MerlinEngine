@@ -98,13 +98,14 @@ namespace Merlin
 
         // Shadow map depth pass
         {
-            auto buffer_params = m_shadow_buffer->GetParameters();
-            m_shadow_buffer->Bind();
+            auto shadow_buffer = std::dynamic_pointer_cast<OpenGLFrameBuffer>(m_shadow_buffer);
+            auto buffer_params = shadow_buffer->GetParameters();
+            shadow_buffer->Bind();
             glViewport(0, 0, buffer_params.width, buffer_params.height);
             glClearColor(0.0, 0.0, 0.0, 1.0);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             DrawMeshShadows(scene);
-            m_shadow_buffer->UnBind();
+            shadow_buffer->UnBind();
         }
 
         // Final lighting pass
@@ -124,18 +125,38 @@ namespace Merlin
         }
     }
 
+    void OpenGLRenderAPI::BindMaterial(
+        const std::shared_ptr<Material>& material)
+    {
+        auto shader = std::dynamic_pointer_cast<OpenGLShader>(material->m_shader);
+        shader->Bind();
+        for (int i = 0; i < material->m_textureData.size(); ++i)
+        {
+            if (material->m_textureData[i])
+            {
+                std::dynamic_pointer_cast<OpenGLTexture2D>(material->m_textureData[i])->Bind(i);
+                material->m_shader->SetUniformInt(material->m_textureNames[i], i);
+            }
+        }
+        for (const auto& item : material->m_uniformLayout)
+        {
+            shader->SetUniform(item.name, item.type, material->m_uniformData + item.offset);
+        }
+    }
+
     void OpenGLRenderAPI::DrawMeshes(const SceneRenderData& scene)
     {
         auto& camera_data = *scene.camera;
+        auto shadow_buffer = std::dynamic_pointer_cast<OpenGLFrameBuffer>(m_shadow_buffer);
         for (const auto& mesh_pointer : scene.meshes)
         {
             MeshRenderData& data = *mesh_pointer;
 
             const auto& material = data.material;
-            const auto& vertex_array = data.vertex_array;
+            const auto& vertex_array = std::dynamic_pointer_cast<OpenGLVertexArray>(data.vertex_array);
             const auto& model_matrix = data.model_matrix;
 
-            material->Bind();
+            BindMaterial(material);
             material->SetUniformFloat3("u_viewPos", camera_data.view_pos);
             material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
             material->SetUniformMat4("u_ModelMatrix", model_matrix);
@@ -148,7 +169,7 @@ namespace Merlin
                 material->SetUniformMat4("u_lightTransform", light_matrix);
             }
             uint32_t shadow_slot = material->TextureCount() + 1;
-            m_shadow_buffer->BindDepthTexture(shadow_slot);
+            shadow_buffer->BindDepthTexture(shadow_slot);
             material->SetUniformInt("u_shadowBufferTexture", shadow_slot);
 
             material->SetUniformFloat("u_ambientRadiance", scene.ambient_light_radiance);
@@ -189,7 +210,6 @@ namespace Merlin
             glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
             vertex_array->UnBind();
-            material->UnBind();
         }
     }
 
@@ -197,17 +217,18 @@ namespace Merlin
     {
         auto& camera = *scene.camera;
         auto skybox = camera.skybox;
-        m_skybox_shader->Bind();
+        auto skybox_shader = std::dynamic_pointer_cast<OpenGLShader>(m_skybox_shader);
+        skybox_shader->Bind();
         if (skybox)
         {
-            auto& cubemap = skybox->GetCubemap();
-            auto& varray = skybox->GetVertexArray();
+            auto& cubemap = std::dynamic_pointer_cast<OpenGLCubemap>(skybox->GetCubemap());
+            auto& varray = std::dynamic_pointer_cast<OpenGLVertexArray>(skybox->GetVertexArray());
 
             cubemap->Bind(0);
 
-            m_skybox_shader->SetUniformFloat3("u_viewPos", camera.view_pos);
-            m_skybox_shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
-            m_skybox_shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
+            skybox_shader->SetUniformFloat3("u_viewPos", camera.view_pos);
+            skybox_shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
+            skybox_shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
 
             varray->Bind();
 
@@ -216,7 +237,7 @@ namespace Merlin
             varray->UnBind();
             cubemap->UnBind(0);
         }
-        m_skybox_shader->UnBind();
+        skybox_shader->UnBind();
     }
 
     void OpenGLRenderAPI::DrawMeshShadows(const SceneRenderData& scene)
@@ -229,23 +250,25 @@ namespace Merlin
 
         auto light_matrix = GetLightMatrix(camera_data, light_data);
 
-        m_shadow_shader->Bind();
+
+        auto shadow_shader = std::dynamic_pointer_cast<OpenGLShader>(m_shadow_shader);
+        shadow_shader->Bind();
         for (const auto& mesh_pointer : scene.meshes)
         {
             MeshRenderData& data = *mesh_pointer;
 
-            const auto& vertex_array = data.vertex_array;
+            const auto& vertex_array = std::dynamic_pointer_cast<OpenGLVertexArray>(data.vertex_array);
             const auto& model_matrix = data.model_matrix;
 
-            m_shadow_shader->SetUniformMat4("u_ModelMatrix", model_matrix);
-            m_shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
+            shadow_shader->SetUniformMat4("u_ModelMatrix", model_matrix);
+            shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
 
             vertex_array->Bind();
             glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
             vertex_array->UnBind();
         }
-        m_shadow_shader->UnBind();
+        shadow_shader->UnBind();
     }
 
     RenderBackend OpenGLRenderAPI::Backend()

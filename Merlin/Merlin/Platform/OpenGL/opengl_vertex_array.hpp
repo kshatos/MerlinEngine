@@ -15,8 +15,8 @@ namespace Merlin
     public:
         OpenGLVertexArray();
         ~OpenGLVertexArray();
-        void Bind() override;
-        void UnBind() override;
+        void Bind();
+        void UnBind();
         void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer) override;
         void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer) override;
         const std::shared_ptr<IndexBuffer>& GetIndexBuffer() override;

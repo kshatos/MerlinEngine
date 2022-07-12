@@ -131,30 +131,4 @@ namespace Merlin
         }
     }
 
-    void Material::Bind()
-    {
-        m_shader->Bind();
-        for (int i = 0; i < m_textureData.size(); ++i)
-        {
-            if (m_textureData[i])
-            {
-                m_textureData[i]->Bind(i);
-                m_shader->SetUniformInt(m_textureNames[i], i);
-            }
-        }
-        for (const auto& item : m_uniformLayout)
-        {
-            m_shader->SetUniform(item.name, item.type, m_uniformData + item.offset);
-        }
-    }
-
-    void Material::UnBind()
-    {
-        m_shader->UnBind();
-        for (int i = 0; i < m_textureData.size(); ++i)
-        {
-            if (m_textureData[i])
-                m_textureData[i]->UnBind(i);
-        }
-    }
 }

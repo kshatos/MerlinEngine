@@ -45,6 +45,7 @@ namespace Merlin
             const FrameBufferParameters& state) override;
 
     private:
+        void BindMaterial(const std::shared_ptr<Material>& material);
         void DrawMeshes(const SceneRenderData& scene);
         void DrawSkybox(const SceneRenderData& scene);
         void DrawMeshShadows(const SceneRenderData& scene);
