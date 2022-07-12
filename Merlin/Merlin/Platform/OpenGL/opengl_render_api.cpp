@@ -91,33 +91,6 @@ namespace Merlin
         glfwSwapBuffers(m_window);
     }
 
-
-    void OpenGLRenderAPI::SetViewport(
-        uint32_t x,
-        uint32_t y,
-        uint32_t width,
-        uint32_t height)
-    {
-        glViewport(x, y, width, height);
-    }
-
-    void OpenGLRenderAPI::SetClearColor(const glm::vec4& color)
-    {
-        glClearColor(color.r, color.g, color.b, color.a);
-    }
-
-    void OpenGLRenderAPI::Clear()
-    {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    }
-
-    void OpenGLRenderAPI::DrawTriangles(
-        const std::shared_ptr<VertexArray>& vertex_array)
-    {
-        glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-    }
-
-
     void OpenGLRenderAPI::RenderScene(const SceneRenderData& scene)
     {
         if (scene.camera == nullptr)
@@ -127,9 +100,9 @@ namespace Merlin
         {
             auto buffer_params = m_shadow_buffer->GetParameters();
             m_shadow_buffer->Bind();
-            SetViewport(0, 0, buffer_params.width, buffer_params.height);
-            SetClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
-            Clear();
+            glViewport(0, 0, buffer_params.width, buffer_params.height);
+            glClearColor(0.0, 0.0, 0.0, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             DrawMeshShadows(scene);
             m_shadow_buffer->UnBind();
         }
@@ -140,8 +113,12 @@ namespace Merlin
             int width, height;
             glfwGetFramebufferSize(m_window, &width, &height);
             glViewport(0, 0, width, height);
-            SetClearColor(scene.camera->clear_color);
-            Clear();
+            glClearColor(
+                scene.camera->clear_color.r,
+                scene.camera->clear_color.g,
+                scene.camera->clear_color.b,
+                scene.camera->clear_color.a);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             DrawMeshes(scene);
             DrawSkybox(scene);
         }
@@ -209,7 +186,7 @@ namespace Merlin
             }
 
             vertex_array->Bind();
-            DrawTriangles(vertex_array);
+            glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
             vertex_array->UnBind();
             material->UnBind();
@@ -234,7 +211,7 @@ namespace Merlin
 
             varray->Bind();
 
-            DrawTriangles(varray);
+            glDrawElements(GL_TRIANGLES, varray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
             varray->UnBind();
             cubemap->UnBind(0);
@@ -264,7 +241,7 @@ namespace Merlin
             m_shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
 
             vertex_array->Bind();
-            DrawTriangles(vertex_array);
+            glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
             vertex_array->UnBind();
         }
