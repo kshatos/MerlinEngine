@@ -6,26 +6,18 @@
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/render_api.hpp"
 
+
 namespace Merlin
 {
     class Renderer
     {
-        static std::shared_ptr<Shader> m_shadow_shader;
-        static std::shared_ptr<Shader> m_skybox_shader;
         static std::shared_ptr<RenderAPI> m_render_impl;
-        static std::shared_ptr<FrameBuffer> m_shadow_buffer;
     public:
         static void Init(std::shared_ptr<RenderAPI> renderApi);
-        inline static std::shared_ptr<FrameBuffer> GetShadowBuffer() { return m_shadow_buffer; }
         static void SetClearColor(const glm::vec4& color);
         static void Clear();
         static void RenderScene(const SceneRenderData& scene);
         static std::shared_ptr<RenderAPI> GetAPI();
-
-    private:
-        static void DrawMeshes(const SceneRenderData& scene);
-        static void DrawSkybox(const SceneRenderData& scene);
-        static void DrawMeshShadows(const SceneRenderData& scene);
     };
 }
 

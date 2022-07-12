@@ -50,6 +50,20 @@ namespace Merlin
         glFrontFace(GL_CCW);
         glEnable(GL_DEBUG_OUTPUT);
         glDebugMessageCallback(LogOpenGLErrors, 0);
+
+        m_shadow_shader = CreateShader(
+            ".\\Assets\\Shaders\\shadow.vert",
+            ".\\Assets\\Shaders\\shadow.frag");
+        m_skybox_shader = CreateShader(
+            ".\\Assets\\Shaders\\skybox.vert",
+            ".\\Assets\\Shaders\\skybox.frag");
+        m_shadow_buffer = CreateFramebuffer(
+            FrameBufferParameters
+            {
+                2048, 2048,
+                ColorBufferFormat::NONE,
+                DepthBufferFormat::DEPTH32
+            });
     }
 
     void OpenGLRenderAPI::Shutdown()
@@ -106,6 +120,161 @@ namespace Merlin
         const std::shared_ptr<VertexArray>& vertex_array)
     {
         glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+    }
+
+
+    void OpenGLRenderAPI::RenderScene(const SceneRenderData& scene)
+    {
+        if (scene.camera == nullptr)
+            return;
+
+        // Shadow map depth pass
+        {
+            auto buffer_params = m_shadow_buffer->GetParameters();
+            m_shadow_buffer->Bind();
+            SetViewport(0, 0, buffer_params.width, buffer_params.height);
+            SetClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+            Clear();
+            DrawMeshShadows(scene);
+            m_shadow_buffer->UnBind();
+        }
+
+        // Final lighting pass
+        {
+            auto buffer = scene.camera->frame_buffer;
+            auto buffer_params = buffer->GetParameters();
+            buffer->Bind();
+            SetViewport(0, 0, buffer_params.width, buffer_params.height);
+            SetClearColor(scene.camera->clear_color);
+            Clear();
+            DrawMeshes(scene);
+            DrawSkybox(scene);
+            buffer->UnBind();
+        }
+    }
+
+    void OpenGLRenderAPI::DrawMeshes(const SceneRenderData& scene)
+    {
+        auto& camera_data = *scene.camera;
+        for (const auto& mesh_pointer : scene.meshes)
+        {
+            MeshRenderData& data = *mesh_pointer;
+
+            const auto& material = data.material;
+            const auto& vertex_array = data.vertex_array;
+            const auto& model_matrix = data.model_matrix;
+
+            material->Bind();
+            material->SetUniformFloat3("u_viewPos", camera_data.view_pos);
+            material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
+            material->SetUniformMat4("u_ModelMatrix", model_matrix);
+            material->SetUniformMat4("u_ViewMatrix", camera_data.view_matrix);
+            material->SetUniformMat4("u_ProjectionMatrix", camera_data.projection_matrix);
+
+            if (scene.directional_lights.size() > 0)
+            {
+                auto light_matrix = GetLightMatrix(camera_data, *scene.directional_lights[0]);
+                material->SetUniformMat4("u_lightTransform", light_matrix);
+            }
+            uint32_t shadow_slot = material->TextureCount() + 1;
+            m_shadow_buffer->BindDepthTexture(shadow_slot);
+            material->SetUniformInt("u_shadowBufferTexture", shadow_slot);
+
+            material->SetUniformFloat("u_ambientRadiance", scene.ambient_light_radiance);
+
+            material->SetUniformInt("u_nPointLights", scene.point_lights.size());
+            for (int i = 0; i < scene.point_lights.size(); ++i)
+            {
+                const auto& light = *scene.point_lights[i];
+                material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
+                material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiantFlux);
+                material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
+                material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
+            }
+
+            material->SetUniformInt("u_nDirectionalLights", scene.directional_lights.size());
+            for (int i = 0; i < scene.directional_lights.size(); ++i)
+            {
+                const auto& light = *scene.directional_lights[i];
+                material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
+                material->SetUniformFloat("u_directionalLights[" + std::to_string(i) + "].irradiance", light.irradiance);
+                material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
+            }
+
+            material->SetUniformInt("u_nSpotLights", scene.spot_lights.size());
+            for (int i = 0; i < scene.spot_lights.size(); ++i)
+            {
+                const auto& light = *scene.spot_lights[i];
+                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
+                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
+                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoffAngle);
+                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloffRatio);
+                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiantIntensity);
+                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
+                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
+            }
+
+            vertex_array->Bind();
+            DrawTriangles(vertex_array);
+
+            vertex_array->UnBind();
+            material->UnBind();
+        }
+    }
+
+    void OpenGLRenderAPI::DrawSkybox(const SceneRenderData& scene)
+    {
+        auto& camera = *scene.camera;
+        auto skybox = camera.skybox;
+        m_skybox_shader->Bind();
+        if (skybox)
+        {
+            auto& cubemap = skybox->GetCubemap();
+            auto& varray = skybox->GetVertexArray();
+
+            cubemap->Bind(0);
+
+            m_skybox_shader->SetUniformFloat3("u_viewPos", camera.view_pos);
+            m_skybox_shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
+            m_skybox_shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
+
+            varray->Bind();
+
+            DrawTriangles(varray);
+
+            varray->UnBind();
+            cubemap->UnBind(0);
+        }
+        m_skybox_shader->UnBind();
+    }
+
+    void OpenGLRenderAPI::DrawMeshShadows(const SceneRenderData& scene)
+    {
+        if (scene.directional_lights.size() < 1)
+            return;
+
+        auto& light_data = *scene.directional_lights[0];
+        auto& camera_data = *scene.camera;
+
+        auto light_matrix = GetLightMatrix(camera_data, light_data);
+
+        m_shadow_shader->Bind();
+        for (const auto& mesh_pointer : scene.meshes)
+        {
+            MeshRenderData& data = *mesh_pointer;
+
+            const auto& vertex_array = data.vertex_array;
+            const auto& model_matrix = data.model_matrix;
+
+            m_shadow_shader->SetUniformMat4("u_ModelMatrix", model_matrix);
+            m_shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
+
+            vertex_array->Bind();
+            DrawTriangles(vertex_array);
+
+            vertex_array->UnBind();
+        }
+        m_shadow_shader->UnBind();
     }
 
     RenderBackend OpenGLRenderAPI::Backend()

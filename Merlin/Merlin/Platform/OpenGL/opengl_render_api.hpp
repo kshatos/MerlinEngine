@@ -23,6 +23,7 @@ namespace Merlin
         void SetClearColor(const glm::vec4& color) override;
         void Clear() override;
         void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) override;
+        void RenderScene(const SceneRenderData& scene) override;
         RenderBackend Backend() override;
 
         std::shared_ptr<VertexBuffer> CreateVertexBuffer(float* vertices, size_t size) override;
@@ -46,6 +47,11 @@ namespace Merlin
             uint32_t resolution, uint32_t channel_count) override;
         std::shared_ptr<FrameBuffer> CreateFramebuffer(
             const FrameBufferParameters& state) override;
+
+    private:
+        void DrawMeshes(const SceneRenderData& scene);
+        void DrawSkybox(const SceneRenderData& scene);
+        void DrawMeshShadows(const SceneRenderData& scene);
     };
 }
 

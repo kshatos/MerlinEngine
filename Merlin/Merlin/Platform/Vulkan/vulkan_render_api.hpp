@@ -75,6 +75,8 @@ namespace Merlin
         void SetClearColor(const glm::vec4& color) override;
         void Clear() override;
         void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) override;
+        void RenderScene(const SceneRenderData& scene) override;
+
         RenderBackend Backend() override;
 
         std::shared_ptr<VertexBuffer> CreateVertexBuffer(

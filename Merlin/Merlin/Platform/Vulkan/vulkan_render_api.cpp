@@ -179,6 +179,10 @@ namespace Merlin
     {
     }
 
+    void VulkanRenderAPI::RenderScene(const SceneRenderData& scene)
+    {
+    }
+
     void VulkanRenderAPI::DrawTriangles(
         const std::shared_ptr<VertexArray>& vertex_array)
     {

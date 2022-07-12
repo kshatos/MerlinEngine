@@ -9,6 +9,7 @@
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
+#include "Merlin/Render/scene_render_data.hpp"
 
 
 namespace Merlin
@@ -21,6 +22,11 @@ namespace Merlin
 
     class RenderAPI
     {
+    protected:
+        std::shared_ptr<Shader> m_shadow_shader;
+        std::shared_ptr<Shader> m_skybox_shader;
+        std::shared_ptr<FrameBuffer> m_shadow_buffer;
+
     public:
         virtual ~RenderAPI() {}
         virtual void Init(void* windowPointer) = 0;
@@ -33,8 +39,11 @@ namespace Merlin
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
+
+        virtual void RenderScene(const SceneRenderData& scene) = 0;
+
         virtual void DrawTriangles(const std::shared_ptr<VertexArray>& vertex_array) = 0;
-        
+
         virtual RenderBackend Backend() = 0;
 
         virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(
@@ -59,11 +68,15 @@ namespace Merlin
         virtual std::shared_ptr<Cubemap> CreateCubemap(
             uint32_t resolution, uint32_t channel_count) = 0;
         virtual std::shared_ptr<FrameBuffer> CreateFramebuffer(
-            const FrameBufferParameters& state)=0;
+            const FrameBufferParameters& state) = 0;
 
 
         static std::shared_ptr<RenderAPI> Create(RenderBackend backend);
     };
+
+    glm::mat4 GetLightMatrix(
+        const CameraRenderData& camera_data,
+        const DirectionalLightData& light_data);
 }
 
 #endif
