@@ -79,5 +79,22 @@ namespace Merlin
         VkMemoryPropertyFlags properties,
         VkPhysicalDevice physicalDevice);
 
+    void createBuffer(
+        VkDevice device,
+        VkPhysicalDevice physicalDevice,
+        VkDeviceSize size,
+        VkBufferUsageFlags usage,
+        VkMemoryPropertyFlags properties,
+        VkBuffer& buffer,
+        VkDeviceMemory& bufferMemory);
+
+    void copyBuffer(
+        VkQueue queue,
+        VkDevice device,
+        VkCommandPool commandPool,
+        VkBuffer srcBuffer,
+        VkBuffer dstBuffer,
+        VkDeviceSize size);
+
 }
 #endif

@@ -118,11 +118,13 @@ if(MERLIN_ENABLE_VULKAN)
         Merlin/Platform/Vulkan/vulkan_render_api.cpp
         Merlin/Platform/Vulkan/vulkan_util.cpp
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.cpp
+        Merlin/Platform/Vulkan/vulkan_index_buffer.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
         Merlin/Platform/Vulkan/vulkan_render_api.hpp
         Merlin/Platform/Vulkan/vulkan_util.hpp
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp
+        Merlin/Platform/Vulkan/vulkan_index_buffer.hpp
     )
     source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
 endif()

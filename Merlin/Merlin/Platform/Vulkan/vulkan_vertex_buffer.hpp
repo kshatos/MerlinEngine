@@ -17,7 +17,9 @@ namespace Merlin
             float* vertices,
             size_t size,
             VkDevice logicalDevice,
-            VkPhysicalDevice physicalDevice);
+            VkPhysicalDevice physicalDevice,
+            VkQueue queue,
+            VkCommandPool commandBuffer);
         ~VulkanVertexBuffer();
 
         void BindCommand(VkCommandBuffer commandBuffer);
