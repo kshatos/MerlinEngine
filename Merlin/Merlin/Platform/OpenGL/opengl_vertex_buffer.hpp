@@ -9,7 +9,10 @@ namespace Merlin
     {
         uint32_t m_id;
     public:
-        OpenGLVertexBuffer(float* vertices, size_t size);
+        OpenGLVertexBuffer(
+            float* vertices,
+            size_t size,
+            BufferLayout layout);
         ~OpenGLVertexBuffer();
         void Bind();
         void UnBind();

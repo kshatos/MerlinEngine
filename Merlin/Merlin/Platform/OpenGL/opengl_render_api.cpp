@@ -290,10 +290,9 @@ namespace Merlin
         size_t index_count,
         BufferLayout vertexLayout)
     {
-        auto vertexBuffer = std::make_shared<OpenGLVertexBuffer>(vertices, vertex_count);
-        vertexBuffer->SetLayout(vertexLayout);
+        auto vertexBuffer = std::make_shared<OpenGLVertexBuffer>(vertices, vertex_count, vertexLayout);
         auto indexBuffer = std::make_shared<OpenGLIndexBuffer>(indices, index_count);
-        auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer, vertexLayout);
+        auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer);
 
         return meshBuffer;
     }

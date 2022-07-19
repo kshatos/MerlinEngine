@@ -183,6 +183,7 @@ namespace Merlin
         auto vertexBuffer = std::make_shared<VulkanVertexBuffer>(
             vertices,
             vertex_count,
+            vertexLayout,
             logicalDevice,
             physicalDevice,
             graphicsQueue,
@@ -195,7 +196,7 @@ namespace Merlin
             graphicsQueue,
             commandPool);
         auto meshBuffer = std::make_shared<MeshBuffer>(
-            indexBuffer, vertexBuffer, vertexLayout);
+            indexBuffer, vertexBuffer);
 
         return meshBuffer;
     }

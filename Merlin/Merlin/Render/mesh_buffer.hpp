@@ -11,12 +11,10 @@ namespace Merlin
     {
         std::shared_ptr<IndexBuffer> m_indexBuffer;
         std::shared_ptr<VertexBuffer> m_vertexBuffer;
-        BufferLayout m_vertexLayout;
     public:
         MeshBuffer(
             std::shared_ptr<IndexBuffer> indexBuffer,
-            std::shared_ptr<VertexBuffer> vertexBuffer,
-            BufferLayout vertexLayout);
+            std::shared_ptr<VertexBuffer> vertexBuffer);
 
         const std::shared_ptr<IndexBuffer>& GetIndexBuffer();
         const std::shared_ptr<VertexBuffer>& GetVertexBuffer();

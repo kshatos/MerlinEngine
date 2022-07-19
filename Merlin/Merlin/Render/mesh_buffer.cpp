@@ -5,11 +5,9 @@ namespace Merlin
 {
     MeshBuffer::MeshBuffer(
         std::shared_ptr<IndexBuffer> indexBuffer,
-        std::shared_ptr<VertexBuffer> vertexBuffer,
-        BufferLayout vertexLayout) :
+        std::shared_ptr<VertexBuffer> vertexBuffer) :
         m_indexBuffer(indexBuffer),
-        m_vertexBuffer(vertexBuffer),
-        m_vertexLayout(vertexLayout)
+        m_vertexBuffer(vertexBuffer)
     {
     }
 
@@ -25,6 +23,6 @@ namespace Merlin
 
     const BufferLayout& MeshBuffer::GetVertexLayout()
     {
-        return m_vertexLayout;
+        return m_vertexBuffer->GetLayout();
     }
 }

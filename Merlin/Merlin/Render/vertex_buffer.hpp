@@ -12,7 +12,6 @@ namespace Merlin
 
     public:
         virtual ~VertexBuffer() {}
-        virtual inline void SetLayout(const BufferLayout& layout) { m_layout = layout; };
         virtual inline const BufferLayout& GetLayout() const { return m_layout; };
     };
 }

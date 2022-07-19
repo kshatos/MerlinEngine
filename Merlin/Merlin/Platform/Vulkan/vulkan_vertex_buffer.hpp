@@ -16,6 +16,7 @@ namespace Merlin
         VulkanVertexBuffer(
             float* vertices,
             size_t size,
+            BufferLayout layout,
             VkDevice logicalDevice,
             VkPhysicalDevice physicalDevice,
             VkQueue queue,

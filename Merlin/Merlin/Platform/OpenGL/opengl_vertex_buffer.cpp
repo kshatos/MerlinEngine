@@ -23,12 +23,13 @@ namespace Merlin
     }
 
 
-    OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size)
+    OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, size_t size, BufferLayout layout)
     {
         glCreateBuffers(1, &m_id);
         glBindBuffer(GL_ARRAY_BUFFER, m_id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 
+        m_layout = layout;
     }
 
     OpenGLVertexBuffer::~OpenGLVertexBuffer()
