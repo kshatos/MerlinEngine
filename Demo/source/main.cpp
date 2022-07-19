@@ -228,12 +228,24 @@ public:
         cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
         CalculateTangentFrame(cubeMesh);
         cube_varray = UploadMesh(cubeMesh);
+        auto cube_mbuffer = Renderer::CreateMeshBuffer(
+            cubeMesh->GetVertexDataPointer(),
+            cubeMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            cubeMesh->GetIndexDataPointer(),
+            cubeMesh->GetTriangleCount() * 3,
+            Vertex_XNTBUV::GetLayout());
 
         auto sphereMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         CalculateTangentFrame(sphereMesh);
         sphere_varray = UploadMesh(sphereMesh);
+        auto sphere_mbuffer =  Renderer::CreateMeshBuffer(
+            sphereMesh->GetVertexDataPointer(),
+            sphereMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            sphereMesh->GetIndexDataPointer(),
+            sphereMesh->GetTriangleCount() * 3,
+            Vertex_XNTBUV::GetLayout());
 
         // Add entities to the scene
         {
@@ -303,6 +315,7 @@ public:
             transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
 
             mesh_comp->data.vertex_array = cube_varray;
+            mesh_comp->data.mesh_buffer = cube_mbuffer;
             mesh_comp->data.material = pbr_texture_material;
         }
         {
@@ -313,6 +326,7 @@ public:
             transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
 
             mesh_comp->data.vertex_array = cube_varray;
+            mesh_comp->data.mesh_buffer = cube_mbuffer;
             mesh_comp->data.material = pbr_texture_material;
         }
 

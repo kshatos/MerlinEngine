@@ -4,6 +4,7 @@
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Render/camera.hpp"
 #include "Merlin/Render/vertex_array.hpp"
+#include "Merlin/Render/mesh_buffer.hpp"
 #include "Merlin/Render/material.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
 
@@ -49,21 +50,25 @@ namespace Merlin
 
     struct MeshRenderData
     {
+        std::shared_ptr<MeshBuffer> mesh_buffer;
         std::shared_ptr<VertexArray> vertex_array;
         std::shared_ptr<Material> material;
         glm::mat4 model_matrix;
 
         MeshRenderData() :
             material(nullptr),
+            mesh_buffer(nullptr),
             vertex_array(nullptr),
             model_matrix(glm::mat4(0.0)) {}
 
         MeshRenderData(
             std::shared_ptr<Material> _material,
+            std::shared_ptr<MeshBuffer> _mesh_buffer,
             std::shared_ptr<VertexArray> _vertex_array,
             glm::mat4 _model_matrix)
             :
             material(_material),
+            mesh_buffer(_mesh_buffer),
             vertex_array(_vertex_array),
             model_matrix(_model_matrix) {}
     };

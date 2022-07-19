@@ -51,21 +51,6 @@ namespace Merlin
 
         glBindVertexArray(m_id);
         gl_buffer->Bind();
-
-        const auto& layout = buffer->GetLayout();
-        uint32_t index = 0;
-        for (const auto& element : layout)
-        {
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(
-                index,
-                ShaderDataTypeElementCount(element.type),
-                GetShaderDataTypeOpenGLType(element.type),
-                element.normalized ? GL_TRUE : GL_FALSE,
-                layout.GetStride(),
-                (void*)(element.offset));
-            index++;
-        }
         glBindVertexArray(0);
         gl_buffer->UnBind();
     }
@@ -74,6 +59,7 @@ namespace Merlin
     {
         auto gl_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(buffer);
         m_index_buffer = buffer;
+
         glBindVertexArray(m_id);
         gl_buffer->Bind();
         glBindVertexArray(0);

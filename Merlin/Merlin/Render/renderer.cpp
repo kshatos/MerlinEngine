@@ -35,6 +35,17 @@ namespace Merlin
         return m_render_impl->CreateVertexArray();
     }
 
+    std::shared_ptr<MeshBuffer> Renderer::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
+    {
+        return m_render_impl->CreateMeshBuffer(
+            vertices, vertex_count, indices, index_count, vertexLayout);
+    }
+
     std::shared_ptr<Shader> Renderer::CreateShader(
         const std::string& vertex_source,
         const std::string& fragment_source)
