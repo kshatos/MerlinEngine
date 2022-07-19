@@ -294,6 +294,20 @@ namespace Merlin
         return std::make_shared<OpenGLVertexArray>();
     }
 
+    std::shared_ptr<MeshBuffer> OpenGLRenderAPI::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
+    {
+        auto vertexBuffer = std::make_shared<OpenGLVertexBuffer>(vertices, vertex_count);
+        auto indexBuffer = std::make_shared<OpenGLIndexBuffer>(indices, index_count);
+        auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer, vertexLayout);
+
+        return meshBuffer;
+    }
+
     std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(
         const std::string& vertex_source,
         const std::string& fragment_source)

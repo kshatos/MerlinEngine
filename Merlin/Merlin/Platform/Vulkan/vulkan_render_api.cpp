@@ -202,6 +202,33 @@ namespace Merlin
         return nullptr;
     }
 
+    std::shared_ptr<MeshBuffer> VulkanRenderAPI::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
+    {
+        auto vertexBuffer = std::make_shared<VulkanVertexBuffer>(
+            vertices,
+            vertex_count,
+            logicalDevice,
+            physicalDevice,
+            graphicsQueue,
+            commandPool);
+        auto indexBuffer = std::make_shared<VulkanIndexBuffer>(
+            indices,
+            index_count,
+            logicalDevice,
+            physicalDevice,
+            graphicsQueue,
+            commandPool);
+        auto meshBuffer = std::make_shared<MeshBuffer>(
+            indexBuffer, vertexBuffer, vertexLayout);
+
+        return meshBuffer;
+    }
+
     std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(
         const std::string& vertex_source,
         const std::string& fragment_source)
@@ -576,7 +603,7 @@ namespace Merlin
         attachment.format = swapChainImageFormat;
         attachment.samples = VK_SAMPLE_COUNT_1_BIT;
         // TODO: switch to  VK_ATTACHMENT_LOAD_OP_LOAD when other passes added
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; 
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

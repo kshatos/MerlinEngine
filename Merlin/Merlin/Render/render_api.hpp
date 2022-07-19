@@ -6,6 +6,7 @@
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/index_buffer.hpp"
 #include "Merlin/Render/vertex_array.hpp"
+#include "Merlin/Render/mesh_buffer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
@@ -44,6 +45,12 @@ namespace Merlin
         virtual std::shared_ptr<IndexBuffer> CreateIndexBuffer(
             uint32_t* indices, uint32_t index_count) = 0;
         virtual std::shared_ptr<VertexArray> CreateVertexArray() = 0;
+        virtual std::shared_ptr<MeshBuffer> CreateMeshBuffer(
+            float* vertices,
+            size_t vertex_count,
+            uint32_t* indices,
+            size_t index_count,
+            BufferLayout vertexLayout) = 0;
         virtual std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) = 0;
@@ -62,7 +69,6 @@ namespace Merlin
             uint32_t resolution, uint32_t channel_count) = 0;
         virtual std::shared_ptr<FrameBuffer> CreateFramebuffer(
             const FrameBufferParameters& state) = 0;
-
 
         static std::shared_ptr<RenderAPI> Create(RenderBackend backend);
     };
