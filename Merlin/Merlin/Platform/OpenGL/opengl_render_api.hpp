@@ -22,9 +22,12 @@ namespace Merlin
         void RenderScene(const SceneRenderData& scene) override;
         RenderBackend Backend() override;
 
-        std::shared_ptr<VertexBuffer> CreateVertexBuffer(float* vertices, size_t size) override;
-        std::shared_ptr<IndexBuffer> CreateIndexBuffer(uint32_t* indices, uint32_t index_count) override;
-        std::shared_ptr<VertexArray> CreateVertexArray() override;
+        std::shared_ptr<MeshBuffer> CreateMeshBuffer(
+            float* vertices,
+            size_t vertex_count,
+            uint32_t* indices,
+            size_t index_count,
+            BufferLayout vertexLayout) override;
         std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) override;

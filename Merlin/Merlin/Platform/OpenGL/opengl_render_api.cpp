@@ -5,7 +5,6 @@
 #include "backends/imgui_impl_glfw.h"
 #include "Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp"
 #include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
-#include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
 #include "Merlin/Platform/OpenGL/opengl_shader.hpp"
 #include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
 #include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"
@@ -152,9 +151,12 @@ namespace Merlin
         {
             MeshRenderData& data = *mesh_pointer;
 
-            const auto& material = data.material;
-            const auto& vertex_array = std::dynamic_pointer_cast<OpenGLVertexArray>(data.vertex_array);
             const auto& model_matrix = data.model_matrix;
+            const auto& material = data.material;
+            const auto& mesh_buffer = data.mesh_buffer;
+            const auto& index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(mesh_buffer->GetIndexBuffer());
+            const auto& vertex_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(mesh_buffer->GetVertexBuffer());
+            const auto& vertex_layout = mesh_buffer->GetVertexLayout();
 
             BindMaterial(material);
             material->SetUniformFloat3("u_viewPos", camera_data.view_pos);
@@ -206,10 +208,9 @@ namespace Merlin
                 material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
             }
 
-            vertex_array->Bind();
-            glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
-            vertex_array->UnBind();
+            vertex_buffer->Bind();
+            index_buffer->Bind();
+            glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, nullptr);
         }
     }
 
@@ -222,7 +223,10 @@ namespace Merlin
         if (skybox)
         {
             auto& cubemap = std::dynamic_pointer_cast<OpenGLCubemap>(skybox->GetCubemap());
-            auto& varray = std::dynamic_pointer_cast<OpenGLVertexArray>(skybox->GetVertexArray());
+            const auto& mesh_buffer = skybox->GetMeshBuffer();
+            const auto& index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(mesh_buffer->GetIndexBuffer());
+            const auto& vertex_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(mesh_buffer->GetVertexBuffer());
+            const auto& vertex_layout = mesh_buffer->GetVertexLayout();
 
             cubemap->Bind(0);
 
@@ -230,11 +234,11 @@ namespace Merlin
             skybox_shader->SetUniformMat4("u_ViewMatrix", glm::mat4(glm::mat3(camera.view_matrix)));
             skybox_shader->SetUniformMat4("u_ProjectionMatrix", camera.projection_matrix);
 
-            varray->Bind();
+            index_buffer->Bind();
+            vertex_buffer->Bind();
 
-            glDrawElements(GL_TRIANGLES, varray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-            varray->UnBind();
             cubemap->UnBind(0);
         }
         skybox_shader->UnBind();
@@ -257,16 +261,18 @@ namespace Merlin
         {
             MeshRenderData& data = *mesh_pointer;
 
-            const auto& vertex_array = std::dynamic_pointer_cast<OpenGLVertexArray>(data.vertex_array);
             const auto& model_matrix = data.model_matrix;
+            const auto& mesh_buffer = data.mesh_buffer;
+            const auto& index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(mesh_buffer->GetIndexBuffer());
+            const auto& vertex_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(mesh_buffer->GetVertexBuffer());
+            const auto& vertex_layout = mesh_buffer->GetVertexLayout();
 
             shadow_shader->SetUniformMat4("u_ModelMatrix", model_matrix);
             shadow_shader->SetUniformMat4("u_LightSpaceMatrix", light_matrix);
 
-            vertex_array->Bind();
-            glDrawElements(GL_TRIANGLES, vertex_array->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
-            vertex_array->UnBind();
+            vertex_buffer->Bind();
+            index_buffer->Bind();
+            glDrawElements(GL_TRIANGLES, index_buffer->GetCount(), GL_UNSIGNED_INT, nullptr);
         }
         shadow_shader->UnBind();
     }
@@ -277,21 +283,18 @@ namespace Merlin
     }
 
 
-    std::shared_ptr<VertexBuffer> OpenGLRenderAPI::CreateVertexBuffer(
-        float* vertices, size_t size)
+    std::shared_ptr<MeshBuffer> OpenGLRenderAPI::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
     {
-        return std::make_shared<OpenGLVertexBuffer>(vertices, size);
-    }
+        auto vertexBuffer = std::make_shared<OpenGLVertexBuffer>(vertices, vertex_count, vertexLayout);
+        auto indexBuffer = std::make_shared<OpenGLIndexBuffer>(indices, index_count);
+        auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer);
 
-    std::shared_ptr<IndexBuffer> OpenGLRenderAPI::CreateIndexBuffer(
-        uint32_t* indices, uint32_t index_count)
-    {
-        return std::make_shared<OpenGLIndexBuffer>(indices, index_count);
-    }
-
-    std::shared_ptr<VertexArray> OpenGLRenderAPI::CreateVertexArray()
-    {
-        return std::make_shared<OpenGLVertexArray>();
+        return meshBuffer;
     }
 
     std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(

@@ -1,4 +1,6 @@
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_index_buffer.hpp"
 #include <stdexcept>
 #include <set>
 #include <backends/imgui_impl_vulkan.h>
@@ -171,21 +173,32 @@ namespace Merlin
         return RenderBackend::VULKAN;
     }
 
-    std::shared_ptr<VertexBuffer> VulkanRenderAPI::CreateVertexBuffer(
-        float* vertices, size_t size)
+    std::shared_ptr<MeshBuffer> VulkanRenderAPI::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
     {
-        return nullptr;
-    }
+        auto vertexBuffer = std::make_shared<VulkanVertexBuffer>(
+            vertices,
+            vertex_count,
+            vertexLayout,
+            logicalDevice,
+            physicalDevice,
+            graphicsQueue,
+            commandPool);
+        auto indexBuffer = std::make_shared<VulkanIndexBuffer>(
+            indices,
+            index_count,
+            logicalDevice,
+            physicalDevice,
+            graphicsQueue,
+            commandPool);
+        auto meshBuffer = std::make_shared<MeshBuffer>(
+            indexBuffer, vertexBuffer);
 
-    std::shared_ptr<IndexBuffer> VulkanRenderAPI::CreateIndexBuffer(
-        uint32_t* indices, uint32_t index_count)
-    {
-        return nullptr;
-    }
-
-    std::shared_ptr<VertexArray> VulkanRenderAPI::CreateVertexArray()
-    {
-        return nullptr;
+        return meshBuffer;
     }
 
     std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(
@@ -562,7 +575,7 @@ namespace Merlin
         attachment.format = swapChainImageFormat;
         attachment.samples = VK_SAMPLE_COUNT_1_BIT;
         // TODO: switch to  VK_ATTACHMENT_LOAD_OP_LOAD when other passes added
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; 
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

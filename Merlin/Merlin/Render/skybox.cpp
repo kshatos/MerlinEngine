@@ -69,7 +69,12 @@ namespace Merlin
         {
             mesh->GetVertex(i).position *= scale;
         }
-        m_varray = UploadMesh(mesh);
+        m_mbuffer = Renderer::CreateMeshBuffer(
+            mesh->GetVertexDataPointer(),
+            mesh->GetVertexCount() * sizeof(Vertex_XNUV),
+            mesh->GetIndexDataPointer(),
+            mesh->GetTriangleCount() * 3,
+            Vertex_XNUV::GetLayout());
     }
 
 }

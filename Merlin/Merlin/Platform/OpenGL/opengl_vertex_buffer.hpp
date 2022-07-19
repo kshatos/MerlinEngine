@@ -7,13 +7,13 @@ namespace Merlin
 {
     class OpenGLVertexBuffer : public VertexBuffer
     {
-        BufferLayout m_layout;
         uint32_t m_id;
     public:
-        OpenGLVertexBuffer(float* vertices, size_t size);
+        OpenGLVertexBuffer(
+            float* vertices,
+            size_t size,
+            BufferLayout layout);
         ~OpenGLVertexBuffer();
-        void SetLayout(const BufferLayout& layout) override;
-        const BufferLayout& GetLayout() const override;
         void Bind();
         void UnBind();
     };

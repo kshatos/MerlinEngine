@@ -28,26 +28,5 @@ namespace Merlin
 
     void CalculateTangentFrame(const std::shared_ptr<Mesh<Vertex_XNTBUV>>& mesh);
 
-    template<typename VertexType>
-    std::shared_ptr<VertexArray> UploadMesh(std::shared_ptr<Mesh<VertexType>> mesh)
-    {
-        BufferLayout layout = VertexType::GetLayout();
-
-        auto vbuffer = Renderer::CreateVertexBuffer(
-            mesh->GetVertexDataPointer(),
-            mesh->GetVertexCount() * sizeof(VertexType));
-        vbuffer->SetLayout(layout);
-
-        auto ibuffer = Renderer::CreateIndexBuffer(
-            mesh->GetIndexDataPointer(),
-            mesh->GetTriangleCount() * 3);
-
-        auto varray = Renderer::CreateVertexArray();
-        varray->AddVertexBuffer(vbuffer);
-        varray->SetIndexBuffer(ibuffer);
-
-        return varray;
-    }
-
 }
 #endif

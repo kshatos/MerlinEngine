@@ -2,7 +2,6 @@
 #define COMPONENT_HPP
 #include <memory>
 #include "Merlin/Render/transform.hpp"
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/shader.hpp"
 
 

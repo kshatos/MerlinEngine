@@ -36,6 +36,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/transform.cpp
     Merlin/Render/mesh_utils.cpp
     Merlin/Render/skybox.cpp
+    Merlin/Render/mesh_buffer.cpp
 )
 set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
@@ -43,7 +44,6 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/index_buffer.hpp
     Merlin/Render/buffer_layout.hpp
     Merlin/Render/frame_buffer.hpp
-    Merlin/Render/vertex_array.hpp
     Merlin/Render/texture.hpp
     Merlin/Render/texture2d.hpp
     Merlin/Render/texture2d_data.hpp
@@ -61,6 +61,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/mesh_vertex.hpp
     Merlin/Render/mesh_utils.hpp
     Merlin/Render/skybox.hpp
+    Merlin/Render/mesh_buffer.hpp
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 
@@ -89,7 +90,6 @@ if(MERLIN_ENABLE_OPENGL)
     set(MERLIN_OPENGL_SOURCE
         Merlin/Platform/OpenGL/opengl_vertex_buffer.cpp
         Merlin/Platform/OpenGL/opengl_index_buffer.cpp
-        Merlin/Platform/OpenGL/opengl_vertex_array.cpp
         Merlin/Platform/OpenGL/opengl_frame_buffer.cpp
         Merlin/Platform/OpenGL/opengl_texture2d.cpp
         Merlin/Platform/OpenGL/opengl_cubemap.cpp
@@ -99,7 +99,6 @@ if(MERLIN_ENABLE_OPENGL)
     set(MERLIN_OPENGL_INCLUDE
         Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp
         Merlin/Platform/OpenGL/opengl_index_buffer.hpp
-        Merlin/Platform/OpenGL/opengl_vertex_array.hpp
         Merlin/Platform/OpenGL/opengl_frame_buffer.hpp
         Merlin/Platform/OpenGL/opengl_texture2d.hpp
         Merlin/Platform/OpenGL/opengl_cubemap.hpp
@@ -117,10 +116,14 @@ if(MERLIN_ENABLE_VULKAN)
     set(MERLIN_VULKAN_SOURCE
         Merlin/Platform/Vulkan/vulkan_render_api.cpp
         Merlin/Platform/Vulkan/vulkan_util.cpp
+        Merlin/Platform/Vulkan/vulkan_vertex_buffer.cpp
+        Merlin/Platform/Vulkan/vulkan_index_buffer.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
         Merlin/Platform/Vulkan/vulkan_render_api.hpp
         Merlin/Platform/Vulkan/vulkan_util.hpp
+        Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp
+        Merlin/Platform/Vulkan/vulkan_index_buffer.hpp
     )
     source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
 endif()

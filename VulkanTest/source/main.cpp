@@ -11,16 +11,39 @@ using namespace Merlin;
 
 class ImGUITestLayer : public Layer
 {
-    virtual void OnAttach() {};
+    std::shared_ptr<MeshBuffer> m_meshBuffer;
 
-    virtual void OnDetatch() {};
+public:
+    virtual void OnAttach() override
+    {
+        std::vector<float> vertices{
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            7.0, 8.0, 9.0
+        };
+        std::vector<uint32_t> indices{
+            0, 1, 2
+        };
+        BufferLayout layout{
+            {ShaderDataType::Float3, "Pos"}
+        };
 
-    virtual void OnUpdate(float time_step)
+        m_meshBuffer = Renderer::CreateMeshBuffer(
+            vertices.data(),
+            vertices.size() * sizeof(float),
+            indices.data(),
+            indices.size(),
+            layout);
+    };
+
+    virtual void OnDetatch() override {};
+
+    virtual void OnUpdate(float time_step) override
     {
         ImGui::ShowDemoWindow();
     }
 
-    virtual void HandleEvent(AppEvent& app_event) {};
+    virtual void HandleEvent(AppEvent& app_event) override {};
 };
 
 

@@ -18,21 +18,15 @@ namespace Merlin
         m_render_impl->RenderScene(scene);
     }
 
-    std::shared_ptr<VertexBuffer> Renderer::Renderer::CreateVertexBuffer(
-        float* vertices, size_t size)
+    std::shared_ptr<MeshBuffer> Renderer::CreateMeshBuffer(
+        float* vertices,
+        size_t vertex_count,
+        uint32_t* indices,
+        size_t index_count,
+        BufferLayout vertexLayout)
     {
-        return m_render_impl->CreateVertexBuffer(vertices, size);
-    }
-
-    std::shared_ptr<IndexBuffer> Renderer::CreateIndexBuffer(
-        uint32_t* indices, uint32_t index_count)
-    {
-        return m_render_impl->CreateIndexBuffer(indices, index_count);
-    }
-
-    std::shared_ptr<VertexArray> Renderer::CreateVertexArray()
-    {
-        return m_render_impl->CreateVertexArray();
+        return m_render_impl->CreateMeshBuffer(
+            vertices, vertex_count, indices, index_count, vertexLayout);
     }
 
     std::shared_ptr<Shader> Renderer::CreateShader(

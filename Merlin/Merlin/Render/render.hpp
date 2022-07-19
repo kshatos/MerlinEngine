@@ -13,7 +13,6 @@
 #include "Merlin/Render/texture2d_data.hpp"
 #include "Merlin/Render/cubemap.hpp"
 #include "Merlin/Render/transform.hpp"
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/mesh.hpp"
 #include "Merlin/Render/mesh_vertex.hpp"
