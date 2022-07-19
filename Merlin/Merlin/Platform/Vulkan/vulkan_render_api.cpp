@@ -209,17 +209,7 @@ namespace Merlin
     }
 
     std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
-        const std::string& filepath,
-        Texture2DProperties props)
-    {
-        return nullptr;
-    }
-
-    std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
-        void* data,
-        uint32_t width,
-        uint32_t height,
-        uint32_t channel_count,
+        const Texture2DData& texture_data,
         Texture2DProperties props)
     {
         return nullptr;

@@ -1,6 +1,7 @@
 #ifndef OPENGL_TEXTURE
 #define OPENGL_TEXTURE
 #include "Merlin/Render/texture2d.hpp"
+#include "Merlin/Render/texture2d_data.hpp"
 #include <string>
 
 
@@ -20,13 +21,7 @@ namespace Merlin
             Texture2DProperties props);
     public:
         OpenGLTexture2D(
-            const std::string& filepath,
-            Texture2DProperties props);
-        OpenGLTexture2D(
-            void* data,
-            uint32_t width,
-            uint32_t height,
-            uint32_t channel_count,
+            Texture2DData texture_data,
             Texture2DProperties props);
         ~OpenGLTexture2D();
         inline uint32_t GetWidth() override { return m_width; }

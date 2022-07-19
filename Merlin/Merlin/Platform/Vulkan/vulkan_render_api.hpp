@@ -85,13 +85,7 @@ namespace Merlin
             const std::string& vertex_source,
             const std::string& fragment_source) override;
         std::shared_ptr<Texture2D> CreateTexture2D(
-            const std::string& filepath,
-            Texture2DProperties props = Texture2DProperties()) override;
-        std::shared_ptr<Texture2D> CreateTexture2D(
-            void* data,
-            uint32_t width,
-            uint32_t height,
-            uint32_t channel_count,
+            const Texture2DData& texture_data,
             Texture2DProperties props = Texture2DProperties()) override;
         std::shared_ptr<Cubemap> CreateCubemap(
             const std::vector<std::string>& face_paths) override;
