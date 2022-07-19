@@ -36,6 +36,7 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/transform.cpp
     Merlin/Render/mesh_utils.cpp
     Merlin/Render/skybox.cpp
+    Merlin/Render/mesh_buffer.cpp
 )
 set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
@@ -61,6 +62,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/mesh_vertex.hpp
     Merlin/Render/mesh_utils.hpp
     Merlin/Render/skybox.hpp
+    Merlin/Render/mesh_buffer.hpp
 )
 source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 
