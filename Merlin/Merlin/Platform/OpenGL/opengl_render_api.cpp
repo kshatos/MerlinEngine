@@ -5,7 +5,6 @@
 #include "backends/imgui_impl_glfw.h"
 #include "Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp"
 #include "Merlin/Platform/OpenGL/opengl_index_buffer.hpp"
-#include "Merlin/Platform/OpenGL/opengl_vertex_array.hpp"
 #include "Merlin/Platform/OpenGL/opengl_shader.hpp"
 #include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
 #include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"

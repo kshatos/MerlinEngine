@@ -2,7 +2,6 @@
 #define MESH_VERTEX_HPP
 #include <glm/glm.hpp>
 #include "Merlin/Render/buffer_layout.hpp"
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/mesh.hpp"
 
 

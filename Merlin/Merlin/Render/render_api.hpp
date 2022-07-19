@@ -1,11 +1,9 @@
 #ifndef RENDER_API_HPP
 #define RENDER_API_HPP
 #include <glm/glm.hpp>
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
 #include "Merlin/Render/index_buffer.hpp"
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/mesh_buffer.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"

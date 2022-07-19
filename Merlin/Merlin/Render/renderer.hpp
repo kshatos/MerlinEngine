@@ -16,11 +16,6 @@ namespace Merlin
         static void Init(std::shared_ptr<RenderAPI> renderApi);
         static void RenderScene(const SceneRenderData& scene);
 
-        static std::shared_ptr<VertexBuffer> CreateVertexBuffer(
-            float* vertices, size_t size);
-        static std::shared_ptr<IndexBuffer> CreateIndexBuffer(
-            uint32_t* indices, uint32_t index_count);
-        static std::shared_ptr<VertexArray> CreateVertexArray();
         static std::shared_ptr<MeshBuffer> CreateMeshBuffer(
             float* vertices,
             size_t vertex_count,

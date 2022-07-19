@@ -1,6 +1,5 @@
 #include "Merlin/Scene/game_scene.hpp"
 #include "Merlin/Render/shader.hpp"
-#include "Merlin/Render/vertex_array.hpp"
 #include "Merlin/Render/transform.hpp"
 #include "Merlin/Scene/core_components.hpp"
 
