@@ -40,11 +40,6 @@ namespace Merlin
 
         virtual RenderBackend Backend() = 0;
 
-        virtual std::shared_ptr<VertexBuffer> CreateVertexBuffer(
-            float* vertices, size_t size) = 0;
-        virtual std::shared_ptr<IndexBuffer> CreateIndexBuffer(
-            uint32_t* indices, uint32_t index_count) = 0;
-        virtual std::shared_ptr<VertexArray> CreateVertexArray() = 0;
         virtual std::shared_ptr<MeshBuffer> CreateMeshBuffer(
             float* vertices,
             size_t vertex_count,

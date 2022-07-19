@@ -284,23 +284,6 @@ namespace Merlin
     }
 
 
-    std::shared_ptr<VertexBuffer> OpenGLRenderAPI::CreateVertexBuffer(
-        float* vertices, size_t size)
-    {
-        return std::make_shared<OpenGLVertexBuffer>(vertices, size);
-    }
-
-    std::shared_ptr<IndexBuffer> OpenGLRenderAPI::CreateIndexBuffer(
-        uint32_t* indices, uint32_t index_count)
-    {
-        return std::make_shared<OpenGLIndexBuffer>(indices, index_count);
-    }
-
-    std::shared_ptr<VertexArray> OpenGLRenderAPI::CreateVertexArray()
-    {
-        return std::make_shared<OpenGLVertexArray>();
-    }
-
     std::shared_ptr<MeshBuffer> OpenGLRenderAPI::CreateMeshBuffer(
         float* vertices,
         size_t vertex_count,

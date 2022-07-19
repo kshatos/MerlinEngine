@@ -11,8 +11,7 @@ using namespace Merlin;
 
 class ImGUITestLayer : public Layer
 {
-    std::shared_ptr<VertexBuffer> m_vertexBuffer;
-    std::shared_ptr<IndexBuffer> m_indexBuffer;
+    std::shared_ptr<MeshBuffer> m_meshBuffer;
 
 public:
     virtual void OnAttach() override
@@ -22,15 +21,19 @@ public:
             4.0, 5.0, 6.0,
             7.0, 8.0, 9.0
         };
-
         std::vector<uint32_t> indices{
             0, 1, 2
         };
+        BufferLayout layout{
+            {ShaderDataType::Float3, "Pos"}
+        };
 
-        m_vertexBuffer = Renderer::CreateVertexBuffer(
-            vertices.data(), vertices.size());
-        m_indexBuffer = Renderer::CreateIndexBuffer(
-            indices.data(), indices.size());
+        m_meshBuffer = Renderer::CreateMeshBuffer(
+            vertices.data(),
+            vertices.size() * sizeof(float),
+            indices.data(),
+            indices.size(),
+            layout);
     };
 
     virtual void OnDetatch() override {};

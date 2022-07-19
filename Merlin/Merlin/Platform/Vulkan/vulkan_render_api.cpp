@@ -173,35 +173,6 @@ namespace Merlin
         return RenderBackend::VULKAN;
     }
 
-    std::shared_ptr<VertexBuffer> VulkanRenderAPI::CreateVertexBuffer(
-        float* vertices, size_t size)
-    {
-        return std::make_shared<VulkanVertexBuffer>(
-            vertices,
-            size,
-            logicalDevice,
-            physicalDevice,
-            graphicsQueue,
-            commandPool);
-    }
-
-    std::shared_ptr<IndexBuffer> VulkanRenderAPI::CreateIndexBuffer(
-        uint32_t* indices, uint32_t index_count)
-    {
-        return std::make_shared<VulkanIndexBuffer>(
-            indices,
-            index_count,
-            logicalDevice,
-            physicalDevice,
-            graphicsQueue,
-            commandPool);
-    }
-
-    std::shared_ptr<VertexArray> VulkanRenderAPI::CreateVertexArray()
-    {
-        return nullptr;
-    }
-
     std::shared_ptr<MeshBuffer> VulkanRenderAPI::CreateMeshBuffer(
         float* vertices,
         size_t vertex_count,

@@ -75,11 +75,6 @@ namespace Merlin
 
         RenderBackend Backend() override;
 
-        std::shared_ptr<VertexBuffer> CreateVertexBuffer(
-            float* vertices, size_t size) override;
-        std::shared_ptr<IndexBuffer> CreateIndexBuffer(
-            uint32_t* indices, uint32_t index_count) override;
-        std::shared_ptr<VertexArray> CreateVertexArray() override;
         std::shared_ptr<MeshBuffer> CreateMeshBuffer(
             float* vertices,
             size_t vertex_count,

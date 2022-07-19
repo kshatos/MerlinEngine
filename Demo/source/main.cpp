@@ -66,8 +66,8 @@ uint32_t CubeIndices[]
 };
 
 std::shared_ptr<TransformComponent> camera_transform;
-std::shared_ptr<VertexArray> cube_varray;
-std::shared_ptr<VertexArray> sphere_varray;
+std::shared_ptr<MeshBuffer> cube_mbuffer;
+std::shared_ptr<MeshBuffer> sphere_mbuffer;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Material> main_material;
 std::shared_ptr<Material> pbr_texture_material;
@@ -227,8 +227,7 @@ public:
         cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
         cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
         CalculateTangentFrame(cubeMesh);
-        cube_varray = UploadMesh(cubeMesh);
-        auto cube_mbuffer = Renderer::CreateMeshBuffer(
+        cube_mbuffer = Renderer::CreateMeshBuffer(
             cubeMesh->GetVertexDataPointer(),
             cubeMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
             cubeMesh->GetIndexDataPointer(),
@@ -239,8 +238,7 @@ public:
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         CalculateTangentFrame(sphereMesh);
-        sphere_varray = UploadMesh(sphereMesh);
-        auto sphere_mbuffer =  Renderer::CreateMeshBuffer(
+        sphere_mbuffer =  Renderer::CreateMeshBuffer(
             sphereMesh->GetVertexDataPointer(),
             sphereMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
             sphereMesh->GetIndexDataPointer(),
@@ -314,7 +312,6 @@ public:
 
             transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
 
-            mesh_comp->data.vertex_array = cube_varray;
             mesh_comp->data.mesh_buffer = cube_mbuffer;
             mesh_comp->data.material = pbr_texture_material;
         }
@@ -325,7 +322,6 @@ public:
 
             transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
 
-            mesh_comp->data.vertex_array = cube_varray;
             mesh_comp->data.mesh_buffer = cube_mbuffer;
             mesh_comp->data.material = pbr_texture_material;
         }
@@ -406,7 +402,7 @@ void main()
 {
     ApplicationInfo appInfo
     {
-        "VulkanTest",
+        "Demo",
         RenderBackend::OPENGL,
         800,
         800
