@@ -12,6 +12,7 @@ namespace Merlin
         VkDevice m_logicalDevice;
     public:
         VkImageView m_textureView;
+        VkSampler m_textureSampler;
         VkImage m_textureImage;
         VkDeviceMemory m_textureImageMemory;
         VulkanTexture2D(

@@ -140,5 +140,9 @@ namespace Merlin
         VkDevice logical_device,
         VkImage image,
         VkFormat format);
+
+    VkSampler createImageSampler(
+        VkDevice logicalDevice,
+        VkPhysicalDevice physicalDevice);
 }
 #endif

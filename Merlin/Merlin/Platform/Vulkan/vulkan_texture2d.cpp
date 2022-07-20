@@ -106,11 +106,16 @@ namespace Merlin
             m_textureImage,
             format);
 
+        m_textureSampler = createImageSampler(
+            logical_device,
+            physical_device);
+
         m_logicalDevice = logical_device;
     }
 
     VulkanTexture2D::~VulkanTexture2D()
     {
+        vkDestroySampler(m_logicalDevice, m_textureSampler, nullptr);
         vkDestroyImageView(m_logicalDevice, m_textureView, nullptr);
         vkDestroyImage(m_logicalDevice, m_textureImage, nullptr);
         vkFreeMemory(m_logicalDevice, m_textureImageMemory, nullptr);
