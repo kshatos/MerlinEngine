@@ -1,5 +1,6 @@
 #ifndef VULKAN_UTIL_HPP
 #define VULKAN_UTIL_HPP
+#include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
 #include "vulkan/vulkan.h"
 #include <glfw/glfw3.h>
 #include <vector>
@@ -106,6 +107,12 @@ namespace Merlin
         VkBuffer dstBuffer,
         VkDeviceSize size);
 
+    VkFormat  GetVkChannelFormat(const uint32_t& channel_count);
+
+    VkFilter  GetVkFilterMode(TextureFilterMode filterMode);
+
+    VkSamplerAddressMode GetVkAdressMode(TextureWrapMode wrapMode);
+
     void createImage(
         VkDevice logical_device,
         VkPhysicalDevice physical_device,
@@ -143,6 +150,9 @@ namespace Merlin
 
     VkSampler createImageSampler(
         VkDevice logicalDevice,
-        VkPhysicalDevice physicalDevice);
+        VkPhysicalDevice physicalDevice,
+        VkFilter filter,
+        VkSamplerAddressMode uMode,
+        VkSamplerAddressMode vMode);
 }
 #endif

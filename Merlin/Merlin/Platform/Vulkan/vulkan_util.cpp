@@ -1,4 +1,5 @@
 #include "Merlin/Platform/Vulkan/vulkan_util.hpp"
+#include "Merlin/Core/logger.hpp"
 #include <set>
 #include <stdexcept>
 #include <algorithm>
@@ -319,6 +320,61 @@ namespace Merlin
     //////////////////////////////
     // IMAGES
     //////////////////////////////
+    /*
+    TODO:
+    Find a better way of figuring out available image
+    formats instead of hardcoding
+    */
+    VkFormat  GetVkChannelFormat(const uint32_t& channel_count)
+    {
+        switch (channel_count)
+        {
+        case 1:
+            return VK_FORMAT_R8_SRGB;
+        case 2:
+            return VK_FORMAT_R8G8_SRGB;
+        case 3:
+            return VK_FORMAT_R8G8B8_SRGB;
+        case 4:
+            return VK_FORMAT_R8G8B8A8_SRGB;
+        default:
+            ME_LOG_ERROR("Invalid number of texture channels.");
+            return VK_FORMAT_UNDEFINED;
+        }
+    }
+
+    VkFilter  GetVkFilterMode(TextureFilterMode filterMode)
+    {
+        switch (filterMode)
+        {
+        case TextureFilterMode::Linear:
+            return VK_FILTER_LINEAR;
+        case TextureFilterMode::Nearest:
+            return VK_FILTER_NEAREST;
+        default:
+            ME_LOG_ERROR("Invalid filter mode.");
+            return VK_FILTER_NEAREST;
+        }
+    }
+
+    VkSamplerAddressMode GetVkAdressMode(TextureWrapMode wrapMode)
+    {
+        switch (wrapMode)
+        {
+        case TextureWrapMode::ClampToEdge:
+            return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+        case TextureWrapMode::ClampToBorder:
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        case TextureWrapMode::MirroredRepeat:
+            return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+        case TextureWrapMode::Repeat:
+            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        default:
+            ME_LOG_ERROR("Invalid texture wrap mode.");
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        }
+    }
+
     void createImage(
         VkDevice logical_device,
         VkPhysicalDevice physical_device,
@@ -516,16 +572,18 @@ namespace Merlin
 
     VkSampler createImageSampler(
         VkDevice logicalDevice,
-        VkPhysicalDevice physicalDevice)
+        VkPhysicalDevice physicalDevice,
+        VkFilter filter,
+        VkSamplerAddressMode uMode,
+        VkSamplerAddressMode vMode)
     {
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.magFilter = filter;
+        samplerInfo.minFilter = filter;
 
-
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeU = uMode;
+        samplerInfo.addressModeV = vMode;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
         samplerInfo.anisotropyEnable = VK_TRUE;

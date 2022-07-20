@@ -6,29 +6,6 @@
 
 namespace Merlin
 {
-    /*
-    TODO:
-    Find a better way of figuring out available image
-    formats instead of hardcoding
-    */
-    VkFormat  GetVkChannelFormat(const uint32_t& channel_count)
-    {
-        switch (channel_count)
-        {
-        case 1:
-            return VK_FORMAT_R8_SRGB;
-        case 2:
-            return VK_FORMAT_R8G8_SRGB;
-        case 3:
-            return VK_FORMAT_R8G8B8_SRGB;
-        case 4:
-            return VK_FORMAT_R8G8B8A8_SRGB;
-        default:
-            ME_LOG_ERROR("Invalid number of texture channels.");
-            return VK_FORMAT_UNDEFINED;
-        }
-    }
-
     VulkanTexture2D::VulkanTexture2D(
         VkDevice logical_device,
         VkPhysicalDevice physical_device,
@@ -108,7 +85,10 @@ namespace Merlin
 
         m_textureSampler = createImageSampler(
             logical_device,
-            physical_device);
+            physical_device,
+            GetVkFilterMode(props.filter_mode),
+            GetVkAdressMode(props.s_wrap_mode),
+            GetVkAdressMode(props.t_wrap_mode));
 
         m_logicalDevice = logical_device;
     }
