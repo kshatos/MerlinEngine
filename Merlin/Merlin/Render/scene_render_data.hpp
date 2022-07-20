@@ -19,6 +19,17 @@ namespace Merlin
         glm::vec3 view_pos;
         glm::mat4 view_matrix;
         glm::mat4 projection_matrix;
+
+        CameraRenderData() :
+            camera(nullptr),
+            skybox(nullptr),
+            frame_buffer(nullptr),
+            clear_color(),
+            view_pos(),
+            view_matrix(),
+            projection_matrix()
+        {
+        }
     };
 
     struct PointLightData

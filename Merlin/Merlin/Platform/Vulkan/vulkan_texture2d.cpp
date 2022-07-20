@@ -12,7 +12,12 @@ namespace Merlin
         VkCommandPool command_pool,
         VkQueue queue,
         const Texture2DData& texture_data,
-        Texture2DProperties props)
+        Texture2DProperties props) :
+        m_textureImage(VK_NULL_HANDLE),
+        m_textureImageMemory(VK_NULL_HANDLE),
+        m_textureView(VK_NULL_HANDLE),
+        m_textureSampler(VK_NULL_HANDLE),
+        m_logicalDevice(VK_NULL_HANDLE)
     {
         size_t texWidth = texture_data.GetXResolution();
         size_t texHeight = texture_data.GetYResolution();

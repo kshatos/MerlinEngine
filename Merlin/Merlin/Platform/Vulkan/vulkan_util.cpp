@@ -13,7 +13,8 @@ namespace Merlin
     VulkanPhysicalDeviceInfo::VulkanPhysicalDeviceInfo(
         VkPhysicalDevice deviceHandle,
         VkInstance instance,
-        VkSurfaceKHR surface)
+        VkSurfaceKHR surface) :
+        surfaceCapabilities()
     {
         handle = deviceHandle;
 

@@ -19,7 +19,7 @@ namespace Merlin
     public:
         CameraComponent(Entity* parent) : Component(parent) {}
         CameraRenderData data;
-        
+
         void OnAwake() override
         {
             m_transform = m_parent->GetComponent<TransformComponent>();
@@ -58,7 +58,11 @@ namespace Merlin
     public:
         PointLightData data;
 
-        PointLightComponent(Entity* parent) : Component(parent) {}
+        PointLightComponent(Entity* parent) :
+            Component(parent),
+            data()
+        {
+        }
 
         void OnAwake() override
         {
@@ -76,7 +80,11 @@ namespace Merlin
     public:
         DirectionalLightData data;
 
-        DirectionalLightComponent(Entity* parent) : Component(parent) {}
+        DirectionalLightComponent(Entity* parent) :
+            Component(parent),
+            data()
+        {
+        }
     };
 
     class SpotLightComponent : public Component
@@ -85,7 +93,10 @@ namespace Merlin
     public:
         SpotLightData data;
 
-        SpotLightComponent(Entity* parent) : Component(parent) {}
+        SpotLightComponent(Entity* parent) :
+            Component(parent),
+            data()
+        {}
 
         void OnAwake() override
         {

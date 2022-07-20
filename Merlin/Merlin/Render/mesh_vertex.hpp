@@ -13,7 +13,13 @@ namespace Merlin
         glm::vec3 normal;
         glm::vec2 uv;
 
-        Vertex_XNUV() {}
+        Vertex_XNUV() :
+            position(0.0f, 0.0f, 0.0f),
+            normal(0.0f, 0.0f, 0.0f),
+            uv(0.0f, 0.0f)
+        {
+        }
+
         Vertex_XNUV(
             float px, float py, float pz,
             float nx, float ny, float nz,
