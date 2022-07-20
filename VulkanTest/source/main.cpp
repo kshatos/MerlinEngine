@@ -5,6 +5,7 @@
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
+#include "Merlin/Core/file_util.hpp"
 
 using namespace Merlin;
 
@@ -12,6 +13,7 @@ using namespace Merlin;
 class ImGUITestLayer : public Layer
 {
     std::shared_ptr<MeshBuffer> m_meshBuffer;
+    std::shared_ptr<Texture2D> m_texture;
 
 public:
     virtual void OnAttach() override
@@ -34,6 +36,9 @@ public:
             indices.data(),
             indices.size(),
             layout);
+
+        m_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Textures\\debug.jpg"));
     };
 
     virtual void OnDetatch() override {};

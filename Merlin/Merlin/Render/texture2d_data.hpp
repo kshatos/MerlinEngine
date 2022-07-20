@@ -22,16 +22,16 @@ namespace Merlin
             uint32_t channel_count,
             unsigned char* data);
 
-        inline uint32_t GetChannelCount() { return m_channel_count; }
-        inline uint32_t GetXResolution() { return m_x_resolution; }
-        inline uint32_t GetYResolution() { return m_y_resolution; }
+        inline uint32_t GetChannelCount() const { return m_channel_count; }
+        inline uint32_t GetXResolution() const { return m_x_resolution; }
+        inline uint32_t GetYResolution() const { return m_y_resolution; }
 
         unsigned char& GetPixel(
             uint32_t i,
             uint32_t j,
             uint32_t channel);
 
-        unsigned char* GetDataPointer();
+        const unsigned char* GetDataPointer() const;
     private:
 
         uint32_t PixelIndex(

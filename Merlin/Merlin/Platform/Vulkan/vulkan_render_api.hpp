@@ -94,9 +94,6 @@ namespace Merlin
         std::shared_ptr<FrameBuffer> CreateFramebuffer(
             const FrameBufferParameters& state) override;
 
-        // Vulkan Specific
-        VkCommandBuffer BeginSingleTimeCommands();
-        void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
     private:
         // Setup stages
         void CreateInstance();

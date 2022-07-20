@@ -50,7 +50,7 @@ namespace Merlin
         return channel + m_channel_count * (i + m_x_resolution * j);
     }
 
-    unsigned char* Texture2DData::GetDataPointer()
+    const unsigned char* Texture2DData::GetDataPointer() const
     {
         return m_data.data();
     }
