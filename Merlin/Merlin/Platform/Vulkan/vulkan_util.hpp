@@ -135,5 +135,10 @@ namespace Merlin
         VkFormat format,
         VkImageLayout oldLayout,
         VkImageLayout newLayout);
+
+    VkImageView createImageView(
+        VkDevice logical_device,
+        VkImage image,
+        VkFormat format);
 }
 #endif

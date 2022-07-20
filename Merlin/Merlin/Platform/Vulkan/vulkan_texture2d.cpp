@@ -101,12 +101,17 @@ namespace Merlin
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+        m_textureView = createImageView(
+            logical_device,
+            m_textureImage,
+            format);
+
         m_logicalDevice = logical_device;
     }
 
-
     VulkanTexture2D::~VulkanTexture2D()
     {
+        vkDestroyImageView(m_logicalDevice, m_textureView, nullptr);
         vkDestroyImage(m_logicalDevice, m_textureImage, nullptr);
         vkFreeMemory(m_logicalDevice, m_textureImageMemory, nullptr);
     }
