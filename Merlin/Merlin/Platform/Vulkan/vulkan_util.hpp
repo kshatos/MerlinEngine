@@ -1,5 +1,6 @@
 #ifndef VULKAN_UTIL_HPP
 #define VULKAN_UTIL_HPP
+#include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
 #include "vulkan/vulkan.h"
 #include <glfw/glfw3.h>
 #include <vector>
@@ -74,6 +75,16 @@ namespace Merlin
         const VkSurfaceCapabilitiesKHR& capabilities,
         GLFWwindow* window);
 
+    VkCommandBuffer BeginSingleTimeCommands(
+        VkDevice logicalDevice,
+        VkCommandPool commandPool);
+
+    void EndSingleTimeCommands(
+        VkDevice logicalDevice,
+        VkCommandBuffer commandBuffer,
+        VkCommandPool commandPool,
+        VkQueue queue);
+
     uint32_t findMemoryType(
         uint32_t typeFilter,
         VkMemoryPropertyFlags properties,
@@ -91,10 +102,57 @@ namespace Merlin
     void copyBuffer(
         VkQueue queue,
         VkDevice device,
-        VkCommandPool commandPool,
+        VkCommandPool commandBuffer,
         VkBuffer srcBuffer,
         VkBuffer dstBuffer,
         VkDeviceSize size);
 
+    VkFormat  GetVkChannelFormat(const uint32_t& channel_count);
+
+    VkFilter  GetVkFilterMode(TextureFilterMode filterMode);
+
+    VkSamplerAddressMode GetVkAdressMode(TextureWrapMode wrapMode);
+
+    void createImage(
+        VkDevice logical_device,
+        VkPhysicalDevice physical_device,
+        uint32_t width,
+        uint32_t height,
+        VkFormat format,
+        VkImageTiling tiling,
+        VkImageUsageFlags usage,
+        VkMemoryPropertyFlags properties,
+        VkImage& image,
+        VkDeviceMemory& imageMemory);
+
+    void copyBufferToImage(
+        VkDevice logicalDevice,
+        VkCommandPool commandPool,
+        VkQueue queue,
+        VkBuffer buffer,
+        VkImage image,
+        uint32_t width,
+        uint32_t height);
+
+    void transitionImageLayout(
+        VkDevice logicalDevice,
+        VkCommandPool commandPool,
+        VkQueue queue,
+        VkImage image,
+        VkFormat format,
+        VkImageLayout oldLayout,
+        VkImageLayout newLayout);
+
+    VkImageView createImageView(
+        VkDevice logical_device,
+        VkImage image,
+        VkFormat format);
+
+    VkSampler createImageSampler(
+        VkDevice logicalDevice,
+        VkPhysicalDevice physicalDevice,
+        VkFilter filter,
+        VkSamplerAddressMode uMode,
+        VkSamplerAddressMode vMode);
 }
 #endif

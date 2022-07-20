@@ -1,6 +1,7 @@
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
 #include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
 #include "Merlin/Platform/Vulkan/vulkan_index_buffer.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
 #include <stdexcept>
 #include <set>
 #include <backends/imgui_impl_vulkan.h>
@@ -209,20 +210,16 @@ namespace Merlin
     }
 
     std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
-        const std::string& filepath,
+        const Texture2DData& texture_data,
         Texture2DProperties props)
     {
-        return nullptr;
-    }
-
-    std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
-        void* data,
-        uint32_t width,
-        uint32_t height,
-        uint32_t channel_count,
-        Texture2DProperties props)
-    {
-        return nullptr;
+        return std::make_shared<VulkanTexture2D>(
+            logicalDevice,
+            physicalDevice,
+            commandPool,
+            graphicsQueue,
+            texture_data,
+            props);
     }
 
     std::shared_ptr<Cubemap> VulkanRenderAPI::CreateCubemap(
@@ -344,11 +341,15 @@ namespace Merlin
             queueCreateInfo.pQueuePriorities = &queuePriority;
             queueCreateInfos.push_back(queueCreateInfo);
         }
+        
+        VkPhysicalDeviceFeatures deviceFeatures{};
+        deviceFeatures.samplerAnisotropy = VK_TRUE;
 
         VkDeviceCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
         createInfo.queueCreateInfoCount = queueCreateInfos.size();
         createInfo.pQueueCreateInfos = queueCreateInfos.data();
+        createInfo.pEnabledFeatures = &deviceFeatures;
 
 
         createInfo.enabledExtensionCount =
@@ -672,9 +673,9 @@ namespace Merlin
         ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)window, true);
         ImGui_ImplVulkan_Init(&init_info, imGuiRenderPass);
 
-        auto commandBuffer = BeginSingleTimeCommands();
+        auto commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
         ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-        EndSingleTimeCommands(commandBuffer);
+        EndSingleTimeCommands(logicalDevice, commandBuffer, commandPool, graphicsQueue);
     }
 
     void VulkanRenderAPI::RecreateSwapChain()
@@ -708,39 +709,6 @@ namespace Merlin
             vkDestroyImageView(logicalDevice, imageView, nullptr);
 
         vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
-    }
-
-    VkCommandBuffer VulkanRenderAPI::BeginSingleTimeCommands() {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = commandPool;
-        allocInfo.commandBufferCount = 1;
-
-        VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-        return commandBuffer;
-    }
-
-    void VulkanRenderAPI::EndSingleTimeCommands(VkCommandBuffer commandBuffer) {
-        vkEndCommandBuffer(commandBuffer);
-
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
-
-        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(graphicsQueue);
-
-        vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
     }
 
     void VulkanRenderAPI::RecordCommandBuffer(

@@ -2,6 +2,7 @@
 #include <glm/gtc/random.hpp>
 #include <glm/glm.hpp>
 #include <imgui.h>
+#include"Merlin/Core/file_util.hpp"
 #include "Merlin/Core/core.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
@@ -143,15 +144,15 @@ public:
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
         auto main_texture = Renderer::CreateTexture2D(
-            ".\\Assets\\Textures\\debug.jpg", texProps);
+            load_texture(".\\Assets\\Textures\\debug.jpg"), texProps);
         auto pbr_albedo_texture = Renderer::CreateTexture2D(
-            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg", texProps);
+            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg"), texProps);
         auto pbr_roughness_texture = Renderer::CreateTexture2D(
-            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg", texProps);
+            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg"), texProps);
         auto pbr_metalic_texture = Renderer::CreateTexture2D(
-            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg", texProps);
+            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg"), texProps);
         auto pbr_normal_texture = Renderer::CreateTexture2D(
-            ".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg", texProps);
+            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg"), texProps);
 
         auto cube_data = std::make_shared<CubemapData>(100, 3);
         for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)

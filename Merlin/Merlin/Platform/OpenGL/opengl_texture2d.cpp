@@ -72,7 +72,7 @@ namespace Merlin
     }
 
     void OpenGLTexture2D::Init(
-        void* data,
+        const unsigned char* data,
         uint32_t width,
         uint32_t height,
         uint32_t channel_count,
@@ -98,43 +98,27 @@ namespace Merlin
     }
 
     OpenGLTexture2D::OpenGLTexture2D(
-        const std::string& filepath,
+        Texture2DData texture_data,
         Texture2DProperties props)
     {
-        int width, height, channel_count;
-        stbi_set_flip_vertically_on_load(1);
-        unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channel_count, 0);
-        if (data)
-        {
-            Init(data, width, height, channel_count, props);
-        }
-        else
-        {
-            ME_LOG_ERROR("Failed to load texture at: " + filepath);
-        }
-        stbi_image_free(data);
-    }
-
-    OpenGLTexture2D::OpenGLTexture2D(
-        void* data,
-        uint32_t width,
-        uint32_t height,
-        uint32_t channel_count,
-        Texture2DProperties props)
-    {
-        Init(data, width, height, channel_count, props);
+        Init(
+            texture_data.GetDataPointer(),
+            texture_data.GetXResolution(),
+            texture_data.GetYResolution(),
+            texture_data.GetChannelCount(),
+            props);
     }
 
     OpenGLTexture2D::~OpenGLTexture2D()
     {
         glDeleteTextures(1, &m_id);
     }
-    
+
     void OpenGLTexture2D::Bind(uint32_t slot)
     {
         glBindTextureUnit(slot, m_id);
     }
-    
+
     void OpenGLTexture2D::UnBind(uint32_t slot)
     {
         // Was causing GL_INVALID_OPERATION errors

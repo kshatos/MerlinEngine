@@ -7,6 +7,7 @@ set(MERLIN_CORE_SOURCE
     Merlin/Core/window.cpp
     Merlin/Core/input.cpp
     Merlin/Core/layer_stack.cpp
+    Merlin/Core/file_util.cpp
 )
 set(MERLIN_CORE_INCLUDE
     Merlin/Core/core.hpp
@@ -18,6 +19,7 @@ set(MERLIN_CORE_INCLUDE
     Merlin/Core/input.hpp
     Merlin/Core/layer.hpp
     Merlin/Core/layer_stack.hpp
+    Merlin/Core/file_util.hpp
 )
 source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 
@@ -118,12 +120,14 @@ if(MERLIN_ENABLE_VULKAN)
         Merlin/Platform/Vulkan/vulkan_util.cpp
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.cpp
         Merlin/Platform/Vulkan/vulkan_index_buffer.cpp
+        Merlin/Platform/Vulkan/vulkan_texture2d.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
         Merlin/Platform/Vulkan/vulkan_render_api.hpp
         Merlin/Platform/Vulkan/vulkan_util.hpp
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp
         Merlin/Platform/Vulkan/vulkan_index_buffer.hpp
+        Merlin/Platform/Vulkan/vulkan_texture2d.hpp
     )
     source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
 endif()

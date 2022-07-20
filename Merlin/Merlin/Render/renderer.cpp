@@ -37,21 +37,12 @@ namespace Merlin
     }
 
     std::shared_ptr<Texture2D> Renderer::CreateTexture2D(
-        const std::string& filepath,
+        const Texture2DData& texture_data,
         Texture2DProperties props)
     {
-        return m_render_impl->CreateTexture2D(filepath, props);
+        return m_render_impl->CreateTexture2D(texture_data, props);
     }
 
-    std::shared_ptr<Texture2D> Renderer::CreateTexture2D(
-        void* data,
-        uint32_t width,
-        uint32_t height,
-        uint32_t channel_count,
-        Texture2DProperties props)
-    {
-        return m_render_impl->CreateTexture2D(data, width, height, channel_count, props);
-    }
     std::shared_ptr<Cubemap> Renderer::CreateCubemap(
         const std::vector<std::string>& face_paths)
     {
