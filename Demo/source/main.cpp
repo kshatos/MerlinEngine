@@ -408,6 +408,10 @@ public:
             camera_transform->transform.Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
             camera_transform->transform.Translate(-up * speed * time_step);
+        if (Input::GetKeyDown(Key::Q))
+            camera_transform->transform.Rotate(up, time_step * 1.0);
+        if (Input::GetKeyDown(Key::E))
+            camera_transform->transform.Rotate(up, -time_step * 1.0);
 
         camera_transform->transform.Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
