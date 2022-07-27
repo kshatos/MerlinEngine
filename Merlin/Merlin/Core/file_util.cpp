@@ -29,7 +29,7 @@ namespace Merlin
         return texture_data;
     }
 
-    std::shared_ptr<Mesh<Vertex_XNUV>> load_mesh(std::string filepath)
+    std::shared_ptr<Mesh<Vertex_XNTBUV>> load_mesh(std::string filepath)
     {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
@@ -59,7 +59,7 @@ namespace Merlin
             totalTriangleCount += mesh->mNumFaces;
         }
 
-        auto merlinMesh = std::make_shared<Mesh<Vertex_XNUV>>();
+        auto merlinMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         merlinMesh->SetVertexCount(totalVertexCount);
         merlinMesh->SetTriangleCount(totalTriangleCount);
 

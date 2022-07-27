@@ -247,12 +247,13 @@ public:
             Vertex_XNTBUV::GetLayout());
 
         auto loadedMesh = load_mesh(".\\Assets\\Meshes\\Spaceship.fbx");
+        CalculateTangentFrame(loadedMesh);
         auto loadedMeshBuffer = Renderer::CreateMeshBuffer(
             loadedMesh->GetVertexDataPointer(),
-            loadedMesh->GetVertexCount() * sizeof(Vertex_XNUV),
+            loadedMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
             loadedMesh->GetIndexDataPointer(),
             loadedMesh->GetTriangleCount() * 3,
-            Vertex_XNUV::GetLayout());
+            Vertex_XNTBUV::GetLayout());
 
         // Add entities to the scene
         {

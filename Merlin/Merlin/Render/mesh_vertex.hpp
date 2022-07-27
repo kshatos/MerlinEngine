@@ -37,6 +37,7 @@ namespace Merlin
             };
         }
     };
+    static_assert(sizeof(Vertex_XNUV) == sizeof(float) * 8);
 
     struct Vertex_XNTBUV
     {
@@ -86,5 +87,6 @@ namespace Merlin
             };
         }
     };
+    static_assert(sizeof(Vertex_XNTBUV) == sizeof(float) * 14);
 }
 #endif
