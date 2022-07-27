@@ -13,3 +13,6 @@
 [submodule "Merlin/thirdparty/stb/stb"]
 	path = Merlin/thirdparty/stb/stb
 	url = https://github.com/nothings/stb.git
+[submodule "Merlin/thirdparty/assimp"]
+	path = Merlin/thirdparty/assimp
+	url = https://github.com/assimp/assimp

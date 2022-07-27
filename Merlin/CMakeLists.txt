@@ -155,6 +155,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp)
 if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
@@ -206,6 +207,7 @@ target_link_libraries(Merlin
     spdlog::spdlog
     glfw
     stb
+    assimp
 )
 
 if(MERLIN_ENABLE_OPENGL)

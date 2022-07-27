@@ -246,6 +246,15 @@ public:
             sphereMesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
+        auto loadedMesh = load_mesh(".\\Assets\\Meshes\\Spaceship.fbx");
+        CalculateTangentFrame(loadedMesh);
+        auto loadedMeshBuffer = Renderer::CreateMeshBuffer(
+            loadedMesh->GetVertexDataPointer(),
+            loadedMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            loadedMesh->GetIndexDataPointer(),
+            loadedMesh->GetTriangleCount() * 3,
+            Vertex_XNTBUV::GetLayout());
+
         // Add entities to the scene
         {
             FrameBufferParameters fb_params;
@@ -269,6 +278,19 @@ public:
             camera_transform = transform_comp;
 
             camera_data = &camera_component->data;
+        }
+        {
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+            auto spin_comp = entity->AddComponent<SpinningComponent>();
+
+
+            transform_comp->transform.Scale(glm::vec3(0.1));
+            transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
+
+            mesh_comp->data.mesh_buffer = loadedMeshBuffer;
+            mesh_comp->data.material = pbr_texture_material;
         }
         {
             /*
@@ -306,6 +328,7 @@ public:
         }
         */
         {
+            /*
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
@@ -315,6 +338,7 @@ public:
 
             mesh_comp->data.mesh_buffer = cube_mbuffer;
             mesh_comp->data.material = pbr_texture_material;
+            */
         }
         {
             auto entity = scene.CreateEntity();
@@ -384,6 +408,10 @@ public:
             camera_transform->transform.Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
             camera_transform->transform.Translate(-up * speed * time_step);
+        if (Input::GetKeyDown(Key::Q))
+            camera_transform->transform.Rotate(up, time_step * 1.0);
+        if (Input::GetKeyDown(Key::E))
+            camera_transform->transform.Rotate(up, -time_step * 1.0);
 
         camera_transform->transform.Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
