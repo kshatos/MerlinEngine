@@ -81,6 +81,8 @@ namespace Merlin
             uint32_t* indices,
             size_t index_count,
             BufferLayout vertexLayout) override;
+        std::shared_ptr<Material> CreateMaterial(
+            MaterialInfo info) override;
         std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) override;

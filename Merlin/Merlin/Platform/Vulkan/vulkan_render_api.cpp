@@ -2,6 +2,7 @@
 #include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
 #include "Merlin/Platform/Vulkan/vulkan_index_buffer.hpp"
 #include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_material.hpp"
 #include <stdexcept>
 #include <set>
 #include <backends/imgui_impl_vulkan.h>
@@ -200,6 +201,12 @@ namespace Merlin
             indexBuffer, vertexBuffer);
 
         return meshBuffer;
+    }
+
+    std::shared_ptr<Material> VulkanRenderAPI::CreateMaterial(
+        MaterialInfo info)
+    {
+        return std::make_shared<VulkanMaterial>(info);
     }
 
     std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(

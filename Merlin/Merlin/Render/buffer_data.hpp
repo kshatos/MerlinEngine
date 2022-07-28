@@ -1,5 +1,5 @@
-#ifndef BUFFER_LAYOUT_HPP
-#define BUFFER_LAYOUT_HPP
+#ifndef BUFFER_DATA_HPP
+#define BUFFER_DATA_HPP
 #include "glm/glm.hpp"
 #include <string>
 #include <vector>

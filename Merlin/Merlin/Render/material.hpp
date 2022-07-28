@@ -1,14 +1,31 @@
 #ifndef MATERIAL_HPP
 #define MATERIAL_HPP
-#include <vector>
-#include <string>
 #include "Merlin/Render/buffer_data.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
+#include <vector>
+#include <string>
 
 
 namespace Merlin
 {
+    struct MaterialInfo
+    {
+        std::shared_ptr<Shader> shader;
+        BufferLayout uniformLayout;
+        std::vector<std::string> textureNames;
+        
+        MaterialInfo(
+            std::shared_ptr<Shader> _shader,
+            BufferLayout _uniformLayout,
+            std::vector<std::string> _textureNames) :
+            shader(_shader),
+            uniformLayout(_uniformLayout),
+            textureNames(_textureNames)
+        {
+        }
+    };
+
     class Material
     {
     public:
@@ -18,22 +35,22 @@ namespace Merlin
         char* m_uniformData;
         std::vector<std::shared_ptr<Texture>> m_textureData;
 
-        Material(
-            std::shared_ptr<Shader> shader,
-            BufferLayout uniformLayout,
-            std::vector<std::string> textureNames) :
-            m_shader(shader),
-            m_uniformLayout(uniformLayout),
-            m_textureNames(textureNames),
-            m_textureData(textureNames.size(), nullptr),
-            m_uniformData(new char[uniformLayout.GetStride()])
+    protected:
+        Material(MaterialInfo info) :
+            m_shader(info.shader),
+            m_uniformLayout(info.uniformLayout),
+            m_textureNames(info.textureNames),
+            m_uniformData(new char[info.uniformLayout.GetStride()]),
+            m_textureData(info.textureNames.size())
         {
         }
+
+    public:
         Material(const Material& other) = delete;
         Material(Material&& other) = delete;
         Material& operator=(const Material& other) = delete;
         Material& operator=(Material&& other) = delete;
-        ~Material()
+        virtual ~Material()
         {
             delete[] m_uniformData;
         }

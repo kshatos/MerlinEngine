@@ -9,7 +9,7 @@
 #include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
 #include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"
 #include "Merlin/Platform/OpenGL/opengl_frame_buffer.hpp"
-
+#include "Merlin/Platform/OpenGL/opengl_material.hpp"
 
 
 namespace Merlin
@@ -295,6 +295,11 @@ namespace Merlin
         auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer);
 
         return meshBuffer;
+    }
+
+    std::shared_ptr<Material> OpenGLRenderAPI::CreateMaterial(MaterialInfo info)
+    {
+        return std::make_shared<OpenGLMaterial>(info);
     }
 
     std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(

@@ -197,29 +197,36 @@ public:
             ".\\Assets\\Shaders\\basic_lit.vert",
             ".\\Assets\\Shaders\\basic_lit.frag");
 
-        pbr_texture_material = std::make_shared<Material>(
-            pbr_texture_shader,
-            BufferLayout{},
-            std::vector<std::string>{
-            "u_albedoTexture",
-                "u_roughnessTexture",
-                "u_metalicTexture",
-                "u_normalTexture"
-        }
+        pbr_texture_material = Renderer::CreateMaterial(
+            MaterialInfo
+            {
+                pbr_texture_shader,
+                BufferLayout{},
+                std::vector<std::string>{
+                "u_albedoTexture",
+                    "u_roughnessTexture",
+                    "u_metalicTexture",
+                    "u_normalTexture"
+                }
+            }
         );
         pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
         pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
         pbr_texture_material->SetTexture("u_metalicTexture", pbr_metalic_texture);
         pbr_texture_material->SetTexture("u_normalTexture", pbr_normal_texture);
 
-        main_material = std::make_shared<Material>(
-            pbr_shader,
-            BufferLayout{
-                {ElementDataType::Float3, "u_albedo"},
-                {ElementDataType::Float, "u_roughness"},
-                {ElementDataType::Float, "u_metalic"}
-            },
-            std::vector<std::string>{});
+        main_material = Renderer::CreateMaterial(
+            MaterialInfo
+            {
+                pbr_shader,
+                BufferLayout{
+                    {ElementDataType::Float3, "u_albedo"},
+                    {ElementDataType::Float, "u_roughness"},
+                    {ElementDataType::Float, "u_metalic"}
+                },
+                std::vector<std::string>{}
+            }
+        );
         main_material->SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
         main_material->SetUniformFloat("u_roughness", 0.0f);
         main_material->SetUniformFloat("u_metalic", 0.0f);
@@ -239,7 +246,7 @@ public:
         sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
         sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
         CalculateTangentFrame(sphereMesh);
-        sphere_mbuffer =  Renderer::CreateMeshBuffer(
+        sphere_mbuffer = Renderer::CreateMeshBuffer(
             sphereMesh->GetVertexDataPointer(),
             sphereMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
             sphereMesh->GetIndexDataPointer(),
@@ -381,7 +388,7 @@ public:
             [this](WindowResizedEvent& e)
             {
                 camera_data->camera->SetAspectRatio((float)e.GetWidth() / (float)e.GetHeight());
-                return false; 
+                return false;
             }
         );
 
