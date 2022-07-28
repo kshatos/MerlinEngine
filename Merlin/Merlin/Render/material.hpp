@@ -2,7 +2,7 @@
 #define MATERIAL_HPP
 #include <vector>
 #include <string>
-#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_data.hpp"
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/texture2d.hpp"
 
@@ -53,7 +53,7 @@ namespace Merlin
     private:
         bool FindBufferElement(
             const std::string& name,
-            const ShaderDataType& type,
+            const ElementDataType& type,
             BufferElement& element);
     };
 }

@@ -4,20 +4,20 @@
 
 namespace Merlin
 {
-    static GLenum GetShaderDataTypeOpenGLType(const ShaderDataType& type)
+    static GLenum GetShaderDataTypeOpenGLType(const ElementDataType& type)
     {
         switch (type)
         {
-        case(ShaderDataType::Float):  return GL_FLOAT;
-        case(ShaderDataType::Float2): return GL_FLOAT;
-        case(ShaderDataType::Float3): return GL_FLOAT;
-        case(ShaderDataType::Float4): return GL_FLOAT;
-        case(ShaderDataType::Mat3):   return GL_FLOAT;
-        case(ShaderDataType::Mat4):   return GL_FLOAT;
-        case(ShaderDataType::Int):    return GL_INT;
-        case(ShaderDataType::Int2):   return GL_INT;
-        case(ShaderDataType::Int3):   return GL_INT;
-        case(ShaderDataType::Int4):   return GL_INT;
+        case(ElementDataType::Float):  return GL_FLOAT;
+        case(ElementDataType::Float2): return GL_FLOAT;
+        case(ElementDataType::Float3): return GL_FLOAT;
+        case(ElementDataType::Float4): return GL_FLOAT;
+        case(ElementDataType::Mat3):   return GL_FLOAT;
+        case(ElementDataType::Mat4):   return GL_FLOAT;
+        case(ElementDataType::Int):    return GL_INT;
+        case(ElementDataType::Int2):   return GL_INT;
+        case(ElementDataType::Int3):   return GL_INT;
+        case(ElementDataType::Int4):   return GL_INT;
         default: return GL_NONE;
         }
     }
@@ -46,7 +46,7 @@ namespace Merlin
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(
                 index,
-                ShaderDataTypeElementCount(element.type),
+                ElementDataTypeElementCount(element.type),
                 GetShaderDataTypeOpenGLType(element.type),
                 element.normalized ? GL_TRUE : GL_FALSE,
                 m_layout.GetStride(),

@@ -6,7 +6,7 @@ namespace Merlin
 
     bool Material::FindBufferElement(
         const std::string& name,
-        const ShaderDataType& type,
+        const ElementDataType& type,
         BufferElement& element)
     {
         for (const auto& item : m_uniformLayout)
@@ -26,7 +26,7 @@ namespace Merlin
         const float& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Float, item))
+        if (FindBufferElement(name, ElementDataType::Float, item))
         {
             float* location = (float*)(m_uniformData + item.offset);
             *location = data;
@@ -40,7 +40,7 @@ namespace Merlin
     void Material::SetUniformFloat2(const std::string& name, const glm::vec2& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Float2, item))
+        if (FindBufferElement(name, ElementDataType::Float2, item))
         {
             glm::vec2* location = (glm::vec2*)(m_uniformData + item.offset);
             *location = data;
@@ -54,7 +54,7 @@ namespace Merlin
     void Material::SetUniformFloat3(const std::string& name, const glm::vec3& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Float3, item))
+        if (FindBufferElement(name, ElementDataType::Float3, item))
         {
             glm::vec3* location = (glm::vec3*)(m_uniformData + item.offset);
             *location = data;
@@ -68,7 +68,7 @@ namespace Merlin
     void Material::SetUniformFloat4(const std::string& name, const glm::vec4& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Float4, item))
+        if (FindBufferElement(name, ElementDataType::Float4, item))
         {
             glm::vec4* location = (glm::vec4*)(m_uniformData + item.offset);
             *location = data;
@@ -82,7 +82,7 @@ namespace Merlin
     void Material::SetUniformMat3(const std::string& name, const glm::mat3& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Mat3, item))
+        if (FindBufferElement(name, ElementDataType::Mat3, item))
         {
             glm::mat3* location = (glm::mat3*)(m_uniformData + item.offset);
             *location = data;
@@ -96,7 +96,7 @@ namespace Merlin
     void Material::SetUniformMat4(const std::string& name, const glm::mat4& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Mat4, item))
+        if (FindBufferElement(name, ElementDataType::Mat4, item))
         {
             glm::mat4* location = (glm::mat4*)(m_uniformData + item.offset);
             *location = data;
@@ -110,7 +110,7 @@ namespace Merlin
     void Material::SetUniformInt(const std::string& name, const uint32_t& data)
     {
         BufferElement item;
-        if (FindBufferElement(name, ShaderDataType::Int, item))
+        if (FindBufferElement(name, ElementDataType::Int, item))
         {
             uint32_t* location = (uint32_t*)(m_uniformData + item.offset);
             *location = data;

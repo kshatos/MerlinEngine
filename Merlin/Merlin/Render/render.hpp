@@ -1,6 +1,6 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
-#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_data.hpp"
 #include "Merlin/Render/camera.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
 #include "Merlin/Render/index_buffer.hpp"

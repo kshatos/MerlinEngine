@@ -215,9 +215,9 @@ public:
         main_material = std::make_shared<Material>(
             pbr_shader,
             BufferLayout{
-                {ShaderDataType::Float3, "u_albedo"},
-                {ShaderDataType::Float, "u_roughness"},
-                {ShaderDataType::Float, "u_metalic"}
+                {ElementDataType::Float3, "u_albedo"},
+                {ElementDataType::Float, "u_roughness"},
+                {ElementDataType::Float, "u_metalic"}
             },
             std::vector<std::string>{});
         main_material->SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));

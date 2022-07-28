@@ -27,7 +27,7 @@ public:
             0, 1, 2
         };
         BufferLayout layout{
-            {ShaderDataType::Float3, "Pos"}
+            {ElementDataType::Float3, "Pos"}
         };
 
         m_meshBuffer = Renderer::CreateMeshBuffer(

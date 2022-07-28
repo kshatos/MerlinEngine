@@ -1,7 +1,7 @@
 #ifndef MESH_VERTEX_HPP
 #define MESH_VERTEX_HPP
 #include <glm/glm.hpp>
-#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_data.hpp"
 #include "Merlin/Render/mesh.hpp"
 
 
@@ -31,9 +31,9 @@ namespace Merlin
         static BufferLayout GetLayout()
         {
             return BufferLayout{
-                {ShaderDataType::Float3, "a_Position"},
-                {ShaderDataType::Float3, "a_Normal"},
-                {ShaderDataType::Float2, "a_TexCoord"}
+                {ElementDataType::Float3, "a_Position"},
+                {ElementDataType::Float3, "a_Normal"},
+                {ElementDataType::Float2, "a_TexCoord"}
             };
         }
     };
@@ -79,11 +79,11 @@ namespace Merlin
         static BufferLayout GetLayout()
         {
             return BufferLayout{
-                {ShaderDataType::Float3, "a_Position"},
-                {ShaderDataType::Float3, "a_Normal"},
-                {ShaderDataType::Float3, "a_Tangent"},
-                {ShaderDataType::Float3, "a_Bitangent"},
-                {ShaderDataType::Float2, "a_TexCoord"}
+                {ElementDataType::Float3, "a_Position"},
+                {ElementDataType::Float3, "a_Normal"},
+                {ElementDataType::Float3, "a_Tangent"},
+                {ElementDataType::Float3, "a_Bitangent"},
+                {ElementDataType::Float2, "a_TexCoord"}
             };
         }
     };

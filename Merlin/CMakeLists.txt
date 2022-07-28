@@ -28,7 +28,7 @@ source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 # RENDER
 #=============================
 set(MERLIN_RENDER_SOURCE
-    Merlin/Render/buffer_layout.cpp
+    Merlin/Render/buffer_data.cpp
     Merlin/Render/texture2d_data.cpp
     Merlin/Render/cubemap_data.cpp
     Merlin/Render/material.cpp
@@ -44,7 +44,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
     Merlin/Render/vertex_buffer.hpp
     Merlin/Render/index_buffer.hpp
-    Merlin/Render/buffer_layout.hpp
+    Merlin/Render/buffer_data.hpp
     Merlin/Render/frame_buffer.hpp
     Merlin/Render/texture.hpp
     Merlin/Render/texture2d.hpp
