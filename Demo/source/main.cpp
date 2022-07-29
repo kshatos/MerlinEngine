@@ -137,42 +137,40 @@ class SceneLayer : public Layer
 public:
     SceneLayer()
     {
-        // Initialize render data
-
         auto texProps = Texture2DProperties(
             TextureWrapMode::Repeat,
             TextureWrapMode::Repeat,
             TextureFilterMode::Linear);
+
         auto main_texture = Renderer::CreateTexture2D(
             load_texture(".\\Assets\\Textures\\debug.jpg"), texProps);
-        auto pbr_albedo_texture = Renderer::CreateTexture2D(
+
+        auto metal_plate_albedo_texture = Renderer::CreateTexture2D(
             load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg"), texProps);
-        auto pbr_roughness_texture = Renderer::CreateTexture2D(
+        auto metal_plate_roughness_texture = Renderer::CreateTexture2D(
             load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg"), texProps);
-        auto pbr_metalic_texture = Renderer::CreateTexture2D(
+        auto metal_plate_metalic_texture = Renderer::CreateTexture2D(
             load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg"), texProps);
-        auto pbr_normal_texture = Renderer::CreateTexture2D(
+        auto metal_plate_normal_texture = Renderer::CreateTexture2D(
             load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg"), texProps);
 
-        auto cube_data = std::make_shared<CubemapData>(100, 3);
-        for (int face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
-        {
-            auto face = static_cast<CubeFace>(face_id);
-            for (int j = 0; j < 100; ++j)
-            {
-                for (int i = 0; i < 100; ++i)
-                {
-                    auto point = CubemapData::CubePoint(cube_data->GetPixelCoordinates(face, i, j));
-                    point = glm::normalize(point);
-                    point *= 0.5f;
-                    point += 0.5f;
-                    cube_data->GetPixel(face, i, j, 0) = point.x;
-                    cube_data->GetPixel(face, i, j, 1) = point.y;
-                    cube_data->GetPixel(face, i, j, 2) = point.z;
-                }
-            }
-        }
-        auto custom_cubemap = UploadCubemap(cube_data);
+        auto helmet_albedo_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_BaseColor.png"), texProps);
+        auto helmet_roughness_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+        auto helmet_metalic_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+        auto helmet_normal_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_Normal.png"), texProps);
+
+        auto spitfire_albedo_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_d.png"), texProps);
+        auto spitfire_roughness_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_r.png"), texProps);
+        auto spitfire_metalic_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_m.png"), texProps);
+        auto spitfire_normal_texture = Renderer::CreateTexture2D(
+            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_n.png"), texProps);
 
         main_cubemap = Renderer::CreateCubemap(
             std::vector<std::string>
@@ -210,29 +208,23 @@ public:
                 }
             }
         );
-        auto pbr_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
-        pbr_material_instance->SetTexture("u_albedoTexture", pbr_albedo_texture);
-        pbr_material_instance->SetTexture("u_roughnessTexture", pbr_roughness_texture);
-        pbr_material_instance->SetTexture("u_metalicTexture", pbr_metalic_texture);
-        pbr_material_instance->SetTexture("u_normalTexture", pbr_normal_texture);
+        auto metal_plate_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
+        metal_plate_material_instance->SetTexture("u_albedoTexture", metal_plate_albedo_texture);
+        metal_plate_material_instance->SetTexture("u_roughnessTexture", metal_plate_roughness_texture);
+        metal_plate_material_instance->SetTexture("u_metalicTexture", metal_plate_metalic_texture);
+        metal_plate_material_instance->SetTexture("u_normalTexture", metal_plate_normal_texture);
+        
+        auto helmet_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
+        helmet_material_instance->SetTexture("u_albedoTexture", helmet_albedo_texture);
+        helmet_material_instance->SetTexture("u_roughnessTexture", helmet_roughness_texture);
+        helmet_material_instance->SetTexture("u_metalicTexture", helmet_metalic_texture);
+        helmet_material_instance->SetTexture("u_normalTexture", helmet_normal_texture);
 
-        main_material = Renderer::CreateMaterial(
-            MaterialInfo
-            {
-                pbr_shader,
-                BufferLayout{
-                    {ElementDataType::Float3, "u_albedo"},
-                    {ElementDataType::Float, "u_roughness"},
-                    {ElementDataType::Float, "u_metalic"}
-                },
-                std::vector<std::string>{}
-            }
-        );
-        auto main_material_instance = Renderer::CreateMaterialInstance(main_material);
-        auto& main_material_buffer = main_material_instance->GetUniformBufferData();
-        main_material_buffer.SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
-        main_material_buffer.SetUniformFloat("u_roughness", 0.0f);
-        main_material_buffer.SetUniformFloat("u_metalic", 0.0f);
+        auto spitfire_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
+        spitfire_material_instance->SetTexture("u_albedoTexture", spitfire_albedo_texture);
+        spitfire_material_instance->SetTexture("u_roughnessTexture", spitfire_roughness_texture);
+        spitfire_material_instance->SetTexture("u_metalicTexture", spitfire_metalic_texture);
+        spitfire_material_instance->SetTexture("u_normalTexture", spitfire_normal_texture);
 
         auto cubeMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
@@ -256,17 +248,26 @@ public:
             sphereMesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto loadedMesh = load_mesh(".\\Assets\\Meshes\\Spaceship.fbx");
-        CalculateTangentFrame(loadedMesh);
-        auto loadedMeshBuffer = Renderer::CreateMeshBuffer(
-            loadedMesh->GetVertexDataPointer(),
-            loadedMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
-            loadedMesh->GetIndexDataPointer(),
-            loadedMesh->GetTriangleCount() * 3,
+        auto helmetMesh = load_mesh(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet.gltf");
+        CalculateTangentFrame(helmetMesh);
+        auto helmetMeshBuffer = Renderer::CreateMeshBuffer(
+            helmetMesh->GetVertexDataPointer(),
+            helmetMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            helmetMesh->GetIndexDataPointer(),
+            helmetMesh->GetTriangleCount() * 3,
+            Vertex_XNTBUV::GetLayout());
+
+        auto spitfireMesh = load_mesh(".\\Assets\\Models\\supermarine-spitfire\\spitfire.FBX");
+        CalculateTangentFrame(spitfireMesh);
+        auto spitfireMeshBuffer = Renderer::CreateMeshBuffer(
+            spitfireMesh->GetVertexDataPointer(),
+            spitfireMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            spitfireMesh->GetIndexDataPointer(),
+            spitfireMesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
         // Add entities to the scene
-        {
+        { // CAMERA
             FrameBufferParameters fb_params;
             fb_params.width = 1000;
             fb_params.height = 1000;
@@ -289,76 +290,46 @@ public:
 
             camera_data = &camera_component->data;
         }
-        {
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            auto spin_comp = entity->AddComponent<SpinningComponent>();
-
-
-            transform_comp->transform.Scale(glm::vec3(0.1));
-            transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
-
-            mesh_comp->data.mesh_buffer = loadedMeshBuffer;
-            mesh_comp->data.material_instance = pbr_material_instance;
-        }
-        {
-            /*
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto light_comp = entity->AddComponent<SpotLightComponent>();
-            light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.cutoffAngle = glm::pi<float>() / 10;
-            light_comp->data.falloffRatio = 0.25f;
-            light_comp->data.radiantIntensity = 10.0f;
-            light_comp->data.range = 50.0f;
-            auto follow_cam_comp = entity->AddComponent<FollowCameraComponent>();
-            */
-        }
-        {
+        { // DIRECTIONAL LIGHT
             auto entity = scene.CreateEntity();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
-            light_comp->data.color = glm::vec3(0.2, 0.2, 1.0);
+            light_comp->data.color = glm::vec3(0.5, 0.5, 0.5);
             light_comp->data.irradiance = 100.0f;
             light_comp->data.direction = glm::normalize(glm::vec3(-0.5, -0.5, 0.0));
         }
-        /*
-        for (int i = 0; i < 4; ++i)
-        {
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            transform_comp->transform.Translate(glm::vec3(
-                glm::linearRand(-2.0f, 2.0f),
-                glm::linearRand(-2.0f, 2.0f),
-                5.0f));
-            auto light_comp = entity->AddComponent<PointLightComponent>();
-            light_comp->data.color = glm::vec3(1.0f, 1.0f, 1.0f);
-            light_comp->data.radiantFlux = 50.0f;
-            light_comp->data.range = 50.0f;
-        }
-        */
-        {
-            /*
+        { // HELMET
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            auto spin_comp = entity->AddComponent<SpinningComponent>();
+            //auto spin_comp = entity->AddComponent<SpinningComponent>();
 
-            transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
+            transform_comp->transform.Scale(glm::vec3(1.0));
+            transform_comp->transform.Translate(glm::vec3(-2.0, 1.5, 0.0));
 
-            mesh_comp->data.mesh_buffer = cube_mbuffer;
-            mesh_comp->data.material = pbr_texture_material;
-            */
+            mesh_comp->data.mesh_buffer = helmetMeshBuffer;
+            mesh_comp->data.material_instance = helmet_material_instance;
         }
-        {
+        { // SPITFIRE
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
 
-            transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
+            transform_comp->transform.Scale(glm::vec3(0.01));
+            transform_comp->transform.Translate(glm::vec3(2.0, 0.5, 0.0));
+            transform_comp->transform.Rotate(glm::vec3(1.0, 0.0, 0.0), -glm::pi<float>()*0.5f);
+
+            mesh_comp->data.mesh_buffer = spitfireMeshBuffer;
+            mesh_comp->data.material_instance = spitfire_material_instance;
+        }
+        { // BASE PLATFORM
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+
+            transform_comp->transform.Scale(glm::vec3(10.0f, 0.1f, 10.0));
 
             mesh_comp->data.mesh_buffer = cube_mbuffer;
-            mesh_comp->data.material_instance = pbr_material_instance;
+            mesh_comp->data.material_instance = metal_plate_material_instance;
         }
 
         scene.OnAwake();

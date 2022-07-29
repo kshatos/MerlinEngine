@@ -252,8 +252,8 @@ void main()
     surface.position = Pos;
     surface.normal = normal;
     surface.albedo = pow(texture(u_albedoTexture, TexCoord).rgb, vec3(2.2));
-    surface.metallic = texture(u_metalicTexture, TexCoord).r;
-    surface.roughness = texture(u_roughnessTexture, TexCoord).r;
+    surface.metallic = texture(u_metalicTexture, TexCoord).g;
+    surface.roughness = texture(u_roughnessTexture, TexCoord).b;
     surface.roughness *= surface.roughness;
 
     // Accumulate lighting contributions
