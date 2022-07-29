@@ -75,6 +75,22 @@ namespace Merlin
         delete[] m_data;
     }
 
+    void BufferData::SetUniformFloat(
+        const std::string& name,
+        const float& data)
+    {
+        BufferElement item;
+        if (FindElement(name, ElementDataType::Float, item))
+        {
+            float* location = (float*)(m_data + item.offset);
+            *location = data;
+        }
+        else
+        {
+            ME_LOG_WARN("Unable to set uniform element: " + name);
+        }
+    }
+
     void BufferData::SetUniformFloat2(
         const std::string& name,
         const glm::vec2& data)
@@ -169,7 +185,39 @@ namespace Merlin
         }
     }
 
-    glm::vec2 BufferData::GetUniformFloat2(const std::string& name)
+
+    void* BufferData::GetUniformPointer(const std::string& name) const
+    {
+        BufferElement item;
+        if (FindElement(name, item))
+        {
+            auto location = m_data + item.offset;
+            return (void*)location;
+        }
+        else
+        {
+            ME_LOG_WARN("Unable to get uniform element: " + name);
+            return nullptr;
+        }
+    }
+
+
+    float BufferData::GetUniformFloat(const std::string& name) const
+    {
+        BufferElement item;
+        if (FindElement(name, ElementDataType::Float2, item))
+        {
+            auto location = (float*)(m_data + item.offset);
+            return *location;
+        }
+        else
+        {
+            ME_LOG_WARN("Unable to get uniform element: " + name);
+            return 0.0;
+        }
+    }
+
+    glm::vec2 BufferData::GetUniformFloat2(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Float2, item))
@@ -184,7 +232,7 @@ namespace Merlin
         }
     }
 
-    glm::vec3 BufferData::GetUniformFloat3(const std::string& name)
+    glm::vec3 BufferData::GetUniformFloat3(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Float3, item))
@@ -199,7 +247,7 @@ namespace Merlin
         }
     }
 
-    glm::vec4 BufferData::GetUniformFloat4(const std::string& name)
+    glm::vec4 BufferData::GetUniformFloat4(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Float4, item))
@@ -214,7 +262,7 @@ namespace Merlin
         }
     }
 
-    glm::mat3 BufferData::GetUniformMat3(const std::string& name)
+    glm::mat3 BufferData::GetUniformMat3(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Mat3, item))
@@ -229,7 +277,7 @@ namespace Merlin
         }
     }
 
-    glm::mat4 BufferData::GetUniformMat4(const std::string& name)
+    glm::mat4 BufferData::GetUniformMat4(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Mat4, item))
@@ -244,7 +292,7 @@ namespace Merlin
         }
     }
 
-    uint32_t BufferData::GetUniformInt(const std::string& name)
+    uint32_t BufferData::GetUniformInt(const std::string& name) const
     {
         BufferElement item;
         if (FindElement(name, ElementDataType::Int, item))
@@ -262,13 +310,27 @@ namespace Merlin
     bool BufferData::FindElement(
         const std::string& name,
         const ElementDataType& type,
-        BufferElement& element)
+        BufferElement& element) const
     {
         for (const auto& item : m_layout)
         {
             if (item.name != name)
                 continue;
             if (item.type != type)
+                continue;
+            element = item;
+            return true;
+        }
+        return false;
+    }
+
+    bool BufferData::FindElement(
+        const std::string& name,
+        BufferElement& element) const
+    {
+        for (const auto& item : m_layout)
+        {
+            if (item.name != name)
                 continue;
             element = item;
             return true;

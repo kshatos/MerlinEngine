@@ -14,5 +14,15 @@ namespace Merlin
         {
         }
     };
+
+    class VulkanMaterialInstance : public MaterialInstance
+    {
+    public:
+        VulkanMaterialInstance(
+            std::shared_ptr<Material> material) :
+            MaterialInstance(material)
+        {
+        }
+    };
 }
 #endif

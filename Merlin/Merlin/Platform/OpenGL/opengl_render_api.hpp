@@ -30,6 +30,8 @@ namespace Merlin
             BufferLayout vertexLayout) override;
         std::shared_ptr<Material> CreateMaterial(
             MaterialInfo info) override;
+        std::shared_ptr<MaterialInstance> CreateMaterialInstance(
+            std::shared_ptr<Material> material) override;
         std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) override;
@@ -44,7 +46,7 @@ namespace Merlin
             const FrameBufferParameters& state) override;
 
     private:
-        void BindMaterial(const std::shared_ptr<Material>& material);
+        void BindMaterial(const std::shared_ptr<MaterialInstance>& material_instance);
         void DrawMeshes(const SceneRenderData& scene);
         void DrawSkybox(const SceneRenderData& scene);
         void DrawMeshShadows(const SceneRenderData& scene);

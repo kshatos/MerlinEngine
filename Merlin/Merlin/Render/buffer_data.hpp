@@ -79,6 +79,7 @@ namespace Merlin
     public:
         BufferData(BufferLayout layout);
         ~BufferData();
+        void SetUniformFloat(const std::string& name, const float& data);
         void SetUniformFloat2(const std::string& name, const glm::vec2& data);
         void SetUniformFloat3(const std::string& name, const glm::vec3& data);
         void SetUniformFloat4(const std::string& name, const glm::vec4& data);
@@ -86,18 +87,23 @@ namespace Merlin
         void SetUniformMat4(const std::string& name, const glm::mat4& data);
         void SetUniformInt(const std::string& name, const uint32_t& data);
 
-        glm::vec2 GetUniformFloat2(const std::string& name);
-        glm::vec3 GetUniformFloat3(const std::string& name);
-        glm::vec4 GetUniformFloat4(const std::string& name);
-        glm::mat3 GetUniformMat3(const std::string& name);
-        glm::mat4 GetUniformMat4(const std::string& name);
-        uint32_t GetUniformInt(const std::string& name);
+        void* GetUniformPointer(const std::string& name) const;
+        float GetUniformFloat(const std::string& name) const;
+        glm::vec2 GetUniformFloat2(const std::string& name) const;
+        glm::vec3 GetUniformFloat3(const std::string& name) const;
+        glm::vec4 GetUniformFloat4(const std::string& name) const;
+        glm::mat3 GetUniformMat3(const std::string& name) const;
+        glm::mat4 GetUniformMat4(const std::string& name) const;
+        uint32_t GetUniformInt(const std::string& name) const;
 
     private:
+        bool BufferData::FindElement(
+            const std::string& name,
+            BufferElement& element) const;
         bool FindElement(
             const std::string& name,
             const ElementDataType& type,
-            BufferElement& element);
+            BufferElement& element) const;
     };
 
 }

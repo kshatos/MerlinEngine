@@ -61,20 +61,20 @@ namespace Merlin
     struct MeshRenderData
     {
         std::shared_ptr<MeshBuffer> mesh_buffer;
-        std::shared_ptr<Material> material;
+        std::shared_ptr<MaterialInstance> material_instance;
         glm::mat4 model_matrix;
 
         MeshRenderData() :
-            material(nullptr),
+            material_instance(nullptr),
             mesh_buffer(nullptr),
             model_matrix(glm::mat4(0.0)) {}
 
         MeshRenderData(
-            std::shared_ptr<Material> _material,
+            std::shared_ptr<MaterialInstance> _material_instance,
             std::shared_ptr<MeshBuffer> _mesh_buffer,
             glm::mat4 _model_matrix)
             :
-            material(_material),
+            material_instance(_material_instance),
             mesh_buffer(_mesh_buffer),
             model_matrix(_model_matrix) {}
     };

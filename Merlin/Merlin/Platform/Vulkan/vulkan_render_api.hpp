@@ -83,6 +83,8 @@ namespace Merlin
             BufferLayout vertexLayout) override;
         std::shared_ptr<Material> CreateMaterial(
             MaterialInfo info) override;
+        std::shared_ptr<MaterialInstance> CreateMaterialInstance(
+            std::shared_ptr<Material> material) override;
         std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) override;

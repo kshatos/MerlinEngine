@@ -14,5 +14,15 @@ namespace Merlin
         {
         }
     };
+
+    class OpenGLMaterialInstance : public MaterialInstance
+    {
+    public:
+        OpenGLMaterialInstance(
+            std::shared_ptr<Material> material) :
+            MaterialInstance(material)
+        {
+        }
+    };
 }
 #endif

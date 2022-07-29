@@ -209,6 +209,12 @@ namespace Merlin
         return std::make_shared<VulkanMaterial>(info);
     }
 
+    std::shared_ptr<MaterialInstance> VulkanRenderAPI::CreateMaterialInstance(
+        std::shared_ptr<Material> material)
+    {
+        return std::make_shared<VulkanMaterialInstance>(material);
+    }
+
     std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(
         const std::string& vertex_source,
         const std::string& fragment_source)

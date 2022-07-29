@@ -210,10 +210,11 @@ public:
                 }
             }
         );
-        pbr_texture_material->SetTexture("u_albedoTexture", pbr_albedo_texture);
-        pbr_texture_material->SetTexture("u_roughnessTexture", pbr_roughness_texture);
-        pbr_texture_material->SetTexture("u_metalicTexture", pbr_metalic_texture);
-        pbr_texture_material->SetTexture("u_normalTexture", pbr_normal_texture);
+        auto pbr_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
+        pbr_material_instance->SetTexture("u_albedoTexture", pbr_albedo_texture);
+        pbr_material_instance->SetTexture("u_roughnessTexture", pbr_roughness_texture);
+        pbr_material_instance->SetTexture("u_metalicTexture", pbr_metalic_texture);
+        pbr_material_instance->SetTexture("u_normalTexture", pbr_normal_texture);
 
         main_material = Renderer::CreateMaterial(
             MaterialInfo
@@ -227,9 +228,11 @@ public:
                 std::vector<std::string>{}
             }
         );
-        main_material->SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
-        main_material->SetUniformFloat("u_roughness", 0.0f);
-        main_material->SetUniformFloat("u_metalic", 0.0f);
+        auto main_material_instance = Renderer::CreateMaterialInstance(main_material);
+        auto& main_material_buffer = main_material_instance->GetUniformBufferData();
+        main_material_buffer.SetUniformFloat3("u_albedo", glm::vec3(0.0, 0.0, 0.0));
+        main_material_buffer.SetUniformFloat("u_roughness", 0.0f);
+        main_material_buffer.SetUniformFloat("u_metalic", 0.0f);
 
         auto cubeMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
         cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
@@ -297,7 +300,7 @@ public:
             transform_comp->transform.Translate(glm::vec3(0.0, 1.5, 0.0));
 
             mesh_comp->data.mesh_buffer = loadedMeshBuffer;
-            mesh_comp->data.material = pbr_texture_material;
+            mesh_comp->data.material_instance = pbr_material_instance;
         }
         {
             /*
@@ -355,7 +358,7 @@ public:
             transform_comp->transform.Scale(glm::vec3(5.0f, 0.1f, 5.0));
 
             mesh_comp->data.mesh_buffer = cube_mbuffer;
-            mesh_comp->data.material = pbr_texture_material;
+            mesh_comp->data.material_instance = pbr_material_instance;
         }
 
         scene.OnAwake();
