@@ -9,7 +9,7 @@
 #include "Merlin/Platform/OpenGL/opengl_texture2d.hpp"
 #include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"
 #include "Merlin/Platform/OpenGL/opengl_frame_buffer.hpp"
-
+#include "Merlin/Platform/OpenGL/opengl_material.hpp"
 
 
 namespace Merlin
@@ -125,21 +125,25 @@ namespace Merlin
     }
 
     void OpenGLRenderAPI::BindMaterial(
-        const std::shared_ptr<Material>& material)
+        const std::shared_ptr<MaterialInstance>& material_instance)
     {
-        auto shader = std::dynamic_pointer_cast<OpenGLShader>(material->m_shader);
+        auto shader = std::dynamic_pointer_cast<OpenGLShader>(
+            material_instance->GetShader());
         shader->Bind();
-        for (int i = 0; i < material->m_textureData.size(); ++i)
+        for (int i = 0; i < material_instance->TextureCount(); ++i)
         {
-            if (material->m_textureData[i])
+            auto texture = material_instance->GetTexture(i);
+            if (texture)
             {
-                std::dynamic_pointer_cast<OpenGLTexture2D>(material->m_textureData[i])->Bind(i);
-                material->m_shader->SetUniformInt(material->m_textureNames[i], i);
+                std::dynamic_pointer_cast<OpenGLTexture2D>(texture)->Bind(i);
+                material_instance->GetShader()->SetUniformInt(
+                    material_instance->GetTextureName(i), i);
             }
         }
-        for (const auto& item : material->m_uniformLayout)
+        const auto& buffer = material_instance->GetUniformBufferData();
+        for (const auto& item : material_instance->GetUniformLayout())
         {
-            shader->SetUniform(item.name, item.type, material->m_uniformData + item.offset);
+            shader->SetUniform(item.name, item.type, buffer.GetUniformPointer(item.name));
         }
     }
 
@@ -152,60 +156,61 @@ namespace Merlin
             MeshRenderData& data = *mesh_pointer;
 
             const auto& model_matrix = data.model_matrix;
-            const auto& material = data.material;
+            const auto& material_instance = data.material_instance;
+            const auto& shader = material_instance->GetShader();
             const auto& mesh_buffer = data.mesh_buffer;
             const auto& index_buffer = std::dynamic_pointer_cast<OpenGLIndexBuffer>(mesh_buffer->GetIndexBuffer());
             const auto& vertex_buffer = std::dynamic_pointer_cast<OpenGLVertexBuffer>(mesh_buffer->GetVertexBuffer());
             const auto& vertex_layout = mesh_buffer->GetVertexLayout();
 
-            BindMaterial(material);
-            material->SetUniformFloat3("u_viewPos", camera_data.view_pos);
-            material->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
-            material->SetUniformMat4("u_ModelMatrix", model_matrix);
-            material->SetUniformMat4("u_ViewMatrix", camera_data.view_matrix);
-            material->SetUniformMat4("u_ProjectionMatrix", camera_data.projection_matrix);
+            BindMaterial(material_instance);
+            shader->SetUniformFloat3("u_viewPos", camera_data.view_pos);
+            shader->SetUniformMat3("u_NormalMatrix", glm::mat3(glm::transpose(glm::inverse(model_matrix))));
+            shader->SetUniformMat4("u_ModelMatrix", model_matrix);
+            shader->SetUniformMat4("u_ViewMatrix", camera_data.view_matrix);
+            shader->SetUniformMat4("u_ProjectionMatrix", camera_data.projection_matrix);
 
             if (scene.directional_lights.size() > 0)
             {
                 auto light_matrix = GetLightMatrix(camera_data, *scene.directional_lights[0]);
-                material->SetUniformMat4("u_lightTransform", light_matrix);
+                shader->SetUniformMat4("u_lightTransform", light_matrix);
             }
-            uint32_t shadow_slot = material->TextureCount() + 1;
+            uint32_t shadow_slot = material_instance->TextureCount() + 1;
             shadow_buffer->BindDepthTexture(shadow_slot);
-            material->SetUniformInt("u_shadowBufferTexture", shadow_slot);
+            shader->SetUniformInt("u_shadowBufferTexture", shadow_slot);
 
-            material->SetUniformFloat("u_ambientRadiance", scene.ambient_light_radiance);
+            shader->SetUniformFloat("u_ambientRadiance", scene.ambient_light_radiance);
 
-            material->SetUniformInt("u_nPointLights", scene.point_lights.size());
+            shader->SetUniformInt("u_nPointLights", scene.point_lights.size());
             for (int i = 0; i < scene.point_lights.size(); ++i)
             {
                 const auto& light = *scene.point_lights[i];
-                material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
-                material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiantFlux);
-                material->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
-                material->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
+                shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
+                shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiantFlux);
+                shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
+                shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
             }
 
-            material->SetUniformInt("u_nDirectionalLights", scene.directional_lights.size());
+            shader->SetUniformInt("u_nDirectionalLights", scene.directional_lights.size());
             for (int i = 0; i < scene.directional_lights.size(); ++i)
             {
                 const auto& light = *scene.directional_lights[i];
-                material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
-                material->SetUniformFloat("u_directionalLights[" + std::to_string(i) + "].irradiance", light.irradiance);
-                material->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
+                shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].direction", light.direction);
+                shader->SetUniformFloat("u_directionalLights[" + std::to_string(i) + "].irradiance", light.irradiance);
+                shader->SetUniformFloat3("u_directionalLights[" + std::to_string(i) + "].color", light.color);
             }
 
-            material->SetUniformInt("u_nSpotLights", scene.spot_lights.size());
+            shader->SetUniformInt("u_nSpotLights", scene.spot_lights.size());
             for (int i = 0; i < scene.spot_lights.size(); ++i)
             {
                 const auto& light = *scene.spot_lights[i];
-                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
-                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
-                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoffAngle);
-                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloffRatio);
-                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiantIntensity);
-                material->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
-                material->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
+                shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
+                shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoffAngle);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloffRatio);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiantIntensity);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
+                shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
             }
 
             vertex_buffer->Bind();
@@ -295,6 +300,17 @@ namespace Merlin
         auto meshBuffer = std::make_shared<MeshBuffer>(indexBuffer, vertexBuffer);
 
         return meshBuffer;
+    }
+
+    std::shared_ptr<Material> OpenGLRenderAPI::CreateMaterial(MaterialInfo info)
+    {
+        return std::make_shared<OpenGLMaterial>(info);
+    }
+
+    std::shared_ptr<MaterialInstance> OpenGLRenderAPI::CreateMaterialInstance(
+        std::shared_ptr<Material> material)
+    {
+        return std::make_shared<OpenGLMaterialInstance>(material);
     }
 
     std::shared_ptr<Shader> OpenGLRenderAPI::CreateShader(

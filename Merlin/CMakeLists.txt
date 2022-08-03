@@ -28,7 +28,7 @@ source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 # RENDER
 #=============================
 set(MERLIN_RENDER_SOURCE
-    Merlin/Render/buffer_layout.cpp
+    Merlin/Render/buffer_data.cpp
     Merlin/Render/texture2d_data.cpp
     Merlin/Render/cubemap_data.cpp
     Merlin/Render/material.cpp
@@ -44,7 +44,7 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render.hpp
     Merlin/Render/vertex_buffer.hpp
     Merlin/Render/index_buffer.hpp
-    Merlin/Render/buffer_layout.hpp
+    Merlin/Render/buffer_data.hpp
     Merlin/Render/frame_buffer.hpp
     Merlin/Render/texture.hpp
     Merlin/Render/texture2d.hpp
@@ -97,6 +97,7 @@ if(MERLIN_ENABLE_OPENGL)
         Merlin/Platform/OpenGL/opengl_cubemap.cpp
         Merlin/Platform/OpenGL/opengl_shader.cpp
         Merlin/Platform/OpenGL/opengl_render_api.cpp
+        Merlin/Platform/OpenGL/opengl_material.cpp
     )
     set(MERLIN_OPENGL_INCLUDE
         Merlin/Platform/OpenGL/opengl_vertex_buffer.hpp
@@ -106,6 +107,7 @@ if(MERLIN_ENABLE_OPENGL)
         Merlin/Platform/OpenGL/opengl_cubemap.hpp
         Merlin/Platform/OpenGL/opengl_shader.hpp
         Merlin/Platform/OpenGL/opengl_render_api.hpp
+        Merlin/Platform/OpenGL/opengl_material.hpp
     )
     source_group("OpenGL" FILES ${MERLIN_OPENGL_SOURCE} ${MERLIN_OPENGL_INCLUDE})
 endif()
@@ -121,6 +123,7 @@ if(MERLIN_ENABLE_VULKAN)
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.cpp
         Merlin/Platform/Vulkan/vulkan_index_buffer.cpp
         Merlin/Platform/Vulkan/vulkan_texture2d.cpp
+        Merlin/Platform/Vulkan/vulkan_material.cpp
     )
     set(MERLIN_VULKAN_INCLUDE
         Merlin/Platform/Vulkan/vulkan_render_api.hpp
@@ -128,6 +131,7 @@ if(MERLIN_ENABLE_VULKAN)
         Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp
         Merlin/Platform/Vulkan/vulkan_index_buffer.hpp
         Merlin/Platform/Vulkan/vulkan_texture2d.hpp
+        Merlin/Platform/Vulkan/vulkan_material.hpp
     )
     source_group("Vulkan" FILES ${MERLIN_VULKAN_SOURCE} ${MERLIN_VULKAN_INCLUDE})
 endif()

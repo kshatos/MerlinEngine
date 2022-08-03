@@ -1,7 +1,7 @@
 #ifndef VERTEX_BUFFER_HPP
 #define VERTEX_BUFFER_HPP
 #include <memory>
-#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_data.hpp"
 
 namespace Merlin
 {

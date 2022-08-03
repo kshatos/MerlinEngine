@@ -95,30 +95,30 @@ namespace Merlin
 
     void OpenGLShader::SetUniform(
         const std::string& name,
-        ShaderDataType type,
+        ElementDataType type,
         void* value)
     {
         switch (type)
         {
-        case Merlin::ShaderDataType::Float:
+        case Merlin::ElementDataType::Float:
             SetUniformFloat(name, *(float*)value);
             break;
-        case Merlin::ShaderDataType::Float2:
+        case Merlin::ElementDataType::Float2:
             SetUniformFloat2(name, *(glm::vec2*)value);
             break;
-        case Merlin::ShaderDataType::Float3:
+        case Merlin::ElementDataType::Float3:
             SetUniformFloat3(name, *(glm::vec3*)value);
             break;
-        case Merlin::ShaderDataType::Float4:
+        case Merlin::ElementDataType::Float4:
             SetUniformFloat4(name, *(glm::vec4*)value);
             break;
-        case Merlin::ShaderDataType::Mat3:
+        case Merlin::ElementDataType::Mat3:
             SetUniformMat3(name, *(glm::mat3*)value);
             break;
-        case Merlin::ShaderDataType::Mat4:
+        case Merlin::ElementDataType::Mat4:
             SetUniformMat4(name, *(glm::mat4*)value);
             break;
-        case Merlin::ShaderDataType::Int:
+        case Merlin::ElementDataType::Int:
             SetUniformInt(name, *(int*)value);
             break;
         default:

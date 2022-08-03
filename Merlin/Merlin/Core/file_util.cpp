@@ -16,7 +16,7 @@ namespace Merlin
     {
         int width, height, channel_count;
         // TODO: Add options for fewer channels and flip
-        stbi_set_flip_vertically_on_load(1);
+        //stbi_set_flip_vertically_on_load(1);
         unsigned char* data = stbi_load(filepath.c_str(), &width, &height, &channel_count, STBI_rgb_alpha);
         if (data==nullptr)
         {

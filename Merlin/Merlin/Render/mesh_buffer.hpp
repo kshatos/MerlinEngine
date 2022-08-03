@@ -2,7 +2,7 @@
 #define MESH_BUFFER_HPP
 #include "Merlin/Render/index_buffer.hpp"
 #include "Merlin/Render/vertex_buffer.hpp"
-#include "Merlin/Render/buffer_layout.hpp"
+#include "Merlin/Render/buffer_data.hpp"
 
 
 namespace Merlin

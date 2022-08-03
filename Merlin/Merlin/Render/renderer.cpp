@@ -29,6 +29,18 @@ namespace Merlin
             vertices, vertex_count, indices, index_count, vertexLayout);
     }
 
+    std::shared_ptr<Material> Renderer::CreateMaterial(
+        MaterialInfo info)
+    {
+        return m_render_impl->CreateMaterial(info);
+    }
+
+    std::shared_ptr<MaterialInstance> Renderer::CreateMaterialInstance(
+        std::shared_ptr<Material> material)
+    {
+        return m_render_impl->CreateMaterialInstance(material);
+    }
+
     std::shared_ptr<Shader> Renderer::CreateShader(
         const std::string& vertex_source,
         const std::string& fragment_source)

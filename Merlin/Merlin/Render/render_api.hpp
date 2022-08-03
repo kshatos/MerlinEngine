@@ -45,6 +45,9 @@ namespace Merlin
             uint32_t* indices,
             size_t index_count,
             BufferLayout vertexLayout) = 0;
+        virtual std::shared_ptr<Material> CreateMaterial(MaterialInfo info) = 0;
+        virtual std::shared_ptr<MaterialInstance> CreateMaterialInstance(
+            std::shared_ptr<Material> material) = 0;
         virtual std::shared_ptr<Shader> CreateShader(
             const std::string& vertex_source,
             const std::string& fragment_source) = 0;
