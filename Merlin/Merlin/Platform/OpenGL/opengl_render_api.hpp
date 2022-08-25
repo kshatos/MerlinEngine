@@ -1,9 +1,9 @@
 #ifndef OPENGL_RENDER_API_HPP
 #define OPENGL_RENDER_API_HPP
-#include "Merlin/Render/render_api.hpp"
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 
+#include "Merlin/Render/render_api.hpp"
 
 namespace Merlin
 {
@@ -11,14 +11,15 @@ namespace Merlin
     {
         GLFWwindow* m_window;
         ImGuiContext* context;
+
     public:
-        void Init(void* windowPointer) override;
+        void Init(void* window_pointer) override;
         void Shutdown() override;
-        
+
         void BeginFrame() override;
         void EndFrame() override;
         void PresentFrame() override;
-        
+
         void RenderScene(const SceneRenderData& scene) override;
         RenderBackend Backend() override;
 
@@ -28,8 +29,7 @@ namespace Merlin
             uint32_t* indices,
             size_t index_count,
             BufferLayout vertexLayout) override;
-        std::shared_ptr<Material> CreateMaterial(
-            MaterialInfo info) override;
+        std::shared_ptr<Material> CreateMaterial(MaterialInfo info) override;
         std::shared_ptr<MaterialInstance> CreateMaterialInstance(
             std::shared_ptr<Material> material) override;
         std::shared_ptr<Shader> CreateShader(
@@ -40,17 +40,18 @@ namespace Merlin
             Texture2DProperties props = Texture2DProperties()) override;
         std::shared_ptr<Cubemap> CreateCubemap(
             const std::vector<std::string>& face_paths) override;
-        std::shared_ptr<Cubemap> CreateCubemap(
-            uint32_t resolution, uint32_t channel_count) override;
+        std::shared_ptr<Cubemap> CreateCubemap(uint32_t resolution,
+                                               uint32_t channel_count) override;
         std::shared_ptr<FrameBuffer> CreateFramebuffer(
             const FrameBufferParameters& state) override;
 
     private:
-        void BindMaterial(const std::shared_ptr<MaterialInstance>& material_instance);
+        void BindMaterial(
+            const std::shared_ptr<MaterialInstance>& material_instance);
         void DrawMeshes(const SceneRenderData& scene);
         void DrawSkybox(const SceneRenderData& scene);
         void DrawMeshShadows(const SceneRenderData& scene);
     };
-}
+}  // namespace Merlin
 
 #endif
