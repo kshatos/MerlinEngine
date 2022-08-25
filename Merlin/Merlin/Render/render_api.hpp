@@ -1,23 +1,23 @@
 #ifndef RENDER_API_HPP
 #define RENDER_API_HPP
 #include <glm/glm.hpp>
-#include "Merlin/Render/skybox.hpp"
-#include "Merlin/Render/vertex_buffer.hpp"
+
+#include "Merlin/Render/frame_buffer.hpp"
 #include "Merlin/Render/index_buffer.hpp"
 #include "Merlin/Render/mesh_buffer.hpp"
+#include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/shader.hpp"
+#include "Merlin/Render/skybox.hpp"
 #include "Merlin/Render/texture2d.hpp"
 #include "Merlin/Render/texture2d_data.hpp"
-#include "Merlin/Render/frame_buffer.hpp"
-#include "Merlin/Render/scene_render_data.hpp"
-
+#include "Merlin/Render/vertex_buffer.hpp"
 
 namespace Merlin
 {
     enum class RenderBackend
     {
-        OPENGL,
-        VULKAN
+        OpenGL,
+        Vulkan
     };
 
     class RenderAPI
@@ -64,9 +64,8 @@ namespace Merlin
         static std::shared_ptr<RenderAPI> Create(RenderBackend backend);
     };
 
-    glm::mat4 GetLightMatrix(
-        const CameraRenderData& camera_data,
-        const DirectionalLightData& light_data);
-}
+    glm::mat4 GetLightMatrix(const CameraRenderData& camera_data,
+                             const DirectionalLightData& light_data);
+}  // namespace Merlin
 
 #endif

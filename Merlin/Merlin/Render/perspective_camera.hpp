@@ -2,7 +2,6 @@
 #define PERSPECTIVE_CAMERA_HPP
 #include "Merlin/Render/camera.hpp"
 
-
 namespace Merlin
 {
     class PerspectiveCamera : public Camera
@@ -18,5 +17,5 @@ namespace Merlin
         glm::mat4 GetProjectionMatrix() override;
         void SetAspectRatio(float aspect_ratio) override;
     };
-}
+}  // namespace Merlin
 #endif

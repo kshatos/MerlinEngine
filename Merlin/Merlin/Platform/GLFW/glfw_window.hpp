@@ -2,7 +2,6 @@
 #define GLFW_WINDOW_HPP
 #include "Merlin/Core/window.hpp"
 
-
 struct GLFWwindow;
 
 namespace Merlin
@@ -24,6 +23,7 @@ namespace Merlin
         GLFWWindowData m_data;
 
         void SetGLFWCallbacks();
+
     public:
         GLFWWindowImpl(WindowProperties props);
         ~GLFWWindowImpl();
@@ -37,5 +37,5 @@ namespace Merlin
         void PresentFrame() override;
         void* GetNativePointer() override;
     };
-}
+}  // namespace Merlin
 #endif

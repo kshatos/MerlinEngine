@@ -1,9 +1,10 @@
 #include "Merlin/Platform/Vulkan/vulkan_util.hpp"
-#include "Merlin/Core/logger.hpp"
+
+#include <algorithm>
 #include <set>
 #include <stdexcept>
-#include <algorithm>
 
+#include "Merlin/Core/logger.hpp"
 
 namespace Merlin
 {
@@ -11,92 +12,94 @@ namespace Merlin
     // PHYSICAL DEVICE
     //////////////////////////////
     VulkanPhysicalDeviceInfo::VulkanPhysicalDeviceInfo(
-        VkPhysicalDevice deviceHandle,
+        VkPhysicalDevice device_handle,
         VkInstance instance,
-        VkSurfaceKHR surface) :
-        surfaceCapabilities()
+        VkSurfaceKHR surface)
+        : surface_capabilities()
     {
-        handle = deviceHandle;
+        handle = device_handle;
 
         // Base details
-        vkGetPhysicalDeviceProperties(deviceHandle, &deviceProperties);
-        vkGetPhysicalDeviceFeatures(deviceHandle, &deviceFeatures);
+        vkGetPhysicalDeviceProperties(device_handle, &device_properties);
+        vkGetPhysicalDeviceFeatures(device_handle, &device_features);
 
         // Extension support
-        uint32_t extensionCount;
+        uint32_t extension_count;
         vkEnumerateDeviceExtensionProperties(
-            deviceHandle, nullptr, &extensionCount, nullptr);
+            device_handle, nullptr, &extension_count, nullptr);
 
-        extensionProperties.resize(extensionCount);
-        vkEnumerateDeviceExtensionProperties(
-            deviceHandle, nullptr, &extensionCount, extensionProperties.data());
+        extension_properties.resize(extension_count);
+        vkEnumerateDeviceExtensionProperties(device_handle,
+                                             nullptr,
+                                             &extension_count,
+                                             extension_properties.data());
 
         // Queue families
-        uint32_t queueFamilyCount = 0;
+        uint32_t queue_family_count = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(
-            deviceHandle, &queueFamilyCount, nullptr);
-        queueFamilyProperties.resize(queueFamilyCount);
+            device_handle, &queue_family_count, nullptr);
+        queue_family_properties.resize(queue_family_count);
         vkGetPhysicalDeviceQueueFamilyProperties(
-            deviceHandle, &queueFamilyCount, queueFamilyProperties.data());
+            device_handle, &queue_family_count, queue_family_properties.data());
 
         // Surface support
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-            deviceHandle, surface, &surfaceCapabilities);
+            device_handle, surface, &surface_capabilities);
 
-        uint32_t formatCount;
+        uint32_t format_count;
         vkGetPhysicalDeviceSurfaceFormatsKHR(
-            deviceHandle, surface, &formatCount, nullptr);
+            device_handle, surface, &format_count, nullptr);
 
-        if (formatCount != 0)
+        if (format_count != 0)
         {
-            surfaceFormats.resize(formatCount);
+            surface_formats.resize(format_count);
             vkGetPhysicalDeviceSurfaceFormatsKHR(
-                deviceHandle, surface, &formatCount, surfaceFormats.data());
+                device_handle, surface, &format_count, surface_formats.data());
         }
 
-        uint32_t presentModeCount;
+        uint32_t present_mode_count;
         vkGetPhysicalDeviceSurfacePresentModesKHR(
-            deviceHandle, surface, &presentModeCount, nullptr);
-        if (presentModeCount > 0)
+            device_handle, surface, &present_mode_count, nullptr);
+        if (present_mode_count > 0)
         {
-            surfacePresentModes.resize(presentModeCount);
+            surface_present_modes.resize(present_mode_count);
             vkGetPhysicalDeviceSurfacePresentModesKHR(
-                deviceHandle, surface, &presentModeCount, surfacePresentModes.data());
+                device_handle,
+                surface,
+                &present_mode_count,
+                surface_present_modes.data());
         }
     }
 
-    float evaluateDevice(const VulkanPhysicalDeviceInfo& info)
-    {
-        return 1.0f;
-    }
+    float EvaluateDevice(const VulkanPhysicalDeviceInfo& info) { return 1.0f; }
 
     //////////////////////////////
     // LOGICAL DEVICE
     //////////////////////////////
-    QueueFamilyIndices findQueueFamilies(
-        VkPhysicalDevice device,
-        VkSurfaceKHR surface)
+    QueueFamilyIndices FindQueueFamilies(VkPhysicalDevice device,
+                                         VkSurfaceKHR surface)
     {
-        uint32_t queueFamilyCount = 0;
+        uint32_t queue_family_count = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(
-            device, &queueFamilyCount, nullptr);
-        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+            device, &queue_family_count, nullptr);
+        std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
         vkGetPhysicalDeviceQueueFamilyProperties(
-            device, &queueFamilyCount, queueFamilies.data());
+            device, &queue_family_count, queue_families.data());
 
         QueueFamilyIndices indices;
         int i = 0;
-        for (const auto& familyProps : queueFamilies)
+        for (const auto& family_props : queue_families)
         {
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(
+                device, i, surface, &presentSupport);
             if (presentSupport)
             {
-                indices.presentFamily = i;
+                indices.present_family = i;
             }
 
-            if (familyProps.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-                indices.graphicsFamily = i;
+            if (family_props.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+                indices.graphics_family = i;
             i++;
         }
 
@@ -106,64 +109,67 @@ namespace Merlin
     //////////////////////////////
     // SWAP CHAIN
     //////////////////////////////
-    SwapChainSupportDetails querySwapChainSupport(
-        VkPhysicalDevice device,
-        VkSurfaceKHR surface)
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device,
+                                                  VkSurfaceKHR surface)
     {
         SwapChainSupportDetails details;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
             device, surface, &details.capabilities);
 
-        uint32_t formatCount;
+        uint32_t format_count;
         vkGetPhysicalDeviceSurfaceFormatsKHR(
-            device, surface, &formatCount, nullptr);
+            device, surface, &format_count, nullptr);
 
-        if (formatCount != 0)
+        if (format_count != 0)
         {
-            details.formats.resize(formatCount);
+            details.formats.resize(format_count);
             vkGetPhysicalDeviceSurfaceFormatsKHR(
-                device, surface, &formatCount, details.formats.data());
+                device, surface, &format_count, details.formats.data());
         }
 
-        uint32_t presentModeCount;
+        uint32_t present_mode_count;
         vkGetPhysicalDeviceSurfacePresentModesKHR(
-            device, surface, &presentModeCount, nullptr);
-        if (presentModeCount > 0)
+            device, surface, &present_mode_count, nullptr);
+        if (present_mode_count > 0)
         {
-            details.presentModes.resize(presentModeCount);
+            details.present_modes.resize(present_mode_count);
             vkGetPhysicalDeviceSurfacePresentModesKHR(
-                device, surface, &presentModeCount, details.presentModes.data());
+                device,
+                surface,
+                &present_mode_count,
+                details.present_modes.data());
         }
 
         return details;
     }
 
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-        const std::vector<VkSurfaceFormatKHR>& availableFormats)
+    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(
+        const std::vector<VkSurfaceFormatKHR>& available_formats)
     {
         // Check for prefered
-        for (const auto& availableFormat : availableFormats)
+        for (const auto& available_format : available_formats)
         {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
-                availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+                available_format.colorSpace ==
+                    VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
             {
-                return availableFormat;
+                return available_format;
             }
         }
 
         // Use whatevers available
-        return availableFormats[0];
+        return available_formats[0];
     }
 
-    VkPresentModeKHR chooseSwapPresentMode(
-        const std::vector<VkPresentModeKHR>& availablePresentModes)
+    VkPresentModeKHR ChooseSwapPresentMode(
+        const std::vector<VkPresentModeKHR>& available_present_modes)
     {
         // Check for prefered
-        for (const auto& avialabeMode : availablePresentModes)
+        for (const auto& avialabe_mode : available_present_modes)
         {
-            if (avialabeMode == VK_PRESENT_MODE_MAILBOX_KHR)
+            if (avialabe_mode == VK_PRESENT_MODE_MAILBOX_KHR)
             {
-                return avialabeMode;
+                return avialabe_mode;
             }
         }
 
@@ -171,11 +177,11 @@ namespace Merlin
         return VK_PRESENT_MODE_FIFO_KHR;
     }
 
-    VkExtent2D chooseSwapExtent(
-        const VkSurfaceCapabilitiesKHR& capabilities,
-        GLFWwindow* window)
+    VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities,
+                                GLFWwindow* window)
     {
-        if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+        if (capabilities.currentExtent.width !=
+            std::numeric_limits<uint32_t>::max())
         {
             return capabilities.currentExtent;
         }
@@ -183,77 +189,72 @@ namespace Merlin
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
 
-        VkExtent2D actualExtent = {
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
-        actualExtent.width = std::clamp(actualExtent.width,
-            capabilities.minImageExtent.width,
-            capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height,
+        VkExtent2D actual_extent = {static_cast<uint32_t>(width),
+                                    static_cast<uint32_t>(height)};
+        actual_extent.width = std::clamp(actual_extent.width,
+                                         capabilities.minImageExtent.width,
+                                         capabilities.maxImageExtent.width);
+        actual_extent.height = std::clamp(actual_extent.height,
 
-            capabilities.minImageExtent.height,
-            capabilities.maxImageExtent.height);
+                                          capabilities.minImageExtent.height,
+                                          capabilities.maxImageExtent.height);
 
-        return actualExtent;
+        return actual_extent;
     }
 
-
-    VkCommandBuffer BeginSingleTimeCommands(
-        VkDevice logicalDevice,
-        VkCommandPool commandPool)
+    VkCommandBuffer BeginSingleTimeCommands(VkDevice logicalDevice,
+                                            VkCommandPool commandPool)
     {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = commandPool;
-        allocInfo.commandBufferCount = 1;
+        VkCommandBufferAllocateInfo alloc_info{};
+        alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        alloc_info.commandPool = commandPool;
+        alloc_info.commandBufferCount = 1;
 
-        VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+        VkCommandBuffer command_buffer;
+        vkAllocateCommandBuffers(logicalDevice, &alloc_info, &command_buffer);
 
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        VkCommandBufferBeginInfo begin_info{};
+        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begin_info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
+        vkBeginCommandBuffer(command_buffer, &begin_info);
 
-        return commandBuffer;
+        return command_buffer;
     }
 
-    void EndSingleTimeCommands(
-        VkDevice logicalDevice,
-        VkCommandBuffer commandBuffer,
-        VkCommandPool commandPool,
-        VkQueue queue)
+    void EndSingleTimeCommands(VkDevice logical_device,
+                               VkCommandBuffer command_buffer,
+                               VkCommandPool command_pool,
+                               VkQueue queue)
     {
-        vkEndCommandBuffer(commandBuffer);
+        vkEndCommandBuffer(command_buffer);
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
+        VkSubmitInfo submit_info{};
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &command_buffer;
 
-        vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE);
         vkQueueWaitIdle(queue);
 
-        vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
+        vkFreeCommandBuffers(logical_device, command_pool, 1, &command_buffer);
     }
 
     //////////////////////////////
     // BUFFERS
     //////////////////////////////
-    uint32_t findMemoryType(
-        uint32_t typeFilter,
-        VkMemoryPropertyFlags properties,
-        VkPhysicalDevice physicalDevice)
+    uint32_t FindMemoryType(uint32_t type_filter,
+                            VkMemoryPropertyFlags properties,
+                            VkPhysicalDevice physical_device)
     {
-        VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+        VkPhysicalDeviceMemoryProperties mem_properties;
+        vkGetPhysicalDeviceMemoryProperties(physical_device, &mem_properties);
+        for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
         {
-            if (typeFilter & (1 << i) &&
-                (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+            if (type_filter & (1 << i) &&
+                (mem_properties.memoryTypes[i].propertyFlags & properties) ==
+                    properties)
             {
                 return i;
             }
@@ -263,60 +264,63 @@ namespace Merlin
         return 0;
     }
 
-    void createBuffer(
-        VkDevice device,
-        VkPhysicalDevice physicalDevice,
-        VkDeviceSize size,
-        VkBufferUsageFlags usage,
-        VkMemoryPropertyFlags properties,
-        VkBuffer& buffer,
-        VkDeviceMemory& bufferMemory)
+    void CreateBuffer(VkDevice device,
+                      VkPhysicalDevice physicalDevice,
+                      VkDeviceSize size,
+                      VkBufferUsageFlags usage,
+                      VkMemoryPropertyFlags properties,
+                      VkBuffer& buffer,
+                      VkDeviceMemory& bufferMemory)
     {
-        VkBufferCreateInfo bufferInfo{};
-        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-        bufferInfo.size = size;
-        bufferInfo.usage = usage;
-        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VkBufferCreateInfo buffer_info{};
+        buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        buffer_info.size = size;
+        buffer_info.usage = usage;
+        buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+        if (vkCreateBuffer(device, &buffer_info, nullptr, &buffer) !=
+            VK_SUCCESS)
+        {
             throw std::runtime_error("failed to create buffer!");
         }
 
-        VkMemoryRequirements memRequirements;
-        vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
+        VkMemoryRequirements mem_requirements;
+        vkGetBufferMemoryRequirements(device, buffer, &mem_requirements);
 
-        VkMemoryAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType(
-            memRequirements.memoryTypeBits, properties, physicalDevice);
+        VkMemoryAllocateInfo alloc_info{};
+        alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        alloc_info.allocationSize = mem_requirements.size;
+        alloc_info.memoryTypeIndex = FindMemoryType(
+            mem_requirements.memoryTypeBits, properties, physicalDevice);
 
-        if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+        if (vkAllocateMemory(device, &alloc_info, nullptr, &bufferMemory) !=
+            VK_SUCCESS)
+        {
             throw std::runtime_error("failed to allocate buffer memory!");
         }
 
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
 
-    void copyBuffer(
-        VkQueue queue,
-        VkDevice device,
-        VkCommandPool commandPool,
-        VkBuffer srcBuffer,
-        VkBuffer dstBuffer,
-        VkDeviceSize size)
+    void CopyBuffer(VkQueue queue,
+                    VkDevice device,
+                    VkCommandPool command_pool,
+                    VkBuffer src_buffer,
+                    VkBuffer dst_buffer,
+                    VkDeviceSize size)
     {
-        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(device, commandPool);
+        VkCommandBuffer command_buffer =
+            BeginSingleTimeCommands(device, command_pool);
         {
-            VkBufferCopy copyRegion{};
-            copyRegion.srcOffset = 0;
-            copyRegion.dstOffset = 0;
-            copyRegion.size = size;
-            vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+            VkBufferCopy copy_region{};
+            copy_region.srcOffset = 0;
+            copy_region.dstOffset = 0;
+            copy_region.size = size;
+            vkCmdCopyBuffer(
+                command_buffer, src_buffer, dst_buffer, 1, &copy_region);
         }
-        EndSingleTimeCommands(device, commandBuffer, commandPool, queue);
+        EndSingleTimeCommands(device, command_buffer, command_pool, queue);
     }
-
 
     //////////////////////////////
     // IMAGES
@@ -326,122 +330,118 @@ namespace Merlin
     Find a better way of figuring out available image
     formats instead of hardcoding
     */
-    VkFormat  GetVkChannelFormat(const uint32_t& channel_count)
+    VkFormat GetVkChannelFormat(const uint32_t& channel_count)
     {
         switch (channel_count)
         {
-        case 1:
-            return VK_FORMAT_R8_SRGB;
-        case 2:
-            return VK_FORMAT_R8G8_SRGB;
-        case 3:
-            return VK_FORMAT_R8G8B8_SRGB;
-        case 4:
-            return VK_FORMAT_R8G8B8A8_SRGB;
-        default:
-            ME_LOG_ERROR("Invalid number of texture channels.");
-            return VK_FORMAT_UNDEFINED;
+            case 1:
+                return VK_FORMAT_R8_SRGB;
+            case 2:
+                return VK_FORMAT_R8G8_SRGB;
+            case 3:
+                return VK_FORMAT_R8G8B8_SRGB;
+            case 4:
+                return VK_FORMAT_R8G8B8A8_SRGB;
+            default:
+                ME_LOG_ERROR("Invalid number of texture channels.");
+                return VK_FORMAT_UNDEFINED;
         }
     }
 
-    VkFilter  GetVkFilterMode(TextureFilterMode filterMode)
+    VkFilter GetVkFilterMode(TextureFilterMode filter_mode)
     {
-        switch (filterMode)
+        switch (filter_mode)
         {
-        case TextureFilterMode::Linear:
-            return VK_FILTER_LINEAR;
-        case TextureFilterMode::Nearest:
-            return VK_FILTER_NEAREST;
-        default:
-            ME_LOG_ERROR("Invalid filter mode.");
-            return VK_FILTER_NEAREST;
+            case TextureFilterMode::Linear:
+                return VK_FILTER_LINEAR;
+            case TextureFilterMode::Nearest:
+                return VK_FILTER_NEAREST;
+            default:
+                ME_LOG_ERROR("Invalid filter mode.");
+                return VK_FILTER_NEAREST;
         }
     }
 
-    VkSamplerAddressMode GetVkAdressMode(TextureWrapMode wrapMode)
+    VkSamplerAddressMode GetVkAdressMode(TextureWrapMode wrap_mode)
     {
-        switch (wrapMode)
+        switch (wrap_mode)
         {
-        case TextureWrapMode::ClampToEdge:
-            return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
-        case TextureWrapMode::ClampToBorder:
-            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        case TextureWrapMode::MirroredRepeat:
-            return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-        case TextureWrapMode::Repeat:
-            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        default:
-            ME_LOG_ERROR("Invalid texture wrap mode.");
-            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            case TextureWrapMode::ClampToEdge:
+                return VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+            case TextureWrapMode::ClampToBorder:
+                return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+            case TextureWrapMode::MirroredRepeat:
+                return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+            case TextureWrapMode::Repeat:
+                return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            default:
+                ME_LOG_ERROR("Invalid texture wrap mode.");
+                return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         }
     }
 
-    void createImage(
-        VkDevice logical_device,
-        VkPhysicalDevice physical_device,
-        uint32_t width,
-        uint32_t height,
-        VkFormat format,
-        VkImageTiling tiling,
-        VkImageUsageFlags usage,
-        VkMemoryPropertyFlags properties,
-        VkImage& image,
-        VkDeviceMemory& imageMemory)
+    void CreateImage(VkDevice logical_device,
+                     VkPhysicalDevice physical_device,
+                     uint32_t width,
+                     uint32_t height,
+                     VkFormat format,
+                     VkImageTiling tiling,
+                     VkImageUsageFlags usage,
+                     VkMemoryPropertyFlags properties,
+                     VkImage& image,
+                     VkDeviceMemory& image_memory)
     {
-        VkImageCreateInfo imageInfo{};
-        imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-        imageInfo.imageType = VK_IMAGE_TYPE_2D;
-        imageInfo.extent.width = width;
-        imageInfo.extent.height = height;
-        imageInfo.extent.depth = 1;
-        imageInfo.mipLevels = 1;
-        imageInfo.arrayLayers = 1;
-        imageInfo.format = format;
-        imageInfo.tiling = tiling;
-        imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        imageInfo.usage = usage;
-        imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-        imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VkImageCreateInfo image_info{};
+        image_info.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        image_info.imageType = VK_IMAGE_TYPE_2D;
+        image_info.extent.width = width;
+        image_info.extent.height = height;
+        image_info.extent.depth = 1;
+        image_info.mipLevels = 1;
+        image_info.arrayLayers = 1;
+        image_info.format = format;
+        image_info.tiling = tiling;
+        image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        image_info.usage = usage;
+        image_info.samples = VK_SAMPLE_COUNT_1_BIT;
+        image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        auto imageCreateResult = vkCreateImage(
-            logical_device, &imageInfo, nullptr, &image);
-        if (imageCreateResult != VK_SUCCESS)
+        auto image_create_result =
+            vkCreateImage(logical_device, &image_info, nullptr, &image);
+        if (image_create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create image!");
         }
 
-        VkMemoryRequirements memRequirements;
-        vkGetImageMemoryRequirements(logical_device, image, &memRequirements);
+        VkMemoryRequirements mem_requirements;
+        vkGetImageMemoryRequirements(logical_device, image, &mem_requirements);
 
-        VkMemoryAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-        allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType(
-            memRequirements.memoryTypeBits,
-            properties,
-            physical_device);
+        VkMemoryAllocateInfo alloc_info{};
+        alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        alloc_info.allocationSize = mem_requirements.size;
+        alloc_info.memoryTypeIndex = FindMemoryType(
+            mem_requirements.memoryTypeBits, properties, physical_device);
 
-        auto memoryAllocateResult = vkAllocateMemory(
-            logical_device, &allocInfo, nullptr, &imageMemory);
-        if (memoryAllocateResult != VK_SUCCESS)
+        auto memory_allocate_result = vkAllocateMemory(
+            logical_device, &alloc_info, nullptr, &image_memory);
+        if (memory_allocate_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate image memory!");
         }
 
-        vkBindImageMemory(logical_device, image, imageMemory, 0);
+        vkBindImageMemory(logical_device, image, image_memory, 0);
     }
 
-    void copyBufferToImage(
-        VkDevice logicalDevice,
-        VkCommandPool commandPool,
-        VkQueue queue,
-        VkBuffer buffer,
-        VkImage image,
-        uint32_t width,
-        uint32_t height)
+    void CopyBufferToImage(VkDevice logical_device,
+                           VkCommandPool command_pool,
+                           VkQueue queue,
+                           VkBuffer buffer,
+                           VkImage image,
+                           uint32_t width,
+                           uint32_t height)
     {
-        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(
-            logicalDevice, commandPool);
+        VkCommandBuffer command_buffer =
+            BeginSingleTimeCommands(logical_device, command_pool);
         {
             VkBufferImageCopy region{};
             region.bufferOffset = 0;
@@ -453,43 +453,35 @@ namespace Merlin
             region.imageSubresource.baseArrayLayer = 0;
             region.imageSubresource.layerCount = 1;
 
-            region.imageOffset = { 0, 0, 0 };
-            region.imageExtent =
-            {
-                width,
-                height,
-                1
-            };
+            region.imageOffset = {0, 0, 0};
+            region.imageExtent = {width, height, 1};
 
-            vkCmdCopyBufferToImage(
-                commandBuffer,
-                buffer,
-                image,
-                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                1,
-                &region
-            );
+            vkCmdCopyBufferToImage(command_buffer,
+                                   buffer,
+                                   image,
+                                   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                                   1,
+                                   &region);
         }
         EndSingleTimeCommands(
-            logicalDevice, commandBuffer, commandPool, queue);
+            logical_device, command_buffer, command_pool, queue);
     }
 
-    void transitionImageLayout(
-        VkDevice logicalDevice,
-        VkCommandPool commandPool,
-        VkQueue queue,
-        VkImage image,
-        VkFormat format,
-        VkImageLayout oldLayout, 
-        VkImageLayout newLayout)
+    void TransitionImageLayout(VkDevice logical_device,
+                               VkCommandPool command_pool,
+                               VkQueue queue,
+                               VkImage image,
+                               VkFormat format,
+                               VkImageLayout old_layout,
+                               VkImageLayout new_layout)
     {
-        VkCommandBuffer commandBuffer = BeginSingleTimeCommands(
-            logicalDevice, commandPool);
+        VkCommandBuffer command_buffer =
+            BeginSingleTimeCommands(logical_device, command_pool);
         {
             VkImageMemoryBarrier barrier{};
             barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-            barrier.oldLayout = oldLayout;
-            barrier.newLayout = newLayout;
+            barrier.oldLayout = old_layout;
+            barrier.newLayout = new_layout;
 
             barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -501,118 +493,113 @@ namespace Merlin
             barrier.subresourceRange.baseArrayLayer = 0;
             barrier.subresourceRange.layerCount = 1;
 
-            VkPipelineStageFlags sourceStage;
-            VkPipelineStageFlags destinationStage;
-            if (
-                oldLayout == VK_IMAGE_LAYOUT_UNDEFINED &&
-                newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+            VkPipelineStageFlags source_stage;
+            VkPipelineStageFlags destination_stage;
+            if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED &&
+                new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
             {
                 barrier.srcAccessMask = 0;
                 barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
-                sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-                destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+                destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
             }
-            else if (
-                oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
-                newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+            else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+                     new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
             {
                 barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
                 barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-                sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-                destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                source_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
             }
             else
             {
                 throw std::invalid_argument("unsupported layout transition!");
             }
 
-            vkCmdPipelineBarrier(
-                commandBuffer,
-                sourceStage,
-                destinationStage,
-                0,
-                0,
-                nullptr,
-                0,
-                nullptr,
-                1,
-                &barrier
-            );
+            vkCmdPipelineBarrier(command_buffer,
+                                 source_stage,
+                                 destination_stage,
+                                 0,
+                                 0,
+                                 nullptr,
+                                 0,
+                                 nullptr,
+                                 1,
+                                 &barrier);
         }
-        EndSingleTimeCommands(logicalDevice, commandBuffer, commandPool, queue);
+        EndSingleTimeCommands(
+            logical_device, command_buffer, command_pool, queue);
     }
 
-    VkImageView createImageView(
-        VkDevice logical_device,
-        VkImage image, 
-        VkFormat format)
+    VkImageView CreateImageView(VkDevice logical_device,
+                                VkImage image,
+                                VkFormat format)
     {
-        VkImageViewCreateInfo viewInfo{};
-        viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        viewInfo.image = image;
-        viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-        viewInfo.format = format;
-        viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = 1;
+        VkImageViewCreateInfo view_info{};
+        view_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        view_info.image = image;
+        view_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        view_info.format = format;
+        view_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        view_info.subresourceRange.baseMipLevel = 0;
+        view_info.subresourceRange.levelCount = 1;
+        view_info.subresourceRange.baseArrayLayer = 0;
+        view_info.subresourceRange.layerCount = 1;
 
-        VkImageView imageView;
-        auto viewCreateResult = vkCreateImageView(
-            logical_device, &viewInfo, nullptr, &imageView);
-        if (viewCreateResult != VK_SUCCESS)
+        VkImageView image_view;
+        auto view_create_result =
+            vkCreateImageView(logical_device, &view_info, nullptr, &image_view);
+        if (view_create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create texture image view!");
         }
 
-        return imageView;
+        return image_view;
     }
 
-    VkSampler createImageSampler(
-        VkDevice logicalDevice,
-        VkPhysicalDevice physicalDevice,
-        VkFilter filter,
-        VkSamplerAddressMode uMode,
-        VkSamplerAddressMode vMode)
+    VkSampler CreateImageSampler(VkDevice logical_device,
+                                 VkPhysicalDevice physical_device,
+                                 VkFilter filter,
+                                 VkSamplerAddressMode u_mode,
+                                 VkSamplerAddressMode v_mode)
     {
-        VkSamplerCreateInfo samplerInfo{};
-        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = filter;
-        samplerInfo.minFilter = filter;
+        VkSamplerCreateInfo sampler_info{};
+        sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        sampler_info.magFilter = filter;
+        sampler_info.minFilter = filter;
 
-        samplerInfo.addressModeU = uMode;
-        samplerInfo.addressModeV = vMode;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        sampler_info.addressModeU = u_mode;
+        sampler_info.addressModeV = v_mode;
+        sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-        samplerInfo.anisotropyEnable = VK_TRUE;
+        sampler_info.anisotropyEnable = VK_TRUE;
 
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        vkGetPhysicalDeviceProperties(physical_device, &properties);
+        sampler_info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
 
-        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 
-        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        sampler_info.unnormalizedCoordinates = VK_FALSE;
 
-        samplerInfo.compareEnable = VK_FALSE;
-        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        sampler_info.compareEnable = VK_FALSE;
+        sampler_info.compareOp = VK_COMPARE_OP_ALWAYS;
 
-        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-        samplerInfo.mipLodBias = 0.0f;
-        samplerInfo.minLod = 0.0f;
-        samplerInfo.maxLod = 0.0f;
+        sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        sampler_info.mipLodBias = 0.0f;
+        sampler_info.minLod = 0.0f;
+        sampler_info.maxLod = 0.0f;
 
         VkSampler sampler;
-        auto samplerCreateResult = vkCreateSampler(
-            logicalDevice, &samplerInfo, nullptr, &sampler);
-        if (samplerCreateResult != VK_SUCCESS)
+        auto sampler_create_result =
+            vkCreateSampler(logical_device, &sampler_info, nullptr, &sampler);
+        if (sampler_create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create texture sampler!");
         }
 
         return sampler;
     }
-}
+}  // namespace Merlin

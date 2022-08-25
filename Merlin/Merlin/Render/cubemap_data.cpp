@@ -1,6 +1,6 @@
 #include "Merlin/Render/cubemap_data.hpp"
-#include "Merlin/Render/renderer.hpp"
 
+#include "Merlin/Render/renderer.hpp"
 
 namespace Merlin
 {
@@ -10,20 +10,20 @@ namespace Merlin
         float v = 2.0f * coordinates.v - 1.0f;
         switch (coordinates.face)
         {
-        case PositiveX:
-            return glm::vec3(+1.0f, -v, -u);
-        case NegativeX:
-            return glm::vec3(-1.0f, -v, +u);
-        case PositiveY:
-            return glm::vec3(+u, +1.0f, +v);
-        case NegativeY:
-            return glm::vec3(+u, -1.0f, -v);
-        case PositiveZ:
-            return glm::vec3(+u, -v, +1.0f);
-        case NegativeZ:
-            return glm::vec3(-u, -v, -1.0f);
-        default:
-            return glm::vec3(0.0);
+            case PositiveX:
+                return glm::vec3(+1.0f, -v, -u);
+            case NegativeX:
+                return glm::vec3(-1.0f, -v, +u);
+            case PositiveY:
+                return glm::vec3(+u, +1.0f, +v);
+            case NegativeY:
+                return glm::vec3(+u, -1.0f, -v);
+            case PositiveZ:
+                return glm::vec3(+u, -v, +1.0f);
+            case NegativeZ:
+                return glm::vec3(-u, -v, -1.0f);
+            default:
+                return glm::vec3(0.0);
         }
     }
 
@@ -50,36 +50,36 @@ namespace Merlin
         float v = 0.0f;
         switch (face)
         {
-        case CubeFace::PositiveX:
-            sphere_point *= +1.0f / sphere_point.x;
-            u = -sphere_point.z;
-            v = -sphere_point.y;
-            break;
-        case CubeFace::NegativeX:
-            sphere_point *= -1.0f / sphere_point.x;
-            u = +sphere_point.z;
-            v = -sphere_point.y;
-            break;
-        case CubeFace::PositiveY:
-            sphere_point *= +1.0f / sphere_point.y;
-            u = sphere_point.x;
-            v = sphere_point.z;
-            break;
-        case CubeFace::NegativeY:
-            sphere_point *= -1.0f / sphere_point.y;
-            u = +sphere_point.x;
-            v = -sphere_point.z;
-            break;
-        case CubeFace::PositiveZ:
-            sphere_point *= +1.0f / sphere_point.z;
-            u = +sphere_point.x;
-            v = -sphere_point.y;
-            break;
-        case CubeFace::NegativeZ:
-            sphere_point *= -1.0f / sphere_point.z;
-            u = -sphere_point.x;
-            v = -sphere_point.y;
-            break;
+            case CubeFace::PositiveX:
+                sphere_point *= +1.0f / sphere_point.x;
+                u = -sphere_point.z;
+                v = -sphere_point.y;
+                break;
+            case CubeFace::NegativeX:
+                sphere_point *= -1.0f / sphere_point.x;
+                u = +sphere_point.z;
+                v = -sphere_point.y;
+                break;
+            case CubeFace::PositiveY:
+                sphere_point *= +1.0f / sphere_point.y;
+                u = sphere_point.x;
+                v = sphere_point.z;
+                break;
+            case CubeFace::NegativeY:
+                sphere_point *= -1.0f / sphere_point.y;
+                u = +sphere_point.x;
+                v = -sphere_point.z;
+                break;
+            case CubeFace::PositiveZ:
+                sphere_point *= +1.0f / sphere_point.z;
+                u = +sphere_point.x;
+                v = -sphere_point.y;
+                break;
+            case CubeFace::NegativeZ:
+                sphere_point *= -1.0f / sphere_point.z;
+                u = -sphere_point.x;
+                v = -sphere_point.y;
+                break;
         }
         u = 0.5f * (u + 1.0f);
         v = 0.5f * (v + 1.0f);
@@ -87,58 +87,48 @@ namespace Merlin
         return CubemapCoordinates(face, u, v);
     }
 
-    CubemapData::CubemapData(
-        uint32_t resolution,
-        uint32_t channel_count) :
-        m_resolution(resolution),
-        m_channel_count(channel_count)
+    CubemapData::CubemapData(uint32_t resolution, uint32_t channel_count)
+        : m_resolution(resolution), m_channel_count(channel_count)
     {
         uint32_t size = resolution * resolution * channel_count * 6;
         m_data.resize(size);
     }
 
-    float& CubemapData::GetPixel(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j,
-        uint32_t channel)
+    float& CubemapData::GetPixel(CubeFace face,
+                                 uint32_t i,
+                                 uint32_t j,
+                                 uint32_t channel)
     {
         auto index = PixelIndex(face, i, j, channel);
         return m_data[index];
     }
 
-    CubemapCoordinates CubemapData::GetPixelCoordinates(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j)
+    CubemapCoordinates CubemapData::GetPixelCoordinates(CubeFace face,
+                                                        uint32_t i,
+                                                        uint32_t j)
     {
         return CubemapCoordinates{
-            face,
-            (i + 0.5f) / m_resolution,
-            (j + 0.5f) / m_resolution
-        };
+            face, (i + 0.5f) / m_resolution, (j + 0.5f) / m_resolution};
     }
 
-    float* CubemapData::GetFaceDataPointer(
-        CubeFace face)
+    float* CubemapData::GetFaceDataPointer(CubeFace face)
     {
         auto index = PixelIndex(face, 0, 0, 0);
         return &m_data[index];
     }
 
-    uint32_t CubemapData::PixelIndex(
-        CubeFace face,
-        uint32_t i,
-        uint32_t j,
-        uint32_t channel)
+    uint32_t CubemapData::PixelIndex(CubeFace face,
+                                     uint32_t i,
+                                     uint32_t j,
+                                     uint32_t channel)
     {
-        return channel + m_channel_count * (i + m_resolution * (j + m_resolution * face));
+        return channel +
+               m_channel_count * (i + m_resolution * (j + m_resolution * face));
     }
 
-    float BilinearInterpolate(
-        CubemapData& cubemap,
-        CubemapCoordinates& coords,
-        uint32_t channel)
+    float BilinearInterpolate(CubemapData& cubemap,
+                              CubemapCoordinates& coords,
+                              uint32_t channel)
     {
         int n = cubemap.GetResolution();
 
@@ -168,19 +158,19 @@ namespace Merlin
         float N10 = coords.u * (1.0f - coords.v);
         float N11 = coords.u * coords.v;
 
-        return (
-            N00 * cubemap.GetPixel(coords.face, imin, jmin, channel) +
-            N01 * cubemap.GetPixel(coords.face, imin, jmax, channel) +
-            N10 * cubemap.GetPixel(coords.face, imax, jmin, channel) +
-            N11 * cubemap.GetPixel(coords.face, imax, jmax, channel));
+        return (N00 * cubemap.GetPixel(coords.face, imin, jmin, channel) +
+                N01 * cubemap.GetPixel(coords.face, imin, jmax, channel) +
+                N10 * cubemap.GetPixel(coords.face, imax, jmin, channel) +
+                N11 * cubemap.GetPixel(coords.face, imax, jmax, channel));
     }
 
-    std::shared_ptr<Cubemap> UploadCubemap(
-        std::shared_ptr<CubemapData> data)
+    std::shared_ptr<Cubemap> UploadCubemap(std::shared_ptr<CubemapData> data)
     {
-        auto cubemap = Renderer::CreateCubemap(data->GetResolution(), data->GetChannelCount());
+        auto cubemap = Renderer::CreateCubemap(data->GetResolution(),
+                                               data->GetChannelCount());
 
-        for (uint32_t face_id = CubeFace::Begin; face_id < CubeFace::End; ++face_id)
+        for (uint32_t face_id = CubeFace::Begin; face_id < CubeFace::End;
+             ++face_id)
         {
             auto face = static_cast<CubeFace>(face_id);
             cubemap->SetFaceData(face, data->GetFaceDataPointer(face));
@@ -189,4 +179,4 @@ namespace Merlin
         return cubemap;
     }
 
-}
+}  // namespace Merlin

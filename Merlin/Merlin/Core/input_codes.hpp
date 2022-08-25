@@ -2,7 +2,6 @@
 #define INPUT_CODES_HPP
 #include <stdint.h>
 
-
 namespace Merlin
 {
     using KeyCode = uint16_t;
@@ -149,6 +148,6 @@ namespace Merlin
         BUTTON_MIDDLE = BUTTON_3,
     };
 
-}
+}  // namespace Merlin
 
 #endif

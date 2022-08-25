@@ -1,70 +1,61 @@
-#include <sstream>
-#include <glm/gtc/random.hpp>
-#include <glm/glm.hpp>
 #include <imgui.h>
-#include"Merlin/Core/file_util.hpp"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/random.hpp>
+#include <sstream>
+
 #include "Merlin/Core/core.hpp"
+#include "Merlin/Core/file_util.hpp"
 #include "Merlin/Render/render.hpp"
 #include "Merlin/Scene/scene.hpp"
 #include "uv_sphere.hpp"
 
 using namespace Merlin;
 
-
-Vertex_XNTBUV CubeVerts[]
-{
+Vertex_XNTBUV cube_verts[]{
     // positions             // normal              // texture coords
-    {-0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f},
-    { 0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f},
-    { 0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f},
-    {-0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f},
+    {-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+    {0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    {0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+    {-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
 
-    { 0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f},
-    { 0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f},
-    { 0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f},
-    { 0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f},
+    {0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    {0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+    {0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+    {0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
 
-    { 0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f},
-    {-0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f},
-    {-0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f},
-    { 0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f},
+    {0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f},
+    {-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f},
+    {-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f},
+    {0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f},
 
-    {-0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 0.0f},
-    {-0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 0.0f},
-    {-0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 1.0f},
-    {-0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 1.0f},
+    {-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+    {-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f},
+    {-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
+    {-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f},
 
-    {-0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f},
-    { 0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f},
-    { 0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f},
-    {-0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f},
+    {-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+    {0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f},
+    {0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f},
+    {-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f},
 
-    { 0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f},
-    {-0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f},
-    {-0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f},
-    { 0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f},
+    {0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f},
+    {-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f},
+    {-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f},
+    {0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f},
 };
 
-uint32_t CubeIndices[]
-{
-    0, 1, 2,
-    0, 2, 3,
+uint32_t cube_indices[]{0,  1,  2,  0,  2,  3,
 
-    4, 5, 6,
-    4, 6, 7,
+                        4,  5,  6,  4,  6,  7,
 
-    8, 9, 10,
-    8, 10, 11,
+                        8,  9,  10, 8,  10, 11,
 
-    12, 13, 14,
-    12, 14, 15,
+                        12, 13, 14, 12, 14, 15,
 
-    16, 17, 18,
-    16, 18, 19,
+                        16, 17, 18, 16, 18, 19,
 
-    20, 21, 22,
-    20, 22, 23
-};
+                        20, 21, 22, 20, 22, 23};
 
 std::shared_ptr<TransformComponent> camera_transform;
 std::shared_ptr<MeshBuffer> cube_mbuffer;
@@ -83,10 +74,9 @@ public:
     SpinningComponent(Entity* parent) : Component(parent)
     {
         rotation_speed = glm::linearRand(0.05f, 0.50f);
-        axis = glm::vec3(
-            glm::linearRand(-1.0f, 1.0f),
-            glm::linearRand(-1.0f, 1.0f),
-            glm::linearRand(-1.0f, 1.0f));
+        axis = glm::vec3(glm::linearRand(-1.0f, 1.0f),
+                         glm::linearRand(-1.0f, 1.0f),
+                         glm::linearRand(-1.0f, 1.0f));
         axis = glm::normalize(axis);
     }
 
@@ -102,18 +92,16 @@ public:
         auto s = glm::sin(th);
 
         glm::quat q(c, s * axis.x, s * axis.y, s * axis.z);
-        transform_comp->transform.Rotate(q);
+        transform_comp->m_transform.Rotate(q);
     }
-
 };
 
 class FollowCameraComponent : public Component
 {
     std::shared_ptr<TransformComponent> transform_comp;
+
 public:
-    FollowCameraComponent(Entity* parent) : Component(parent)
-    {
-    }
+    FollowCameraComponent(Entity* parent) : Component(parent) {}
 
     virtual void OnAwake() override
     {
@@ -122,157 +110,191 @@ public:
 
     virtual void OnUpdate(float time_step) override
     {
-        transform_comp->transform = camera_transform->transform;
+        transform_comp->m_transform = camera_transform->m_transform;
     }
-
 };
 
 class SceneLayer : public Layer
 {
-    float m_ambientRadiance = 0.0f;
+    float m_ambient_radiance = 0.0f;
     GameScene scene;
     CameraRenderData* camera_data;
-    ImVec2 viewport_size{ 0, 0 };
+    ImVec2 viewport_size{0, 0};
 
 public:
     SceneLayer()
     {
-        auto texProps = Texture2DProperties(
-            TextureWrapMode::Repeat,
-            TextureWrapMode::Repeat,
-            TextureFilterMode::Linear);
+        auto tex_props = Texture2DProperties(TextureWrapMode::Repeat,
+                                             TextureWrapMode::Repeat,
+                                             TextureFilterMode::Linear);
 
         auto main_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\debug.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\debug.jpg"), tex_props);
 
         auto metal_plate_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-"
+                        "JPG\\MetalPlates007_1K_Color.jpg"),
+            tex_props);
         auto metal_plate_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-"
+                        "JPG\\MetalPlates007_1K_Roughness.jpg"),
+            tex_props);
         auto metal_plate_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-"
+                        "JPG\\MetalPlates007_1K_Metalness.jpg"),
+            tex_props);
         auto metal_plate_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-"
+                        "JPG\\MetalPlates007_1K_NormalGL.jpg"),
+            tex_props);
 
         auto helmet_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_BaseColor.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_BaseColor.png"),
+            tex_props);
         auto helmet_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_"
+                        "MetallicRoughness.png"),
+            tex_props);
         auto helmet_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_"
+                        "MetallicRoughness.png"),
+            tex_props);
         auto helmet_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_Normal.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_Normal.png"),
+            tex_props);
 
         auto spitfire_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_d.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\supermarine-spitfire\\spitfire_d.png"),
+            tex_props);
         auto spitfire_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_r.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\supermarine-spitfire\\spitfire_r.png"),
+            tex_props);
         auto spitfire_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_m.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\supermarine-spitfire\\spitfire_m.png"),
+            tex_props);
         auto spitfire_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_n.png"), texProps);
+            LoadTexture(
+                ".\\Assets\\Models\\supermarine-spitfire\\spitfire_n.png"),
+            tex_props);
 
-        main_cubemap = Renderer::CreateCubemap(
-            std::vector<std::string>
-        {
+        main_cubemap = Renderer::CreateCubemap(std::vector<std::string>{
             ".\\Assets\\Textures\\skybox_hilly_lake\\right.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
-                ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"
-        });
+            ".\\Assets\\Textures\\skybox_hilly_lake\\left.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\top.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\bottom.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\front.jpg",
+            ".\\Assets\\Textures\\skybox_hilly_lake\\back.jpg"});
 
-        auto pbr_shader = Renderer::CreateShader(
-            ".\\Assets\\Shaders\\pbr_lit_basic.vert",
-            ".\\Assets\\Shaders\\pbr_lit_basic.frag");
+        auto pbr_shader =
+            Renderer::CreateShader(".\\Assets\\Shaders\\pbr_lit_basic.vert",
+                                   ".\\Assets\\Shaders\\pbr_lit_basic.frag");
 
-        auto pbr_texture_shader = Renderer::CreateShader(
-            ".\\Assets\\Shaders\\pbr_lit_texture.vert",
-            ".\\Assets\\Shaders\\pbr_lit_texture.frag");
+        auto pbr_texture_shader =
+            Renderer::CreateShader(".\\Assets\\Shaders\\pbr_lit_texture.vert",
+                                   ".\\Assets\\Shaders\\pbr_lit_texture.frag");
 
-        auto main_shader = Renderer::CreateShader(
-            ".\\Assets\\Shaders\\basic_lit.vert",
-            ".\\Assets\\Shaders\\basic_lit.frag");
+        auto main_shader =
+            Renderer::CreateShader(".\\Assets\\Shaders\\basic_lit.vert",
+                                   ".\\Assets\\Shaders\\basic_lit.frag");
 
         pbr_texture_material = Renderer::CreateMaterial(
-            MaterialInfo
-            {
-                pbr_texture_shader,
-                BufferLayout{},
-                std::vector<std::string>{
-                "u_albedoTexture",
-                    "u_roughnessTexture",
-                    "u_metalicTexture",
-                    "u_normalTexture"
-                }
-            }
-        );
-        auto metal_plate_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
-        metal_plate_material_instance->SetTexture("u_albedoTexture", metal_plate_albedo_texture);
-        metal_plate_material_instance->SetTexture("u_roughnessTexture", metal_plate_roughness_texture);
-        metal_plate_material_instance->SetTexture("u_metalicTexture", metal_plate_metalic_texture);
-        metal_plate_material_instance->SetTexture("u_normalTexture", metal_plate_normal_texture);
-        
-        auto helmet_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
-        helmet_material_instance->SetTexture("u_albedoTexture", helmet_albedo_texture);
-        helmet_material_instance->SetTexture("u_roughnessTexture", helmet_roughness_texture);
-        helmet_material_instance->SetTexture("u_metalicTexture", helmet_metalic_texture);
-        helmet_material_instance->SetTexture("u_normalTexture", helmet_normal_texture);
+            MaterialInfo{pbr_texture_shader,
+                         BufferLayout{},
+                         std::vector<std::string>{"u_albedoTexture",
+                                                  "u_roughnessTexture",
+                                                  "u_metalicTexture",
+                                                  "u_normalTexture"}});
+        auto metal_plate_material_instance =
+            Renderer::CreateMaterialInstance(pbr_texture_material);
+        metal_plate_material_instance->SetTexture("u_albedoTexture",
+                                                  metal_plate_albedo_texture);
+        metal_plate_material_instance->SetTexture(
+            "u_roughnessTexture", metal_plate_roughness_texture);
+        metal_plate_material_instance->SetTexture("u_metalicTexture",
+                                                  metal_plate_metalic_texture);
+        metal_plate_material_instance->SetTexture("u_normalTexture",
+                                                  metal_plate_normal_texture);
 
-        auto spitfire_material_instance = Renderer::CreateMaterialInstance(pbr_texture_material);
-        spitfire_material_instance->SetTexture("u_albedoTexture", spitfire_albedo_texture);
-        spitfire_material_instance->SetTexture("u_roughnessTexture", spitfire_roughness_texture);
-        spitfire_material_instance->SetTexture("u_metalicTexture", spitfire_metalic_texture);
-        spitfire_material_instance->SetTexture("u_normalTexture", spitfire_normal_texture);
+        auto helmet_material_instance =
+            Renderer::CreateMaterialInstance(pbr_texture_material);
+        helmet_material_instance->SetTexture("u_albedoTexture",
+                                             helmet_albedo_texture);
+        helmet_material_instance->SetTexture("u_roughnessTexture",
+                                             helmet_roughness_texture);
+        helmet_material_instance->SetTexture("u_metalicTexture",
+                                             helmet_metalic_texture);
+        helmet_material_instance->SetTexture("u_normalTexture",
+                                             helmet_normal_texture);
 
-        auto cubeMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
-        cubeMesh->SetVertexData(CubeVerts, sizeof(CubeVerts) / sizeof(Vertex_XNUV));
-        cubeMesh->SetIndexData(CubeIndices, sizeof(CubeIndices) / sizeof(uint32_t));
-        CalculateTangentFrame(cubeMesh);
+        auto spitfire_material_instance =
+            Renderer::CreateMaterialInstance(pbr_texture_material);
+        spitfire_material_instance->SetTexture("u_albedoTexture",
+                                               spitfire_albedo_texture);
+        spitfire_material_instance->SetTexture("u_roughnessTexture",
+                                               spitfire_roughness_texture);
+        spitfire_material_instance->SetTexture("u_metalicTexture",
+                                               spitfire_metalic_texture);
+        spitfire_material_instance->SetTexture("u_normalTexture",
+                                               spitfire_normal_texture);
+
+        auto cube_mesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
+        cube_mesh->SetVertexData(cube_verts,
+                                 sizeof(cube_verts) / sizeof(Vertex_XNUV));
+        cube_mesh->SetIndexData(cube_indices,
+                                sizeof(cube_indices) / sizeof(uint32_t));
+        CalculateTangentFrame(cube_mesh);
         cube_mbuffer = Renderer::CreateMeshBuffer(
-            cubeMesh->GetVertexDataPointer(),
-            cubeMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
-            cubeMesh->GetIndexDataPointer(),
-            cubeMesh->GetTriangleCount() * 3,
+            cube_mesh->GetVertexDataPointer(),
+            cube_mesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            cube_mesh->GetIndexDataPointer(),
+            cube_mesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto sphereMesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
-        sphereMesh->SetVertexData(UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
-        sphereMesh->SetIndexData(UVSphereIndices, sizeof(UVSphereIndices) / sizeof(uint32_t));
-        CalculateTangentFrame(sphereMesh);
+        auto sphere_mesh = std::make_shared<Mesh<Vertex_XNTBUV>>();
+        sphere_mesh->SetVertexData(
+            UVSphereVerts, sizeof(UVSphereVerts) / sizeof(Vertex_XNTBUV));
+        sphere_mesh->SetIndexData(UVSphereIndices,
+                                  sizeof(UVSphereIndices) / sizeof(uint32_t));
+        CalculateTangentFrame(sphere_mesh);
         sphere_mbuffer = Renderer::CreateMeshBuffer(
-            sphereMesh->GetVertexDataPointer(),
-            sphereMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
-            sphereMesh->GetIndexDataPointer(),
-            sphereMesh->GetTriangleCount() * 3,
+            sphere_mesh->GetVertexDataPointer(),
+            sphere_mesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            sphere_mesh->GetIndexDataPointer(),
+            sphere_mesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto helmetMesh = load_mesh(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet.gltf");
-        CalculateTangentFrame(helmetMesh);
-        auto helmetMeshBuffer = Renderer::CreateMeshBuffer(
-            helmetMesh->GetVertexDataPointer(),
-            helmetMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
-            helmetMesh->GetIndexDataPointer(),
-            helmetMesh->GetTriangleCount() * 3,
+        auto helmet_mesh =
+            LoadMesh(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet.gltf");
+        CalculateTangentFrame(helmet_mesh);
+        auto helmet_mesh_buffer = Renderer::CreateMeshBuffer(
+            helmet_mesh->GetVertexDataPointer(),
+            helmet_mesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            helmet_mesh->GetIndexDataPointer(),
+            helmet_mesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto spitfireMesh = load_mesh(".\\Assets\\Models\\supermarine-spitfire\\spitfire.FBX");
-        CalculateTangentFrame(spitfireMesh);
-        auto spitfireMeshBuffer = Renderer::CreateMeshBuffer(
-            spitfireMesh->GetVertexDataPointer(),
-            spitfireMesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
-            spitfireMesh->GetIndexDataPointer(),
-            spitfireMesh->GetTriangleCount() * 3,
+        auto spitfire_mesh =
+            LoadMesh(".\\Assets\\Models\\supermarine-spitfire\\spitfire.FBX");
+        CalculateTangentFrame(spitfire_mesh);
+        auto spitfire_mesh_buffer = Renderer::CreateMeshBuffer(
+            spitfire_mesh->GetVertexDataPointer(),
+            spitfire_mesh->GetVertexCount() * sizeof(Vertex_XNTBUV),
+            spitfire_mesh->GetIndexDataPointer(),
+            spitfire_mesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
         // Add entities to the scene
-        { // CAMERA
+        {  // CAMERA
             FrameBufferParameters fb_params;
             fb_params.width = 1000;
             fb_params.height = 1000;
             fb_params.color_buffer_format = ColorBufferFormat::RGBA8;
-            fb_params.depth_buffer_format = DepthBufferFormat::DEPTH24_STENCIL8;
+            fb_params.depth_buffer_format = DepthBufferFormat::Depth24Stencil8;
             auto fbuffer = Renderer::CreateFramebuffer(fb_params);
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
@@ -280,64 +302,66 @@ public:
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto camera_component = entity->AddComponent<CameraComponent>();
-            auto camera = std::make_shared<PerspectiveCamera>(glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-            transform_comp->transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
-            camera_component->data.camera = camera;
-            camera_component->data.frame_buffer = fbuffer;
-            camera_component->data.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-            camera_component->data.skybox = skybox;
+            auto camera = std::make_shared<PerspectiveCamera>(
+                glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
+            transform_comp->m_transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
+            camera_component->m_data.camera = camera;
+            camera_component->m_data.frame_buffer = fbuffer;
+            camera_component->m_data.clear_color =
+                glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            camera_component->m_data.skybox = skybox;
             camera_transform = transform_comp;
 
-            camera_data = &camera_component->data;
+            camera_data = &camera_component->m_data;
         }
-        { // DIRECTIONAL LIGHT
+        {  // DIRECTIONAL LIGHT
             auto entity = scene.CreateEntity();
             auto light_comp = entity->AddComponent<DirectionalLightComponent>();
-            light_comp->data.color = glm::vec3(0.5, 0.5, 0.5);
-            light_comp->data.irradiance = 100.0f;
-            light_comp->data.direction = glm::normalize(glm::vec3(-0.5, -0.5, 0.0));
+            light_comp->m_data.color = glm::vec3(0.5, 0.5, 0.5);
+            light_comp->m_data.irradiance = 100.0f;
+            light_comp->m_data.direction =
+                glm::normalize(glm::vec3(-0.5, -0.5, 0.0));
         }
-        { // HELMET
+        {  // HELMET
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            //auto spin_comp = entity->AddComponent<SpinningComponent>();
+            // auto spin_comp = entity->AddComponent<SpinningComponent>();
 
-            transform_comp->transform.Scale(glm::vec3(1.0));
-            transform_comp->transform.Translate(glm::vec3(-2.0, 1.5, 0.0));
+            transform_comp->m_transform.Scale(glm::vec3(1.0));
+            transform_comp->m_transform.Translate(glm::vec3(-2.0, 1.5, 0.0));
 
-            mesh_comp->data.mesh_buffer = helmetMeshBuffer;
-            mesh_comp->data.material_instance = helmet_material_instance;
+            mesh_comp->m_data.mesh_buffer = helmet_mesh_buffer;
+            mesh_comp->m_data.material_instance = helmet_material_instance;
         }
-        { // SPITFIRE
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-
-            transform_comp->transform.Scale(glm::vec3(0.01));
-            transform_comp->transform.Translate(glm::vec3(2.0, 0.5, 0.0));
-            transform_comp->transform.Rotate(glm::vec3(1.0, 0.0, 0.0), -glm::pi<float>()*0.5f);
-
-            mesh_comp->data.mesh_buffer = spitfireMeshBuffer;
-            mesh_comp->data.material_instance = spitfire_material_instance;
-        }
-        { // BASE PLATFORM
+        {  // SPITFIRE
             auto entity = scene.CreateEntity();
             auto transform_comp = entity->AddComponent<TransformComponent>();
             auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
 
-            transform_comp->transform.Scale(glm::vec3(10.0f, 0.1f, 10.0));
+            transform_comp->m_transform.Scale(glm::vec3(0.01));
+            transform_comp->m_transform.Translate(glm::vec3(2.0, 0.5, 0.0));
+            transform_comp->m_transform.Rotate(glm::vec3(1.0, 0.0, 0.0),
+                                               -glm::pi<float>() * 0.5f);
 
-            mesh_comp->data.mesh_buffer = cube_mbuffer;
-            mesh_comp->data.material_instance = metal_plate_material_instance;
+            mesh_comp->m_data.mesh_buffer = spitfire_mesh_buffer;
+            mesh_comp->m_data.material_instance = spitfire_material_instance;
+        }
+        {  // BASE PLATFORM
+            auto entity = scene.CreateEntity();
+            auto transform_comp = entity->AddComponent<TransformComponent>();
+            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+
+            transform_comp->m_transform.Scale(glm::vec3(10.0f, 0.1f, 10.0));
+
+            mesh_comp->m_data.mesh_buffer = cube_mbuffer;
+            mesh_comp->m_data.material_instance = metal_plate_material_instance;
         }
 
         scene.OnAwake();
     }
 
-    virtual void OnAttach()override
-    {
-    }
+    virtual void OnAttach() override {}
 
     virtual void OnDetatch() override {}
 
@@ -348,10 +372,11 @@ public:
 
         Renderer::RenderScene(scene.GetRenderData());
 
-        {// Render GUI to main window
+        {  // Render GUI to main window
             ImGui::Begin("Settings");
-            ImGui::SliderFloat("Ambient Light", &m_ambientRadiance, 0.0f, 1.0f);
-            scene.SetAmbientLight(m_ambientRadiance);
+            ImGui::SliderFloat(
+                "Ambient Light", &m_ambient_radiance, 0.0f, 1.0f);
+            scene.SetAmbientLight(m_ambient_radiance);
             ImGui::End();
         }
     }
@@ -361,40 +386,42 @@ public:
         app_event.Dispatch<WindowResizedEvent>(
             [this](WindowResizedEvent& e)
             {
-                camera_data->camera->SetAspectRatio((float)e.GetWidth() / (float)e.GetHeight());
+                camera_data->camera->SetAspectRatio((float)e.GetWidth() /
+                                                    (float)e.GetHeight());
                 return false;
-            }
-        );
+            });
 
         ME_LOG_INFO(app_event.ToString());
     }
 
     void MoveCamera(float time_step)
     {
-        const auto& up = camera_transform->transform.Up();
-        const auto& right = camera_transform->transform.Right();
-        const auto& forward = camera_transform->transform.Forward();
+        const auto& up = camera_transform->m_transform.Up();
+        const auto& right = camera_transform->m_transform.Right();
+        const auto& forward = camera_transform->m_transform.Forward();
         float speed = 5.0e-1f;
-        if (Input::GetKeyDown(Key::LEFT_SHIFT))
-            speed *= 2.0f;
+        if (Input::GetKeyDown(Key::LEFT_SHIFT)) speed *= 2.0f;
         if (Input::GetKeyDown(Key::W))
-            camera_transform->transform.Translate(+forward * speed * time_step);
+            camera_transform->m_transform.Translate(+forward * speed *
+                                                    time_step);
         if (Input::GetKeyDown(Key::A))
-            camera_transform->transform.Translate(-right * speed * time_step);
+            camera_transform->m_transform.Translate(-right * speed * time_step);
         if (Input::GetKeyDown(Key::S))
-            camera_transform->transform.Translate(-forward * speed * time_step);
+            camera_transform->m_transform.Translate(-forward * speed *
+                                                    time_step);
         if (Input::GetKeyDown(Key::D))
-            camera_transform->transform.Translate(+right * speed * time_step);
+            camera_transform->m_transform.Translate(+right * speed * time_step);
         if (Input::GetKeyDown(Key::Z))
-            camera_transform->transform.Translate(+up * speed * time_step);
+            camera_transform->m_transform.Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
-            camera_transform->transform.Translate(-up * speed * time_step);
+            camera_transform->m_transform.Translate(-up * speed * time_step);
         if (Input::GetKeyDown(Key::Q))
-            camera_transform->transform.Rotate(up, time_step * 1.0);
+            camera_transform->m_transform.Rotate(up, time_step * 1.0);
         if (Input::GetKeyDown(Key::E))
-            camera_transform->transform.Rotate(up, -time_step * 1.0);
+            camera_transform->m_transform.Rotate(up, -time_step * 1.0);
 
-        camera_transform->transform.Rotate(up, Input::GetMouseScrollDelta().y * time_step * 5.0);
+        camera_transform->m_transform.Rotate(
+            up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
 };
 
@@ -407,16 +434,14 @@ public:
     }
 };
 
-
 void main()
 {
-    ApplicationInfo appInfo
-    {
+    ApplicationInfo app_info{
         "Demo",
-        RenderBackend::OPENGL,
+        RenderBackend::OpenGL,
         800,
-        800
+        800,
     };
-    DemoApplication app(appInfo);
+    DemoApplication app(app_info);
     app.Run();
 }

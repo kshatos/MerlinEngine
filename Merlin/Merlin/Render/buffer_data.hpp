@@ -1,10 +1,11 @@
 #ifndef BUFFER_DATA_HPP
 #define BUFFER_DATA_HPP
-#include "glm/glm.hpp"
-#include <string>
-#include <vector>
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
+#include "glm/glm.hpp"
 
 namespace Merlin
 {
@@ -35,24 +36,23 @@ namespace Merlin
         uint32_t size;
         bool normalized;
 
-        BufferElement() :
-            name(""),
-            type(ElementDataType::None),
-            offset(0),
-            size(0),
-            normalized(false)
+        BufferElement()
+            : name("")
+            , type(ElementDataType::None)
+            , offset(0)
+            , size(0)
+            , normalized(false)
         {
         }
 
-        BufferElement(
-            ElementDataType _type,
-            const std::string _name,
-            bool _normalized = false) :
-            name(_name),
-            type(_type),
-            offset(0),
-            size(ElementDataTypeSize(_type)),
-            normalized(_normalized)
+        BufferElement(ElementDataType _type,
+                      const std::string _name,
+                      bool _normalized = false)
+            : name(_name)
+            , type(_type)
+            , offset(0)
+            , size(ElementDataTypeSize(_type))
+            , normalized(_normalized)
         {
         }
     };
@@ -61,13 +61,26 @@ namespace Merlin
     {
         std::vector<BufferElement> m_elements;
         uint32_t m_stride;
+
     public:
         BufferLayout();
         BufferLayout(const std::initializer_list<BufferElement>& _elements);
-        inline std::vector<BufferElement>::iterator begin() { return m_elements.begin(); }
-        inline std::vector<BufferElement>::iterator end() { return m_elements.end(); }
-        inline std::vector<BufferElement>::const_iterator begin() const { return m_elements.begin(); }
-        inline std::vector<BufferElement>::const_iterator end() const { return m_elements.end(); }
+        inline std::vector<BufferElement>::iterator begin()
+        {
+            return m_elements.begin();
+        }
+        inline std::vector<BufferElement>::iterator end()
+        {
+            return m_elements.end();
+        }
+        inline std::vector<BufferElement>::const_iterator begin() const
+        {
+            return m_elements.begin();
+        }
+        inline std::vector<BufferElement>::const_iterator end() const
+        {
+            return m_elements.end();
+        }
         uint32_t GetStride() const;
     };
 
@@ -97,14 +110,12 @@ namespace Merlin
         uint32_t GetUniformInt(const std::string& name) const;
 
     private:
-        bool BufferData::FindElement(
-            const std::string& name,
-            BufferElement& element) const;
-        bool FindElement(
-            const std::string& name,
-            const ElementDataType& type,
-            BufferElement& element) const;
+        bool BufferData::FindElement(const std::string& name,
+                                     BufferElement& element) const;
+        bool FindElement(const std::string& name,
+                         const ElementDataType& type,
+                         BufferElement& element) const;
     };
 
-}
+}  // namespace Merlin
 #endif

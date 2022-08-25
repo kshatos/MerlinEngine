@@ -1,12 +1,12 @@
 #ifndef SCENE_RENDER_DATA_HPP
 #define SCENE_RENDER_DATA_HPP
 #include <vector>
-#include "Merlin/Render/skybox.hpp"
-#include "Merlin/Render/camera.hpp"
-#include "Merlin/Render/mesh_buffer.hpp"
-#include "Merlin/Render/material.hpp"
-#include "Merlin/Render/frame_buffer.hpp"
 
+#include "Merlin/Render/camera.hpp"
+#include "Merlin/Render/frame_buffer.hpp"
+#include "Merlin/Render/material.hpp"
+#include "Merlin/Render/mesh_buffer.hpp"
+#include "Merlin/Render/skybox.hpp"
 
 namespace Merlin
 {
@@ -20,14 +20,14 @@ namespace Merlin
         glm::mat4 view_matrix;
         glm::mat4 projection_matrix;
 
-        CameraRenderData() :
-            camera(nullptr),
-            skybox(nullptr),
-            frame_buffer(nullptr),
-            clear_color(),
-            view_pos(),
-            view_matrix(),
-            projection_matrix()
+        CameraRenderData()
+            : camera(nullptr)
+            , skybox(nullptr)
+            , frame_buffer(nullptr)
+            , clear_color()
+            , view_pos()
+            , view_matrix()
+            , projection_matrix()
         {
         }
     };
@@ -35,7 +35,7 @@ namespace Merlin
     struct PointLightData
     {
         glm::vec3 position;
-        float radiantFlux;
+        float radiant_flux;
         float range;
         glm::vec3 color;
     };
@@ -51,9 +51,9 @@ namespace Merlin
     {
         glm::vec3 position;
         glm::vec3 direction;
-        float cutoffAngle;
-        float falloffRatio;
-        float radiantIntensity;
+        float cutoff_angle;
+        float falloff_ratio;
+        float radiant_intensity;
         float range;
         glm::vec3 color;
     };
@@ -64,19 +64,21 @@ namespace Merlin
         std::shared_ptr<MaterialInstance> material_instance;
         glm::mat4 model_matrix;
 
-        MeshRenderData() :
-            material_instance(nullptr),
-            mesh_buffer(nullptr),
-            model_matrix(glm::mat4(0.0)) {}
+        MeshRenderData()
+            : material_instance(nullptr)
+            , mesh_buffer(nullptr)
+            , model_matrix(glm::mat4(0.0))
+        {
+        }
 
-        MeshRenderData(
-            std::shared_ptr<MaterialInstance> _material_instance,
-            std::shared_ptr<MeshBuffer> _mesh_buffer,
-            glm::mat4 _model_matrix)
-            :
-            material_instance(_material_instance),
-            mesh_buffer(_mesh_buffer),
-            model_matrix(_model_matrix) {}
+        MeshRenderData(std::shared_ptr<MaterialInstance> _material_instance,
+                       std::shared_ptr<MeshBuffer> _mesh_buffer,
+                       glm::mat4 _model_matrix)
+            : material_instance(_material_instance)
+            , mesh_buffer(_mesh_buffer)
+            , model_matrix(_model_matrix)
+        {
+        }
     };
 
     struct SceneRenderData
@@ -89,5 +91,5 @@ namespace Merlin
         std::vector<MeshRenderData*> meshes;
     };
 
-}
+}  // namespace Merlin
 #endif

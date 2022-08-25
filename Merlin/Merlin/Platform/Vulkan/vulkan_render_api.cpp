@@ -1,51 +1,49 @@
 #include "Merlin/Platform/Vulkan/vulkan_render_api.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_index_buffer.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_material.hpp"
-#include <stdexcept>
-#include <set>
+
 #include <backends/imgui_impl_vulkan.h>
+
+#include <set>
+#include <stdexcept>
+
+#include "Merlin/Platform/Vulkan/vulkan_index_buffer.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_material.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_texture2d.hpp"
+#include "Merlin/Platform/Vulkan/vulkan_vertex_buffer.hpp"
 #include "backends/imgui_impl_glfw.h"
-
-
 
 namespace Merlin
 {
-    bool validationLayersSupported(
-        std::vector<const char*> layerNames)
+    bool validationLayersSupported(std::vector<const char*> layer_names)
     {
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-        std::vector<VkLayerProperties> availableLayers(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+        uint32_t layer_count;
+        vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+        std::vector<VkLayerProperties> available_layers(layer_count);
+        vkEnumerateInstanceLayerProperties(&layer_count,
+                                           available_layers.data());
 
-        for (const char* layerName : layerNames)
+        for (const char* layer_name : layer_names)
         {
-            bool layerFound = false;
-            for (const auto& layerProps : availableLayers)
+            bool layer_found = false;
+            for (const auto& layer_props : available_layers)
             {
-                if (strcmp(layerName, layerProps.layerName))
+                if (strcmp(layer_name, layer_props.layerName))
                 {
-                    layerFound = true;
+                    layer_found = true;
                     break;
                 }
             }
-            if (!layerFound)
-                return false;
+            if (!layer_found) return false;
         }
 
         return true;
     }
 
     // RENDER API
-    VulkanRenderAPI::~VulkanRenderAPI()
-    {
-    }
+    VulkanRenderAPI::~VulkanRenderAPI() {}
 
-    void VulkanRenderAPI::Init(void* windowPointer)
+    void VulkanRenderAPI::Init(void* window_pointer)
     {
-        window = (GLFWwindow*)windowPointer;
+        m_window = (GLFWwindow*)window_pointer;
         CreateInstance();
         CreateSurface();
         PickPhysicalDevice();
@@ -63,29 +61,29 @@ namespace Merlin
 
     void VulkanRenderAPI::Shutdown()
     {
-        vkDeviceWaitIdle(logicalDevice);
+        vkDeviceWaitIdle(m_logical_device);
 
-        for (auto semaphore : imageAvailableSemaphores)
-            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
-        for (auto semaphore : renderFinishedSemaphores)
-            vkDestroySemaphore(logicalDevice, semaphore, nullptr);
-        for (auto fence : inFlightFences)
-            vkDestroyFence(logicalDevice, fence, nullptr);
+        for (auto semaphore : m_image_available_semaphores)
+            vkDestroySemaphore(m_logical_device, semaphore, nullptr);
+        for (auto semaphore : m_render_finished_semaphores)
+            vkDestroySemaphore(m_logical_device, semaphore, nullptr);
+        for (auto fence : m_in_flight_fences)
+            vkDestroyFence(m_logical_device, fence, nullptr);
 
         CleanupSwapChain();
 
-        vkDestroyDescriptorPool(logicalDevice, guiDescriptorPool, nullptr);
-        vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
+        vkDestroyDescriptorPool(
+            m_logical_device, m_gui_descriptor_pool, nullptr);
+        vkDestroyCommandPool(m_logical_device, m_command_pool, nullptr);
 
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
 
-        vkDestroyDevice(logicalDevice, nullptr);
-        vkDestroySurfaceKHR(instance, surface, nullptr);
-        vkDestroyInstance(instance, nullptr);
+        vkDestroyDevice(m_logical_device, nullptr);
+        vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+        vkDestroyInstance(m_instance, nullptr);
     }
-
 
     void VulkanRenderAPI::BeginFrame()
     {
@@ -94,86 +92,90 @@ namespace Merlin
         ImGui::NewFrame();
     }
 
-    void VulkanRenderAPI::EndFrame()
-    {
-        ImGui::Render();
-    }
+    void VulkanRenderAPI::EndFrame() { ImGui::Render(); }
 
     void VulkanRenderAPI::PresentFrame()
     {
-        vkWaitForFences(logicalDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+        vkWaitForFences(m_logical_device,
+                        1,
+                        &m_in_flight_fences[m_current_frame],
+                        VK_TRUE,
+                        UINT64_MAX);
 
-        uint32_t imageIndex;
-        auto aquireImageResult = vkAcquireNextImageKHR(
-            logicalDevice, swapChain,
-            UINT64_MAX, imageAvailableSemaphores[currentFrame],
-            VK_NULL_HANDLE, &imageIndex);
+        uint32_t image_index;
+        auto aquire_image_result =
+            vkAcquireNextImageKHR(m_logical_device,
+                                  m_swap_chain,
+                                  UINT64_MAX,
+                                  m_image_available_semaphores[m_current_frame],
+                                  VK_NULL_HANDLE,
+                                  &image_index);
 
-        if (aquireImageResult == VK_ERROR_OUT_OF_DATE_KHR ||
-            aquireImageResult == VK_SUBOPTIMAL_KHR ||
-            framebufferResized)
+        if (aquire_image_result == VK_ERROR_OUT_OF_DATE_KHR ||
+            aquire_image_result == VK_SUBOPTIMAL_KHR || m_framebuffer_resized)
         {
-            framebufferResized = false;
+            m_framebuffer_resized = false;
             RecreateSwapChain();
             return;
         }
-        else if (aquireImageResult != VK_SUCCESS)
+        else if (aquire_image_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        vkResetFences(logicalDevice, 1, &inFlightFences[currentFrame]);
+        vkResetFences(
+            m_logical_device, 1, &m_in_flight_fences[m_current_frame]);
 
-        vkResetCommandBuffer(commandBuffers[currentFrame], 0);
-        RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+        vkResetCommandBuffer(m_command_buffers[m_current_frame], 0);
+        RecordCommandBuffer(m_command_buffers[m_current_frame], image_index);
 
+        VkSubmitInfo submit_info{};
+        submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        VkSemaphore wait_semaphores[] = {
+            m_image_available_semaphores[m_current_frame]};
+        VkPipelineStageFlags wait_stages[] = {
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        submit_info.waitSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = wait_semaphores;
+        submit_info.pWaitDstStageMask = wait_stages;
+        submit_info.commandBufferCount = 1;
+        submit_info.pCommandBuffers = &m_command_buffers[m_current_frame];
 
-        VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
+        VkSemaphore signal_semaphores[] = {
+            m_render_finished_semaphores[m_current_frame]};
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pSignalSemaphores = signal_semaphores;
 
-        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        auto queSubmitStatus = vkQueueSubmit(
-            graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]);
-        if (queSubmitStatus != VK_SUCCESS)
+        auto que_submit_status =
+            vkQueueSubmit(m_graphics_queue,
+                          1,
+                          &submit_info,
+                          m_in_flight_fences[m_current_frame]);
+        if (que_submit_status != VK_SUCCESS)
         {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
 
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = signalSemaphores;
+        VkPresentInfoKHR present_info{};
+        present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        present_info.waitSemaphoreCount = 1;
+        present_info.pWaitSemaphores = signal_semaphores;
 
-        VkSwapchainKHR swapChains[] = { swapChain };
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = swapChains;
-        presentInfo.pImageIndices = &imageIndex;
-        presentInfo.pResults = nullptr;
+        VkSwapchainKHR swap_chains[] = {m_swap_chain};
+        present_info.swapchainCount = 1;
+        present_info.pSwapchains = swap_chains;
+        present_info.pImageIndices = &image_index;
+        present_info.pResults = nullptr;
 
-        vkQueuePresentKHR(presentQueue, &presentInfo);
+        vkQueuePresentKHR(m_present_queue, &present_info);
 
-        currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+        m_current_frame = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    void VulkanRenderAPI::RenderScene(const SceneRenderData& scene)
-    {
-    }
+    void VulkanRenderAPI::RenderScene(const SceneRenderData& scene) {}
 
-    RenderBackend VulkanRenderAPI::Backend()
-    {
-        return RenderBackend::VULKAN;
-    }
+    RenderBackend VulkanRenderAPI::Backend() { return RenderBackend::Vulkan; }
 
     std::shared_ptr<MeshBuffer> VulkanRenderAPI::CreateMeshBuffer(
         float* vertices,
@@ -182,29 +184,28 @@ namespace Merlin
         size_t index_count,
         BufferLayout vertexLayout)
     {
-        auto vertexBuffer = std::make_shared<VulkanVertexBuffer>(
-            vertices,
-            vertex_count,
-            vertexLayout,
-            logicalDevice,
-            physicalDevice,
-            graphicsQueue,
-            commandPool);
-        auto indexBuffer = std::make_shared<VulkanIndexBuffer>(
-            indices,
-            index_count,
-            logicalDevice,
-            physicalDevice,
-            graphicsQueue,
-            commandPool);
-        auto meshBuffer = std::make_shared<MeshBuffer>(
-            indexBuffer, vertexBuffer);
+        auto vertex_buffer =
+            std::make_shared<VulkanVertexBuffer>(vertices,
+                                                 vertex_count,
+                                                 vertexLayout,
+                                                 m_logical_device,
+                                                 m_physical_device,
+                                                 m_graphics_queue,
+                                                 m_command_pool);
+        auto index_buffer =
+            std::make_shared<VulkanIndexBuffer>(indices,
+                                                index_count,
+                                                m_logical_device,
+                                                m_physical_device,
+                                                m_graphics_queue,
+                                                m_command_pool);
+        auto mesh_buffer =
+            std::make_shared<MeshBuffer>(index_buffer, vertex_buffer);
 
-        return meshBuffer;
+        return mesh_buffer;
     }
 
-    std::shared_ptr<Material> VulkanRenderAPI::CreateMaterial(
-        MaterialInfo info)
+    std::shared_ptr<Material> VulkanRenderAPI::CreateMaterial(MaterialInfo info)
     {
         return std::make_shared<VulkanMaterial>(info);
     }
@@ -216,23 +217,20 @@ namespace Merlin
     }
 
     std::shared_ptr<Shader> VulkanRenderAPI::CreateShader(
-        const std::string& vertex_source,
-        const std::string& fragment_source)
+        const std::string& vertex_source, const std::string& fragment_source)
     {
         return nullptr;
     }
 
     std::shared_ptr<Texture2D> VulkanRenderAPI::CreateTexture2D(
-        const Texture2DData& texture_data,
-        Texture2DProperties props)
+        const Texture2DData& texture_data, Texture2DProperties props)
     {
-        return std::make_shared<VulkanTexture2D>(
-            logicalDevice,
-            physicalDevice,
-            commandPool,
-            graphicsQueue,
-            texture_data,
-            props);
+        return std::make_shared<VulkanTexture2D>(m_logical_device,
+                                                 m_physical_device,
+                                                 m_command_pool,
+                                                 m_graphics_queue,
+                                                 texture_data,
+                                                 props);
     }
 
     std::shared_ptr<Cubemap> VulkanRenderAPI::CreateCubemap(
@@ -256,36 +254,37 @@ namespace Merlin
     // SETUP
     void VulkanRenderAPI::CreateInstance()
     {
-        VkApplicationInfo appInfo{};
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "";
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "Merlin Engine";
-        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_0;
+        VkApplicationInfo app_info{};
+        app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+        app_info.pApplicationName = "";
+        app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+        app_info.pEngineName = "Merlin Engine";
+        app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+        app_info.apiVersion = VK_API_VERSION_1_0;
 
-        VkInstanceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
+        VkInstanceCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+        create_info.pApplicationInfo = &app_info;
 
         uint32_t glfwExtensionCount = 0;
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        createInfo.enabledExtensionCount = glfwExtensionCount;
-        createInfo.ppEnabledExtensionNames = glfwExtensions;
+        create_info.enabledExtensionCount = glfwExtensionCount;
+        create_info.ppEnabledExtensionNames = glfwExtensions;
 
-        if (validationLayersSupported(validationLayerNames))
+        if (validationLayersSupported(validation_layer_names))
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayerNames.size());
-            createInfo.ppEnabledLayerNames = validationLayerNames.data();
+            create_info.enabledLayerCount =
+                static_cast<uint32_t>(validation_layer_names.size());
+            create_info.ppEnabledLayerNames = validation_layer_names.data();
         }
         else
         {
-            createInfo.enabledLayerCount = 0;
+            create_info.enabledLayerCount = 0;
         }
 
-        auto instanceCreateResult = vkCreateInstance(
-            &createInfo, nullptr, &instance);
+        auto instanceCreateResult =
+            vkCreateInstance(&create_info, nullptr, &m_instance);
         if (instanceCreateResult != VK_SUCCESS)
         {
             throw std::runtime_error("Unable to create vulkan instance!");
@@ -294,9 +293,9 @@ namespace Merlin
 
     void VulkanRenderAPI::CreateSurface()
     {
-        auto surfaceCreateResult = glfwCreateWindowSurface(
-            instance, window, nullptr, &surface);
-        if (surfaceCreateResult != VK_SUCCESS)
+        auto surface_create_result =
+            glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface);
+        if (surface_create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create window surface!");
         }
@@ -304,183 +303,191 @@ namespace Merlin
 
     void VulkanRenderAPI::PickPhysicalDevice()
     {
-        uint32_t deviceCount;
-        vkEnumeratePhysicalDevices(
-            instance, &deviceCount, nullptr);
-        std::vector<VkPhysicalDevice> devices(deviceCount);
-        vkEnumeratePhysicalDevices(
-            instance, &deviceCount, devices.data());
+        uint32_t device_count;
+        vkEnumeratePhysicalDevices(m_instance, &device_count, nullptr);
+        std::vector<VkPhysicalDevice> devices(device_count);
+        vkEnumeratePhysicalDevices(m_instance, &device_count, devices.data());
 
-        float bestScore = -std::numeric_limits<float>::infinity();
-        VkPhysicalDevice selectedDevice = VK_NULL_HANDLE;
+        float best_score = -std::numeric_limits<float>::infinity();
+        VkPhysicalDevice selected_device = VK_NULL_HANDLE;
         for (const auto& device : devices)
         {
-            VulkanPhysicalDeviceInfo deviceInfo(device, instance, surface);
-            float score = evaluateDevice(deviceInfo);
-            if (score > bestScore)
+            VulkanPhysicalDeviceInfo device_info(device, m_instance, m_surface);
+            float score = EvaluateDevice(device_info);
+            if (score > best_score)
             {
-                bestScore = score;
-                selectedDevice = device;
+                best_score = score;
+                selected_device = device;
             }
         }
 
-        if (selectedDevice == VK_NULL_HANDLE)
+        if (selected_device == VK_NULL_HANDLE)
         {
             throw std::runtime_error("Unable to find acceptable GPU!");
         }
 
-        physicalDevice = selectedDevice;
-        physicalDeviceInfo = VulkanPhysicalDeviceInfo(
-            selectedDevice, instance, surface);
+        m_physical_device = selected_device;
+        m_physical_device_info =
+            VulkanPhysicalDeviceInfo(selected_device, m_instance, m_surface);
     }
 
     void VulkanRenderAPI::CreateLogicalDevice()
     {
-        queueIndices = findQueueFamilies(physicalDevice, surface);
-        std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-        std::set<uint32_t> uniqueQueueFamilies =
-        {
-            queueIndices.graphicsFamily.value(),
-            queueIndices.presentFamily.value()
-        };
+        m_queue_indices = FindQueueFamilies(m_physical_device, m_surface);
+        std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+        std::set<uint32_t> unique_queue_families = {
+            m_queue_indices.graphics_family.value(),
+            m_queue_indices.present_family.value()};
 
-        float queuePriority = 1.0f;
-        for (auto& queueFamilyIndex : uniqueQueueFamilies)
+        float queue_priority = 1.0f;
+        for (auto& queue_family_index : unique_queue_families)
         {
-            VkDeviceQueueCreateInfo queueCreateInfo{};
-            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueCreateInfo.queueFamilyIndex = queueFamilyIndex;
-            queueCreateInfo.queueCount = 1;
-            queueCreateInfo.pQueuePriorities = &queuePriority;
-            queueCreateInfos.push_back(queueCreateInfo);
+            VkDeviceQueueCreateInfo queue_create_info{};
+            queue_create_info.sType =
+                VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+            queue_create_info.queueFamilyIndex = queue_family_index;
+            queue_create_info.queueCount = 1;
+            queue_create_info.pQueuePriorities = &queue_priority;
+            queue_create_infos.push_back(queue_create_info);
         }
-        
-        VkPhysicalDeviceFeatures deviceFeatures{};
-        deviceFeatures.samplerAnisotropy = VK_TRUE;
 
-        VkDeviceCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-        createInfo.queueCreateInfoCount = queueCreateInfos.size();
-        createInfo.pQueueCreateInfos = queueCreateInfos.data();
-        createInfo.pEnabledFeatures = &deviceFeatures;
+        VkPhysicalDeviceFeatures device_features{};
+        device_features.samplerAnisotropy = VK_TRUE;
 
+        VkDeviceCreateInfo create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+        create_info.queueCreateInfoCount = queue_create_infos.size();
+        create_info.pQueueCreateInfos = queue_create_infos.data();
+        create_info.pEnabledFeatures = &device_features;
 
-        createInfo.enabledExtensionCount =
-            static_cast<uint32_t>(deviceExtensions.size());
-        createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+        create_info.enabledExtensionCount =
+            static_cast<uint32_t>(device_extensions.size());
+        create_info.ppEnabledExtensionNames = device_extensions.data();
 
-        if (validationLayerNames.size() > 0)
+        if (validation_layer_names.size() > 0)
         {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayerNames.size());
-            createInfo.ppEnabledLayerNames = validationLayerNames.data();
+            create_info.enabledLayerCount =
+                static_cast<uint32_t>(validation_layer_names.size());
+            create_info.ppEnabledLayerNames = validation_layer_names.data();
         }
         else
         {
-            createInfo.enabledLayerCount = 0;
+            create_info.enabledLayerCount = 0;
         }
 
-        auto createResult = vkCreateDevice(
-            physicalDevice, &createInfo, nullptr, &logicalDevice);
-        if (createResult != VK_SUCCESS)
+        auto create_result = vkCreateDevice(
+            m_physical_device, &create_info, nullptr, &m_logical_device);
+        if (create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create logical device!");
         }
 
-        vkGetDeviceQueue(logicalDevice, queueIndices.graphicsFamily.value(), 0, &graphicsQueue);
-        vkGetDeviceQueue(logicalDevice, queueIndices.presentFamily.value(), 0, &presentQueue);
+        vkGetDeviceQueue(m_logical_device,
+                         m_queue_indices.graphics_family.value(),
+                         0,
+                         &m_graphics_queue);
+        vkGetDeviceQueue(m_logical_device,
+                         m_queue_indices.present_family.value(),
+                         0,
+                         &m_present_queue);
     }
 
     void VulkanRenderAPI::CreateSwapChain()
     {
-        SwapChainSupportDetails swapChainSupport =
-            querySwapChainSupport(physicalDevice, surface);
+        SwapChainSupportDetails swap_chain_support =
+            QuerySwapChainSupport(m_physical_device, m_surface);
 
-        VkSurfaceFormatKHR surfaceFormat =
-            chooseSwapSurfaceFormat(swapChainSupport.formats);
+        VkSurfaceFormatKHR surface_format =
+            ChooseSwapSurfaceFormat(swap_chain_support.formats);
         VkPresentModeKHR presentMode =
-            chooseSwapPresentMode(swapChainSupport.presentModes);
+            ChooseSwapPresentMode(swap_chain_support.present_modes);
         VkExtent2D extent =
-            chooseSwapExtent(swapChainSupport.capabilities, window);
+            ChooseSwapExtent(swap_chain_support.capabilities, m_window);
 
-        uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-        if (swapChainSupport.capabilities.maxImageCount > 0 &&
-            imageCount > swapChainSupport.capabilities.maxImageCount)
+        uint32_t image_count =
+            swap_chain_support.capabilities.minImageCount + 1;
+        if (swap_chain_support.capabilities.maxImageCount > 0 &&
+            image_count > swap_chain_support.capabilities.maxImageCount)
         {
-            imageCount = swapChainSupport.capabilities.maxImageCount;
+            image_count = swap_chain_support.capabilities.maxImageCount;
         }
 
-        VkSwapchainCreateInfoKHR createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-        createInfo.surface = surface;
-        createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
-        createInfo.imageColorSpace = surfaceFormat.colorSpace;
-        createInfo.imageExtent = extent;
-        createInfo.imageArrayLayers = 1;
-        createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        VkSwapchainCreateInfoKHR create_info{};
+        create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        create_info.surface = m_surface;
+        create_info.minImageCount = image_count;
+        create_info.imageFormat = surface_format.format;
+        create_info.imageColorSpace = surface_format.colorSpace;
+        create_info.imageExtent = extent;
+        create_info.imageArrayLayers = 1;
+        create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
-        uint32_t queueFamilyIndices[] = {
-            indices.graphicsFamily.value(),
-            indices.presentFamily.value()
-        };
-        if (indices.graphicsFamily != indices.presentFamily)
+        QueueFamilyIndices indices =
+            FindQueueFamilies(m_physical_device, m_surface);
+        uint32_t queue_family_indices[] = {indices.graphics_family.value(),
+                                           indices.present_family.value()};
+        if (indices.graphics_family != indices.present_family)
         {
-            createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-            createInfo.queueFamilyIndexCount = 2;
-            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+            create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            create_info.queueFamilyIndexCount = 2;
+            create_info.pQueueFamilyIndices = queue_family_indices;
         }
         else
         {
-            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-            createInfo.queueFamilyIndexCount = 0;
-            createInfo.pQueueFamilyIndices = nullptr;
+            create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+            create_info.queueFamilyIndexCount = 0;
+            create_info.pQueueFamilyIndices = nullptr;
         }
-        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-        createInfo.presentMode = presentMode;
-        createInfo.clipped = VK_TRUE;
-        createInfo.oldSwapchain = VK_NULL_HANDLE;
+        create_info.preTransform =
+            swap_chain_support.capabilities.currentTransform;
+        create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        create_info.presentMode = presentMode;
+        create_info.clipped = VK_TRUE;
+        create_info.oldSwapchain = VK_NULL_HANDLE;
 
-        VkResult swapchainCreateResult = vkCreateSwapchainKHR(
-            logicalDevice, &createInfo, nullptr, &swapChain);
+        VkResult swapchain_create_result = vkCreateSwapchainKHR(
+            m_logical_device, &create_info, nullptr, &m_swap_chain);
 
-        if (swapchainCreateResult != VK_SUCCESS)
+        if (swapchain_create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create swap chain!");
         }
 
         vkGetSwapchainImagesKHR(
-            logicalDevice, swapChain, &imageCount, nullptr);
-        swapChainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(
-            logicalDevice, swapChain, &imageCount, swapChainImages.data());
-        swapChainImageFormat = surfaceFormat.format;
-        swapChainExtent = extent;
+            m_logical_device, m_swap_chain, &image_count, nullptr);
+        m_swap_chain_images.resize(image_count);
+        vkGetSwapchainImagesKHR(m_logical_device,
+                                m_swap_chain,
+                                &image_count,
+                                m_swap_chain_images.data());
+        m_swap_chain_image_format = surface_format.format;
+        m_swap_chain_extent = extent;
     }
 
     void VulkanRenderAPI::CreateImageViews()
     {
-        swapChainImageViews.resize(swapChainImages.size());
-        for (size_t i = 0; i < swapChainImages.size(); i++)
+        m_swap_chain_image_views.resize(m_swap_chain_images.size());
+        for (size_t i = 0; i < m_swap_chain_images.size(); i++)
         {
-            VkImageViewCreateInfo createInfo{};
-            createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = swapChainImages[i];
-            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = swapChainImageFormat;
-            createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            createInfo.subresourceRange.baseMipLevel = 0;
-            createInfo.subresourceRange.levelCount = 1;
-            createInfo.subresourceRange.baseArrayLayer = 0;
-            createInfo.subresourceRange.layerCount = 1;
+            VkImageViewCreateInfo create_info{};
+            create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+            create_info.image = m_swap_chain_images[i];
+            create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+            create_info.format = m_swap_chain_image_format;
+            create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+            create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            create_info.subresourceRange.baseMipLevel = 0;
+            create_info.subresourceRange.levelCount = 1;
+            create_info.subresourceRange.baseArrayLayer = 0;
+            create_info.subresourceRange.layerCount = 1;
 
-            auto result = vkCreateImageView(
-                logicalDevice, &createInfo, nullptr, &swapChainImageViews[i]);
+            auto result = vkCreateImageView(m_logical_device,
+                                            &create_info,
+                                            nullptr,
+                                            &m_swap_chain_image_views[i]);
             if (result != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create image views!");
@@ -490,14 +497,14 @@ namespace Merlin
 
     void VulkanRenderAPI::CreateCommandPool()
     {
-        VkCommandPoolCreateInfo poolInfo{};
-        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        poolInfo.queueFamilyIndex = queueIndices.graphicsFamily.value();
+        VkCommandPoolCreateInfo pool_info{};
+        pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        pool_info.queueFamilyIndex = m_queue_indices.graphics_family.value();
 
-        auto poolCreateStatus = vkCreateCommandPool(
-            logicalDevice, &poolInfo, nullptr, &commandPool);
-        if (poolCreateStatus != VK_SUCCESS)
+        auto pool_create_status = vkCreateCommandPool(
+            m_logical_device, &pool_info, nullptr, &m_command_pool);
+        if (pool_create_status != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create command pool!");
         }
@@ -505,16 +512,16 @@ namespace Merlin
 
     void VulkanRenderAPI::CreateCommandBuffer()
     {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = commandPool;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = (uint32_t)MAX_FRAMES_IN_FLIGHT;
+        VkCommandBufferAllocateInfo alloc_info{};
+        alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        alloc_info.commandPool = m_command_pool;
+        alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        alloc_info.commandBufferCount = (uint32_t)MAX_FRAMES_IN_FLIGHT;
 
-        commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        auto bufferCreateStatus = vkAllocateCommandBuffers(
-            logicalDevice, &allocInfo, commandBuffers.data());
-        if (bufferCreateStatus != VK_SUCCESS)
+        m_command_buffers.resize(MAX_FRAMES_IN_FLIGHT);
+        auto buffer_create_status = vkAllocateCommandBuffers(
+            m_logical_device, &alloc_info, m_command_buffers.data());
+        if (buffer_create_status != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate command buffers!");
         }
@@ -522,31 +529,29 @@ namespace Merlin
 
     void VulkanRenderAPI::CreateDescriptorPool()
     {
-        std::vector<VkDescriptorPoolSize> poolSizes =
-        {
-            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
-        };
+        std::vector<VkDescriptorPoolSize> pool_sizes = {
+            {VK_DESCRIPTOR_TYPE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000},
+            {VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000},
+            {VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000},
+            {VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000}};
 
-        VkDescriptorPoolCreateInfo poolInfo = {};
-        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        poolInfo.maxSets = 1000 * (uint32_t)poolSizes.size();
-        poolInfo.poolSizeCount = (uint32_t)poolSizes.size();
-        poolInfo.pPoolSizes = poolSizes.data();
+        VkDescriptorPoolCreateInfo pool_info = {};
+        pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        pool_info.maxSets = 1000 * (uint32_t)pool_sizes.size();
+        pool_info.poolSizeCount = (uint32_t)pool_sizes.size();
+        pool_info.pPoolSizes = pool_sizes.data();
 
-        auto createResult = vkCreateDescriptorPool(
-            logicalDevice, &poolInfo, nullptr, &guiDescriptorPool);
-        if (createResult != VK_SUCCESS)
+        auto create_result = vkCreateDescriptorPool(
+            m_logical_device, &pool_info, nullptr, &m_gui_descriptor_pool);
+        if (create_result != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create descriptor pool!");
         }
@@ -554,29 +559,35 @@ namespace Merlin
 
     void VulkanRenderAPI::CreateSyncObjects()
     {
-        imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-        inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+        m_image_available_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+        m_render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
+        m_in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
 
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        VkSemaphoreCreateInfo semaphore_info{};
+        semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        VkFenceCreateInfo fence_info{};
+        fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
         for (int i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
         {
-            auto imageSemaphoreResult = vkCreateSemaphore(
-                logicalDevice, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]);
-            auto renderSemaphoreResult = vkCreateSemaphore(
-                logicalDevice, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]);
-            auto fenceResult = vkCreateFence(
-                logicalDevice, &fenceInfo, nullptr, &inFlightFences[i]);
+            auto image_semaphore_result =
+                vkCreateSemaphore(m_logical_device,
+                                  &semaphore_info,
+                                  nullptr,
+                                  &m_image_available_semaphores[i]);
+            auto render_semaphore_result =
+                vkCreateSemaphore(m_logical_device,
+                                  &semaphore_info,
+                                  nullptr,
+                                  &m_render_finished_semaphores[i]);
+            auto fence_result = vkCreateFence(
+                m_logical_device, &fence_info, nullptr, &m_in_flight_fences[i]);
 
-            if (imageSemaphoreResult != VK_SUCCESS ||
-                renderSemaphoreResult != VK_SUCCESS ||
-                fenceResult != VK_SUCCESS)
+            if (image_semaphore_result != VK_SUCCESS ||
+                render_semaphore_result != VK_SUCCESS ||
+                fence_result != VK_SUCCESS)
             {
                 throw std::runtime_error("Unable to create sync objects!");
             }
@@ -586,7 +597,7 @@ namespace Merlin
     void VulkanRenderAPI::CreateImGuiRenderPass()
     {
         VkAttachmentDescription attachment = {};
-        attachment.format = swapChainImageFormat;
+        attachment.format = m_swap_chain_image_format;
         attachment.samples = VK_SAMPLE_COUNT_1_BIT;
         // TODO: switch to  VK_ATTACHMENT_LOAD_OP_LOAD when other passes added
         attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -610,7 +621,8 @@ namespace Merlin
         dependency.dstSubpass = 0;
         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask = 0;  // or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependency.srcAccessMask =
+            0;  // or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
         VkRenderPassCreateInfo info = {};
@@ -622,36 +634,36 @@ namespace Merlin
         info.dependencyCount = 1;
         info.pDependencies = &dependency;
 
-        auto createStatus = vkCreateRenderPass(
-            logicalDevice, &info, nullptr, &imGuiRenderPass);
-        if (createStatus != VK_SUCCESS)
+        auto create_status = vkCreateRenderPass(
+            m_logical_device, &info, nullptr, &m_im_gui_render_pass);
+        if (create_status != VK_SUCCESS)
         {
-            throw std::runtime_error("Could not create Dear ImGui's render pass");
+            throw std::runtime_error(
+                "Could not create Dear ImGui's render pass");
         }
     }
 
     void VulkanRenderAPI::CreateImGuiFrameBuffers()
     {
-        imGuiFramebuffers.resize(swapChainImageViews.size());
-        for (size_t i = 0; i < swapChainImageViews.size(); i++)
+        m_im_gui_framebuffers.resize(m_swap_chain_image_views.size());
+        for (size_t i = 0; i < m_swap_chain_image_views.size(); i++)
         {
-            VkImageView attachments[] =
-            {
-                swapChainImageViews[i]
-            };
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType =
-                VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = imGuiRenderPass;
-            framebufferInfo.attachmentCount = 1;
-            framebufferInfo.pAttachments = attachments;
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
-            framebufferInfo.layers = 1;
+            VkImageView attachments[] = {m_swap_chain_image_views[i]};
+            VkFramebufferCreateInfo framebuffer_info{};
+            framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebuffer_info.renderPass = m_im_gui_render_pass;
+            framebuffer_info.attachmentCount = 1;
+            framebuffer_info.pAttachments = attachments;
+            framebuffer_info.width = m_swap_chain_extent.width;
+            framebuffer_info.height = m_swap_chain_extent.height;
+            framebuffer_info.layers = 1;
 
-            auto framebufferCreateStatus = vkCreateFramebuffer(
-                logicalDevice, &framebufferInfo, nullptr, &imGuiFramebuffers[i]);
-            if (framebufferCreateStatus != VK_SUCCESS)
+            auto framebuffer_create_status =
+                vkCreateFramebuffer(m_logical_device,
+                                    &framebuffer_info,
+                                    nullptr,
+                                    &m_im_gui_framebuffers[i]);
+            if (framebuffer_create_status != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create framebuffer!");
             }
@@ -661,34 +673,38 @@ namespace Merlin
     void VulkanRenderAPI::CreateImGuiContext()
     {
         IMGUI_CHECKVERSION();
-        context = ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
+        m_context = ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
         ImGui::StyleColorsDark();
 
         ImGui_ImplVulkan_InitInfo init_info = {};
-        init_info.Instance = instance;
-        init_info.PhysicalDevice = physicalDevice;
-        init_info.Device = logicalDevice;
+        init_info.Instance = m_instance;
+        init_info.PhysicalDevice = m_physical_device;
+        init_info.Device = m_logical_device;
 
-        init_info.QueueFamily = queueIndices.graphicsFamily.value();
-        init_info.Queue = graphicsQueue;
-        init_info.PipelineCache = VK_NULL_HANDLE; // TODO: Figure out if needed
-        init_info.DescriptorPool = guiDescriptorPool;
-        init_info.Allocator = nullptr; // TODO: Figure out if needed
-        init_info.MinImageCount = swapChainImages.size();
-        init_info.ImageCount = swapChainImages.size();
+        init_info.QueueFamily = m_queue_indices.graphics_family.value();
+        init_info.Queue = m_graphics_queue;
+        init_info.PipelineCache = VK_NULL_HANDLE;  // TODO: Figure out if needed
+        init_info.DescriptorPool = m_gui_descriptor_pool;
+        init_info.Allocator = nullptr;  // TODO: Figure out if needed
+        init_info.MinImageCount = m_swap_chain_images.size();
+        init_info.ImageCount = m_swap_chain_images.size();
 
         init_info.CheckVkResultFn = [](VkResult err)
         {
             if (err != VK_SUCCESS)
-                throw std::runtime_error("Error initializing imgui vulkan backend!");
+                throw std::runtime_error(
+                    "Error initializing imgui vulkan backend!");
         };
-        ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)window, true);
-        ImGui_ImplVulkan_Init(&init_info, imGuiRenderPass);
+        ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)m_window, true);
+        ImGui_ImplVulkan_Init(&init_info, m_im_gui_render_pass);
 
-        auto commandBuffer = BeginSingleTimeCommands(logicalDevice, commandPool);
-        ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
-        EndSingleTimeCommands(logicalDevice, commandBuffer, commandPool, graphicsQueue);
+        auto command_buffer =
+            BeginSingleTimeCommands(m_logical_device, m_command_pool);
+        ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+        EndSingleTimeCommands(
+            m_logical_device, command_buffer, m_command_pool, m_graphics_queue);
     }
 
     void VulkanRenderAPI::RecreateSwapChain()
@@ -697,11 +713,11 @@ namespace Merlin
         int height = 0;
         while (width == 0 || height == 0)
         {
-            glfwGetFramebufferSize(window, &width, &height);
+            glfwGetFramebufferSize(m_window, &width, &height);
             glfwWaitEvents();
         }
 
-        vkDeviceWaitIdle(logicalDevice);
+        vkDeviceWaitIdle(m_logical_device);
 
         CleanupSwapChain();
 
@@ -713,54 +729,54 @@ namespace Merlin
 
     void VulkanRenderAPI::CleanupSwapChain()
     {
-        for (auto framebuffer : imGuiFramebuffers)
-            vkDestroyFramebuffer(logicalDevice, framebuffer, nullptr);
+        for (auto framebuffer : m_im_gui_framebuffers)
+            vkDestroyFramebuffer(m_logical_device, framebuffer, nullptr);
 
-        vkDestroyRenderPass(logicalDevice, imGuiRenderPass, nullptr);
+        vkDestroyRenderPass(m_logical_device, m_im_gui_render_pass, nullptr);
 
-        for (auto imageView : swapChainImageViews)
-            vkDestroyImageView(logicalDevice, imageView, nullptr);
+        for (auto image_view : m_swap_chain_image_views)
+            vkDestroyImageView(m_logical_device, image_view, nullptr);
 
-        vkDestroySwapchainKHR(logicalDevice, swapChain, nullptr);
+        vkDestroySwapchainKHR(m_logical_device, m_swap_chain, nullptr);
     }
 
-    void VulkanRenderAPI::RecordCommandBuffer(
-        VkCommandBuffer commandBuffer,
-        uint32_t imageIndex)
+    void VulkanRenderAPI::RecordCommandBuffer(VkCommandBuffer command_buffer,
+                                              uint32_t image_index)
     {
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0;
-        beginInfo.pInheritanceInfo = nullptr;
+        VkCommandBufferBeginInfo begin_info{};
+        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        begin_info.flags = 0;
+        begin_info.pInheritanceInfo = nullptr;
 
-        auto beginStatus = vkBeginCommandBuffer(commandBuffer, &beginInfo);
-        if (beginStatus != VK_SUCCESS)
+        auto begin_status = vkBeginCommandBuffer(command_buffer, &begin_info);
+        if (begin_status != VK_SUCCESS)
         {
-            throw std::runtime_error("failed to begin recording command buffer!");
+            throw std::runtime_error(
+                "failed to begin recording command buffer!");
         }
 
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = imGuiRenderPass;
-        renderPassInfo.framebuffer = imGuiFramebuffers[imageIndex];
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = swapChainExtent;
-        VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
+        VkRenderPassBeginInfo render_pass_info{};
+        render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        render_pass_info.renderPass = m_im_gui_render_pass;
+        render_pass_info.framebuffer = m_im_gui_framebuffers[image_index];
+        render_pass_info.renderArea.offset = {0, 0};
+        render_pass_info.renderArea.extent = m_swap_chain_extent;
+        VkClearValue clear_color = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
+        render_pass_info.clearValueCount = 1;
+        render_pass_info.pClearValues = &clear_color;
 
-        vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(
+            command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
         {
-            ImGui_ImplVulkan_RenderDrawData(
-                ImGui::GetDrawData(),
-                commandBuffer);
+            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(),
+                                            command_buffer);
         }
-        vkCmdEndRenderPass(commandBuffer);
+        vkCmdEndRenderPass(command_buffer);
 
-        if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+        if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to record command buffer!");
         }
     }
 
-}
+}  // namespace Merlin
