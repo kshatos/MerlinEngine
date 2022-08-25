@@ -1,0 +1,13 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: Google
+IndentWidth: 4
+AccessModifierOffset: -4
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Allman
+BreakConstructorInitializersBeforeComma: true
+BreakConstructorInitializers: BeforeComma
+NamespaceIndentation: All
+ObjCBlockIndentWidth: 4
+...
