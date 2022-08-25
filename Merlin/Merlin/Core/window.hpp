@@ -9,16 +9,16 @@ namespace Merlin
 {
     struct WindowProperties
     {
-        RenderBackend renderBackend;
+        RenderBackend render_backend;
         std::string title;
         unsigned int width;
         unsigned int height;
 
         WindowProperties(std::string _title,
-                         RenderBackend _renderBackend,
+                         RenderBackend _render_backend,
                          int _width,
                          int _height)
-            : renderBackend(_renderBackend)
+            : render_backend(_render_backend)
             , title(_title)
             , width(_width)
             , height(_height)

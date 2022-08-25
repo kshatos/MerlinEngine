@@ -143,34 +143,34 @@ public:
             TextureFilterMode::Linear);
 
         auto main_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\debug.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\debug.jpg"), texProps);
 
         auto metal_plate_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Color.jpg"), texProps);
         auto metal_plate_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Roughness.jpg"), texProps);
         auto metal_plate_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_Metalness.jpg"), texProps);
         auto metal_plate_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg"), texProps);
+            LoadTexture(".\\Assets\\Textures\\AmbientCG\\MetalPlates007_1K-JPG\\MetalPlates007_1K_NormalGL.jpg"), texProps);
 
         auto helmet_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_BaseColor.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_BaseColor.png"), texProps);
         auto helmet_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
         auto helmet_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_MetallicRoughness.png"), texProps);
         auto helmet_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_Normal.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet_Normal.png"), texProps);
 
         auto spitfire_albedo_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_d.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_d.png"), texProps);
         auto spitfire_roughness_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_r.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_r.png"), texProps);
         auto spitfire_metalic_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_m.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_m.png"), texProps);
         auto spitfire_normal_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_n.png"), texProps);
+            LoadTexture(".\\Assets\\Models\\supermarine-spitfire\\spitfire_n.png"), texProps);
 
         main_cubemap = Renderer::CreateCubemap(
             std::vector<std::string>
@@ -248,7 +248,7 @@ public:
             sphereMesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto helmetMesh = load_mesh(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet.gltf");
+        auto helmetMesh = LoadMesh(".\\Assets\\Models\\SciFiHelmet\\SciFiHelmet.gltf");
         CalculateTangentFrame(helmetMesh);
         auto helmetMeshBuffer = Renderer::CreateMeshBuffer(
             helmetMesh->GetVertexDataPointer(),
@@ -257,7 +257,7 @@ public:
             helmetMesh->GetTriangleCount() * 3,
             Vertex_XNTBUV::GetLayout());
 
-        auto spitfireMesh = load_mesh(".\\Assets\\Models\\supermarine-spitfire\\spitfire.FBX");
+        auto spitfireMesh = LoadMesh(".\\Assets\\Models\\supermarine-spitfire\\spitfire.FBX");
         CalculateTangentFrame(spitfireMesh);
         auto spitfireMeshBuffer = Renderer::CreateMeshBuffer(
             spitfireMesh->GetVertexDataPointer(),

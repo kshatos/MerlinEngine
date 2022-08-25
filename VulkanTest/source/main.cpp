@@ -38,7 +38,7 @@ public:
             layout);
 
         m_texture = Renderer::CreateTexture2D(
-            load_texture(".\\Assets\\Textures\\debug.jpg"));
+            LoadTexture(".\\Assets\\Textures\\debug.jpg"));
     };
 
     virtual void OnDetatch() override {};
