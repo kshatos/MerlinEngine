@@ -1,60 +1,44 @@
 #include "Merlin/Render/transform.hpp"
-#include  <glm/gtx/transform.hpp>
 
+#include <glm/gtx/transform.hpp>
 
 namespace Merlin
 {
 
-    Transform::Transform() :
-        m_position(glm::vec3(0.0f, 0.0f, 0.0f)),
-        m_scale(glm::vec3(1.0f, 1.0f, 1.0f)),
-        m_orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
-        m_transform_matrix_is_dirty(false),
-        m_transform_matrix(glm::mat4(1.0f))
+    Transform::Transform()
+        : m_position(glm::vec3(0.0f, 0.0f, 0.0f))
+        , m_scale(glm::vec3(1.0f, 1.0f, 1.0f))
+        , m_orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f))
+        , m_transform_matrix_is_dirty(false)
+        , m_transform_matrix(glm::mat4(1.0f))
     {
     }
 
-    Transform::Transform(
-        glm::vec3 position,
-        glm::vec3 scale,
-        glm::quat orientation) :
-        m_position(position),
-        m_scale(scale),
-        m_orientation(orientation),
-        m_transform_matrix_is_dirty(true),
-        m_transform_matrix(glm::mat4())
+    Transform::Transform(glm::vec3 position,
+                         glm::vec3 scale,
+                         glm::quat orientation)
+        : m_position(position)
+        , m_scale(scale)
+        , m_orientation(orientation)
+        , m_transform_matrix_is_dirty(true)
+        , m_transform_matrix(glm::mat4())
     {
     }
 
-    void Transform::SetPosition(glm::vec3 position)
-    {
-        m_position = position;
-    }
+    void Transform::SetPosition(glm::vec3 position) { m_position = position; }
 
-    void Transform::SetScale(glm::vec3 scale)
-    {
-        m_scale = scale;
-    }
+    void Transform::SetScale(glm::vec3 scale) { m_scale = scale; }
 
     void Transform::SetOrientation(glm::vec3 orientation)
     {
         m_orientation = orientation;
     }
 
-    const glm::vec3& Transform::GetPosition()
-    {
-        return m_position;
-    }
+    const glm::vec3& Transform::GetPosition() { return m_position; }
 
-    const glm::vec3& Transform::GetScale()
-    {
-        return m_scale;
-    }
+    const glm::vec3& Transform::GetScale() { return m_scale; }
 
-    const glm::quat& Transform::GetOrientation()
-    {
-        return m_orientation;
-    }
+    const glm::quat& Transform::GetOrientation() { return m_orientation; }
 
     const glm::mat4& Transform::GetTransformationMatrix()
     {
@@ -116,10 +100,9 @@ namespace Merlin
         m_transform_matrix_is_dirty = true;
     }
 
-    void Transform::RotateAround(
-        glm::vec3 position,
-        glm::vec3 axis,
-        float angle_radians)
+    void Transform::RotateAround(glm::vec3 position,
+                                 glm::vec3 axis,
+                                 float angle_radians)
     {
         glm::quat rotation = glm::angleAxis(angle_radians, axis);
 
@@ -138,4 +121,4 @@ namespace Merlin
         m_transform_matrix_is_dirty = true;
     }
 
-}
+}  // namespace Merlin

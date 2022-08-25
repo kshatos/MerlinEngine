@@ -67,7 +67,7 @@ void main()
     ApplicationInfo appInfo
     {
         "VulkanTest",
-        RenderBackend::VULKAN,
+        RenderBackend::Vulkan,
         800,
         800
     };

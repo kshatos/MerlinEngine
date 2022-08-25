@@ -1,8 +1,8 @@
 #include "Merlin/Render/renderer.hpp"
+
+#include "Merlin/Render/material.hpp"
 #include "Merlin/Render/render_api.hpp"
 #include "Merlin/Render/shader.hpp"
-#include "Merlin/Render/material.hpp"
-
 
 namespace Merlin
 {
@@ -29,8 +29,7 @@ namespace Merlin
             vertices, vertex_count, indices, index_count, vertexLayout);
     }
 
-    std::shared_ptr<Material> Renderer::CreateMaterial(
-        MaterialInfo info)
+    std::shared_ptr<Material> Renderer::CreateMaterial(MaterialInfo info)
     {
         return m_render_impl->CreateMaterial(info);
     }
@@ -42,15 +41,13 @@ namespace Merlin
     }
 
     std::shared_ptr<Shader> Renderer::CreateShader(
-        const std::string& vertex_source,
-        const std::string& fragment_source)
+        const std::string& vertex_source, const std::string& fragment_source)
     {
         return m_render_impl->CreateShader(vertex_source, fragment_source);
     }
 
     std::shared_ptr<Texture2D> Renderer::CreateTexture2D(
-        const Texture2DData& texture_data,
-        Texture2DProperties props)
+        const Texture2DData& texture_data, Texture2DProperties props)
     {
         return m_render_impl->CreateTexture2D(texture_data, props);
     }
@@ -61,8 +58,8 @@ namespace Merlin
         return m_render_impl->CreateCubemap(face_paths);
     }
 
-    std::shared_ptr<Cubemap> Renderer::CreateCubemap(
-        uint32_t resolution, uint32_t channel_count)
+    std::shared_ptr<Cubemap> Renderer::CreateCubemap(uint32_t resolution,
+                                                     uint32_t channel_count)
     {
         return m_render_impl->CreateCubemap(resolution, channel_count);
     }
@@ -73,4 +70,4 @@ namespace Merlin
         return m_render_impl->CreateFramebuffer(state);
     }
 
-}
+}  // namespace Merlin

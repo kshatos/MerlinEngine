@@ -2,7 +2,6 @@
 #define TEXTURE_HPP
 #include <stdint.h>
 
-
 namespace Merlin
 {
     class Texture
@@ -10,5 +9,5 @@ namespace Merlin
     public:
         virtual ~Texture() {}
     };
-}
+}  // namespace Merlin
 #endif

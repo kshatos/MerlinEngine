@@ -28,7 +28,7 @@ namespace Merlin
             glfw_is_initialized = true;
         }
 
-        if (props.render_backend == RenderBackend::VULKAN)
+        if (props.render_backend == RenderBackend::Vulkan)
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
         m_window_ptr = glfwCreateWindow(

@@ -60,8 +60,8 @@ namespace Merlin
             FrameBufferParameters
             {
                 2048, 2048,
-                ColorBufferFormat::NONE,
-                DepthBufferFormat::DEPTH32
+                ColorBufferFormat::None,
+                DepthBufferFormat::Depth32
             });
     }
 
@@ -186,7 +186,7 @@ namespace Merlin
             {
                 const auto& light = *scene.point_lights[i];
                 shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].position", light.position);
-                shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiantFlux);
+                shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].radiantFlux", light.radiant_flux);
                 shader->SetUniformFloat("u_pointLights[" + std::to_string(i) + "].range", light.range);
                 shader->SetUniformFloat3("u_pointLights[" + std::to_string(i) + "].color", light.color);
             }
@@ -206,9 +206,9 @@ namespace Merlin
                 const auto& light = *scene.spot_lights[i];
                 shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].position", light.position);
                 shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].direction", light.direction);
-                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoffAngle);
-                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloffRatio);
-                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiantIntensity);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].cutoffAngle", light.cutoff_angle);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].falloffRatio", light.falloff_ratio);
+                shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].radiantIntensity", light.radiant_intensity);
                 shader->SetUniformFloat("u_spotLights[" + std::to_string(i) + "].range", light.range);
                 shader->SetUniformFloat3("u_spotLights[" + std::to_string(i) + "].color", light.color);
             }
@@ -284,7 +284,7 @@ namespace Merlin
 
     RenderBackend OpenGLRenderAPI::Backend()
     {
-        return RenderBackend::OPENGL;
+        return RenderBackend::OpenGL;
     }
 
 

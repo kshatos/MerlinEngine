@@ -172,7 +172,7 @@ namespace Merlin
 
     RenderBackend VulkanRenderAPI::Backend()
     {
-        return RenderBackend::VULKAN;
+        return RenderBackend::Vulkan;
     }
 
     std::shared_ptr<MeshBuffer> VulkanRenderAPI::CreateMeshBuffer(

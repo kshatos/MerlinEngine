@@ -1,19 +1,16 @@
 #include "Merlin/Render/mesh_buffer.hpp"
 
-
 namespace Merlin
 {
-    MeshBuffer::MeshBuffer(
-        std::shared_ptr<IndexBuffer> indexBuffer,
-        std::shared_ptr<VertexBuffer> vertexBuffer) :
-        m_indexBuffer(indexBuffer),
-        m_vertexBuffer(vertexBuffer)
+    MeshBuffer::MeshBuffer(std::shared_ptr<IndexBuffer> index_buffer,
+                           std::shared_ptr<VertexBuffer> vertex_buffer)
+        : m_index_buffer(index_buffer), m_vertexBuffer(vertex_buffer)
     {
     }
 
     const std::shared_ptr<IndexBuffer>& MeshBuffer::GetIndexBuffer()
     {
-        return m_indexBuffer;
+        return m_index_buffer;
     }
 
     const std::shared_ptr<VertexBuffer>& MeshBuffer::GetVertexBuffer()
@@ -25,4 +22,4 @@ namespace Merlin
     {
         return m_vertexBuffer->GetLayout();
     }
-}
+}  // namespace Merlin

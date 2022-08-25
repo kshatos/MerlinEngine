@@ -10,7 +10,7 @@ namespace Merlin
     struct ApplicationInfo
     {
         std::string app_name = "";
-        RenderBackend render_backend = RenderBackend::OPENGL;
+        RenderBackend render_backend = RenderBackend::OpenGL;
         int window_width = 800;
         int window_height = 800;
 

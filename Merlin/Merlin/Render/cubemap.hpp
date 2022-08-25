@@ -1,10 +1,10 @@
 #ifndef CUBEMAP_HPP
 #define CUBEMAP_HPP
 #include <memory>
-#include <vector>
 #include <string>
-#include "Merlin/Render/texture.hpp"
+#include <vector>
 
+#include "Merlin/Render/texture.hpp"
 
 namespace Merlin
 {
@@ -23,12 +23,12 @@ namespace Merlin
     class Cubemap : public Texture
     {
     public:
-        virtual ~Cubemap() {};
+        virtual ~Cubemap(){};
 
         virtual uint32_t GetResolution() = 0;
         virtual uint32_t GetChannelCount() = 0;
 
         virtual void SetFaceData(CubeFace face, float* data) = 0;
     };
-}
+}  // namespace Merlin
 #endif

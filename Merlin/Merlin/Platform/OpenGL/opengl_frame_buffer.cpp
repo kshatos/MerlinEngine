@@ -20,9 +20,9 @@ namespace Merlin
     {
         switch (format)
         {
-        case DepthBufferFormat::DEPTH32:
+        case DepthBufferFormat::Depth32:
             return GL_DEPTH_COMPONENT32;
-        case DepthBufferFormat::DEPTH24_STENCIL8:
+        case DepthBufferFormat::Depth24Stencil8:
             return GL_DEPTH24_STENCIL8;
         default:
             return GL_NONE;
@@ -33,9 +33,9 @@ namespace Merlin
     {
         switch (format)
         {
-        case DepthBufferFormat::DEPTH32:
+        case DepthBufferFormat::Depth32:
             return GL_DEPTH_COMPONENT;
-        case DepthBufferFormat::DEPTH24_STENCIL8:
+        case DepthBufferFormat::Depth24Stencil8:
             return GL_DEPTH_STENCIL;
         default:
             return GL_NONE;
@@ -46,9 +46,9 @@ namespace Merlin
     {
         switch (format)
         {
-        case DepthBufferFormat::DEPTH32:
+        case DepthBufferFormat::Depth32:
             return GL_UNSIGNED_INT;
-        case DepthBufferFormat::DEPTH24_STENCIL8:
+        case DepthBufferFormat::Depth24Stencil8:
             return GL_UNSIGNED_INT_24_8;
         default:
             return GL_NONE;
@@ -59,9 +59,9 @@ namespace Merlin
     {
         switch (format)
         {
-        case Merlin::DepthBufferFormat::DEPTH32:
+        case Merlin::DepthBufferFormat::Depth32:
             return GL_DEPTH_ATTACHMENT;
-        case Merlin::DepthBufferFormat::DEPTH24_STENCIL8:
+        case Merlin::DepthBufferFormat::Depth24Stencil8:
             return GL_DEPTH_STENCIL_ATTACHMENT;
         default:
             return GL_NONE;
@@ -121,7 +121,7 @@ namespace Merlin
         glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
         // Color
-        if (m_parameters.color_buffer_format != ColorBufferFormat::NONE)
+        if (m_parameters.color_buffer_format != ColorBufferFormat::None)
         {
             auto gl_format = GetGLColorBufferFormat(m_parameters.color_buffer_format);
             glGenTextures(1, &m_color_attachment_id);
@@ -133,7 +133,7 @@ namespace Merlin
         }
 
         // Depth
-        if (m_parameters.depth_buffer_format != DepthBufferFormat::NONE)
+        if (m_parameters.depth_buffer_format != DepthBufferFormat::None)
         {
             auto gl_internal_format = GetGLDepthBufferInternalFormat(m_parameters.depth_buffer_format);
             auto gl_format = GetGLDepthBufferFormat(m_parameters.depth_buffer_format);

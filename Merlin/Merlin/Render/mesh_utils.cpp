@@ -1,15 +1,13 @@
 #include "Merlin/Render/mesh_utils.hpp"
 
-
 namespace Merlin
 {
-    TangentFrame TriangleFrame(
-        const glm::vec3& p1,
-        const glm::vec3& p2,
-        const glm::vec3& p3,
-        const glm::vec2& uv1,
-        const glm::vec2& uv2,
-        const glm::vec2& uv3)
+    TangentFrame TriangleFrame(const glm::vec3& p1,
+                               const glm::vec3& p2,
+                               const glm::vec3& p3,
+                               const glm::vec2& uv1,
+                               const glm::vec2& uv2,
+                               const glm::vec2& uv3)
     {
         TangentFrame frame;
 
@@ -23,16 +21,12 @@ namespace Merlin
 
         glm::vec3 normal = glm::cross(E1, E2);
 
-        glm::vec3 tangent{
-            detUV * (DUV2.y * E1.x - DUV1.y * E2.x),
-            detUV * (DUV2.y * E1.y - DUV1.y * E2.y),
-            detUV * (DUV2.y * E1.z - DUV1.y * E2.z)
-        };
-        glm::vec3 bitangent{
-            detUV * (-DUV2.x * E1.x + DUV1.x * E2.x),
-            detUV * (-DUV2.x * E1.y + DUV1.x * E2.y),
-            detUV * (-DUV2.x * E1.z + DUV1.x * E2.z)
-        };
+        glm::vec3 tangent{detUV * (DUV2.y * E1.x - DUV1.y * E2.x),
+                          detUV * (DUV2.y * E1.y - DUV1.y * E2.y),
+                          detUV * (DUV2.y * E1.z - DUV1.y * E2.z)};
+        glm::vec3 bitangent{detUV * (-DUV2.x * E1.x + DUV1.x * E2.x),
+                            detUV * (-DUV2.x * E1.y + DUV1.x * E2.y),
+                            detUV * (-DUV2.x * E1.z + DUV1.x * E2.z)};
 
         frame.normal = glm::normalize(normal);
         frame.tangent = glm::normalize(tangent);
@@ -53,7 +47,8 @@ namespace Merlin
         }
 
         // Accumulate triangle frames onto vertices with angle as weight
-        for (int tri_index = 0; tri_index < mesh->GetTriangleCount(); tri_index++)
+        for (int tri_index = 0; tri_index < mesh->GetTriangleCount();
+             tri_index++)
         {
             auto idx1 = mesh->GetIndex(tri_index, 0);
             auto idx2 = mesh->GetIndex(tri_index, 1);
@@ -72,8 +67,7 @@ namespace Merlin
             float th3 = glm::acos(glm::dot(-e3, -e2));
 
             auto frame = TriangleFrame(
-                p1.position, p2.position, p3.position,
-                p1.uv, p2.uv, p3.uv);
+                p1.position, p2.position, p3.position, p1.uv, p2.uv, p3.uv);
 
             p1.normal += th1 * frame.normal;
             p2.normal += th2 * frame.normal;
@@ -87,7 +81,7 @@ namespace Merlin
             p2.bitangent += th2 * frame.bitangent;
             p3.bitangent += th3 * frame.bitangent;
         }
-    
+
         // Normalize each tangent frame
         for (int v_index = 0; v_index < mesh->GetVertexCount(); v_index++)
         {
@@ -98,4 +92,4 @@ namespace Merlin
         }
     }
 
-}
+}  // namespace Merlin
