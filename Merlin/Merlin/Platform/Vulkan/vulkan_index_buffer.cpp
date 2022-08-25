@@ -10,6 +10,10 @@ namespace Merlin
                                          VkPhysicalDevice physical_device,
                                          VkQueue queue,
                                          VkCommandPool command_buffer)
+        : m_index_count(0)
+        , m_logical_device(VK_NULL_HANDLE)
+        , m_index_buffer(VK_NULL_HANDLE)
+        , m_index_buffer_memory(VK_NULL_HANDLE)
     {
         VkDeviceSize buffer_size = sizeof(uint32_t) * index_count;
 

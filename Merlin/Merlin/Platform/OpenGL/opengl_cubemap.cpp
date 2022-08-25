@@ -29,7 +29,9 @@ namespace Merlin
         glGenTextures(1, &m_id);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 
-        int width, height, channel_count;
+        int width = 0;
+        int height = 0;
+        int channel_count = 0;
         for (unsigned int i = 0; i < face_paths.size(); i++)
         {
             stbi_set_flip_vertically_on_load(0);
