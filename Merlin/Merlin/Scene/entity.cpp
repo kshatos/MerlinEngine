@@ -1,11 +1,10 @@
 #include "Merlin/Scene/entity.hpp"
 
-
 namespace Merlin
 {
     void Entity::OnAwake()
     {
-        for(auto & component : m_components)
+        for (auto& component : m_components)
         {
             component->OnAwake();
         }
@@ -18,4 +17,4 @@ namespace Merlin
             component->OnUpdate(time_step);
         }
     }
-}
+}  // namespace Merlin
