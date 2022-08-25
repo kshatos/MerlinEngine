@@ -1,7 +1,6 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
-#include<string>
-
+#include <string>
 
 namespace Merlin
 {
@@ -21,10 +20,10 @@ namespace Merlin
 #define ME_LOG_ERROR(x) Merlin::Logger::Error(x)
 #define ME_LOG_FATAL(x) Merlin::Logger::Fatal(x)
 #else
-#define ME_LOG_INFO(x) 
+#define ME_LOG_INFO(x)
 #define ME_LOG_WARN(x)
 #define ME_LOG_ERROR(x)
 #define ME_LOG_FATAL(x)
 #endif
-}
+}  // namespace Merlin
 #endif

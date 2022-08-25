@@ -5,29 +5,26 @@
 #include "Merlin/Core/layer_stack.hpp"
 #include "Merlin/Render/render_api.hpp"
 
-
 namespace Merlin
 {
     struct ApplicationInfo
     {
-        std::string appName = "";
-        RenderBackend renderBackend = RenderBackend::OPENGL;
-        int windowWidth = 800;
-        int windowHeight = 800;
+        std::string app_name = "";
+        RenderBackend render_backend = RenderBackend::OPENGL;
+        int window_width = 800;
+        int window_height = 800;
 
-        ApplicationInfo(
-            std::string _appName,
-            RenderBackend _renderBackend,
-            int _windowWidth,
-            int _windowHeight) :
-            appName(_appName),
-            renderBackend(_renderBackend),
-            windowWidth(_windowWidth),
-            windowHeight(_windowHeight)
+        ApplicationInfo(std::string _app_name,
+                        RenderBackend _render_backend,
+                        int _window_width,
+                        int _window_height)
+            : app_name(_app_name)
+            , render_backend(_render_backend)
+            , window_width(_window_width)
+            , window_height(_window_height)
         {
         }
     };
-
 
     class Application
     {
@@ -37,9 +34,10 @@ namespace Merlin
         LayerStack m_layer_stack;
         bool m_is_running;
         float m_last_frame_time = 0.0f;
+
     public:
         inline static Application& Get() { return *app_instance; }
-       
+
         Application(const ApplicationInfo& properties);
         virtual ~Application() {}
 
@@ -48,10 +46,11 @@ namespace Merlin
 
         inline std::shared_ptr<Window> GeMaintWindow() { return m_main_window; }
         void Run();
+
     private:
         void HandleEvent(AppEvent& app_event);
         void UpdateLayers(float time_step);
     };
-}
+}  // namespace Merlin
 
 #endif

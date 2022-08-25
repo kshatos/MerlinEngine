@@ -1,8 +1,8 @@
 #include "Merlin/Core/application.hpp"
+
+#include "Merlin/Core/input.hpp"
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Render/renderer.hpp"
-#include "Merlin/Core/input.hpp"
-
 
 namespace Merlin
 {
@@ -12,16 +12,13 @@ namespace Merlin
     {
         Logger::Init();
 
-        WindowProperties windowProps
-        {
-            properties.appName,
-            properties.renderBackend,
-            properties.windowWidth,
-            properties.windowHeight
-        };
+        WindowProperties windowProps{properties.app_name,
+                                     properties.render_backend,
+                                     properties.window_width,
+                                     properties.window_height};
         m_main_window = std::unique_ptr<Window>(Window::Create(windowProps));
-        m_main_window->SetEventCallback(
-            [this](AppEvent& e) { return this->HandleEvent(e); });
+        m_main_window->SetEventCallback([this](AppEvent& e)
+                                        { return this->HandleEvent(e); });
 
         Renderer::Init(m_main_window->m_renderApi);
 
@@ -53,8 +50,7 @@ namespace Merlin
         // Dispatch events to layers allowing them to block
         for (auto& layer : m_layer_stack)
         {
-            if (app_event.m_was_handled)
-                break;
+            if (app_event.m_was_handled) break;
             layer->HandleEvent(app_event);
         }
     }
@@ -86,4 +82,4 @@ namespace Merlin
         }
     }
 
-}
+}  // namespace Merlin
