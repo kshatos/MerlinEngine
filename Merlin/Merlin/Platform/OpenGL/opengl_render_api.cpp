@@ -1,7 +1,6 @@
 #include "Merlin/Platform/OpenGL/opengl_render_api.hpp"
 
 #include <backends/imgui_impl_opengl3.h>
-#include <glad/glad.h>
 
 #include "Merlin/Core/logger.hpp"
 #include "Merlin/Platform/OpenGL/opengl_cubemap.hpp"

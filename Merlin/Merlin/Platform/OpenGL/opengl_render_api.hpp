@@ -1,5 +1,8 @@
 #ifndef OPENGL_RENDER_API_HPP
 #define OPENGL_RENDER_API_HPP
+// clang-format off
+#include <glad/glad.h>
+// clang-format on
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 

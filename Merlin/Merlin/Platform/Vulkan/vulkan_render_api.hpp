@@ -1,70 +1,67 @@
 #ifndef VULKAN_RENDER_API_HPP
 #define VULKAN_RENDER_API_HPP
-#include "Merlin/Render/render_api.hpp"
-#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
-#include "vulkan/vulkan.h"
+// clang-format off
+#include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
-#include "imgui.h"
+// clang-format on
 
+#include "Merlin/Platform/Vulkan/vulkan_util.hpp"
+#include "Merlin/Render/render_api.hpp"
+#include "imgui.h"
 
 namespace Merlin
 {
-    const std::vector<const char*> validationLayerNames
-    {
-        "VK_LAYER_KHRONOS_validation"
-    };
+    const std::vector<const char*> validation_layer_names{
+        "VK_LAYER_KHRONOS_validation"};
 
-    const std::vector<const char*> deviceExtensions
-    {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    };
+    const std::vector<const char*> device_extensions{
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
     const int MAX_FRAMES_IN_FLIGHT = 2;
-
 
     class VulkanRenderAPI : public RenderAPI
     {
     public:
-        GLFWwindow* window;
-        ImGuiContext* context;
+        GLFWwindow* m_window;
+        ImGuiContext* m_context;
 
-        VkInstance instance;
-        VkSurfaceKHR surface;
+        VkInstance m_instance;
+        VkSurfaceKHR m_surface;
 
-        VkPhysicalDevice physicalDevice;
-        VulkanPhysicalDeviceInfo physicalDeviceInfo;
+        VkPhysicalDevice m_physical_device;
+        VulkanPhysicalDeviceInfo m_physical_device_info;
 
-        VkDevice logicalDevice;
-        QueueFamilyIndices queueIndices;
-        VkQueue graphicsQueue;
-        VkQueue presentQueue;
+        VkDevice m_logical_device;
+        QueueFamilyIndices m_queue_indices;
+        VkQueue m_graphics_queue;
+        VkQueue m_present_queue;
 
-        VkCommandPool commandPool;
-        std::vector<VkCommandBuffer> commandBuffers;
+        VkCommandPool m_command_pool;
+        std::vector<VkCommandBuffer> m_command_buffers;
 
-        VkDescriptorPool guiDescriptorPool;
+        VkDescriptorPool m_gui_descriptor_pool;
 
-        VkRenderPass imGuiRenderPass;
+        VkRenderPass m_im_gui_render_pass;
 
-        VkSwapchainKHR swapChain;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
-        std::vector<VkImage> swapChainImages;
-        std::vector<VkImageView> swapChainImageViews;
-        std::vector<VkFramebuffer> imGuiFramebuffers;
+        VkSwapchainKHR m_swap_chain;
+        VkFormat m_swap_chain_image_format;
+        VkExtent2D m_swap_chain_extent;
+        std::vector<VkImage> m_swap_chain_images;
+        std::vector<VkImageView> m_swap_chain_image_views;
+        std::vector<VkFramebuffer> m_im_gui_framebuffers;
 
-        std::vector<VkSemaphore> imageAvailableSemaphores;
-        std::vector<VkSemaphore> renderFinishedSemaphores;
-        std::vector<VkFence> inFlightFences;
+        std::vector<VkSemaphore> m_image_available_semaphores;
+        std::vector<VkSemaphore> m_render_finished_semaphores;
+        std::vector<VkFence> m_in_flight_fences;
 
-        uint32_t currentFrame = 0;
-        bool framebufferResized = false;
+        uint32_t m_current_frame = 0;
+        bool m_framebuffer_resized = false;
 
     public:
         VulkanRenderAPI() = default;
         ~VulkanRenderAPI();
         // Render API
-        void Init(void* windowPointer) override;
+        void Init(void* window_pointer) override;
         void Shutdown() override;
 
         void BeginFrame() override;
@@ -80,9 +77,8 @@ namespace Merlin
             size_t vertex_count,
             uint32_t* indices,
             size_t index_count,
-            BufferLayout vertexLayout) override;
-        std::shared_ptr<Material> CreateMaterial(
-            MaterialInfo info) override;
+            BufferLayout vertex_layout) override;
+        std::shared_ptr<Material> CreateMaterial(MaterialInfo info) override;
         std::shared_ptr<MaterialInstance> CreateMaterialInstance(
             std::shared_ptr<Material> material) override;
         std::shared_ptr<Shader> CreateShader(
@@ -93,8 +89,8 @@ namespace Merlin
             Texture2DProperties props = Texture2DProperties()) override;
         std::shared_ptr<Cubemap> CreateCubemap(
             const std::vector<std::string>& face_paths) override;
-        std::shared_ptr<Cubemap> CreateCubemap(
-            uint32_t resolution, uint32_t channel_count) override;
+        std::shared_ptr<Cubemap> CreateCubemap(uint32_t resolution,
+                                               uint32_t channel_count) override;
         std::shared_ptr<FrameBuffer> CreateFramebuffer(
             const FrameBufferParameters& state) override;
 
@@ -118,9 +114,8 @@ namespace Merlin
         void CleanupSwapChain();
 
         // Render
-        void RecordCommandBuffer(
-            VkCommandBuffer commandBuffer,
-            uint32_t imageIndex);
+        void RecordCommandBuffer(VkCommandBuffer command_buffer,
+                                 uint32_t image_index);
     };
-}
+}  // namespace Merlin
 #endif
