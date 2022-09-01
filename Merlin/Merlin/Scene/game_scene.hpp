@@ -1,22 +1,31 @@
 #ifndef GAME_SCENE_HPP
 #define GAME_SCENE_HPP
+#include <entt/entt.hpp>
 #include <memory>
 
 #include "Merlin/Render/camera.hpp"
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Scene/core_components.hpp"
-#include "Merlin/Scene/entity.hpp"
 
 namespace Merlin
 {
+    class Entity;
+
     class GameScene
     {
-        std::vector<std::shared_ptr<Entity>> m_entities;
+        entt::registry m_registry;
         SceneRenderData m_render_data;
 
     public:
-        std::shared_ptr<Entity> CreateEntity();
+        GameScene();
+        GameScene(const GameScene& other) = delete;
+        GameScene(GameScene&& other) = delete;
+        GameScene& operator=(const GameScene& rhs) = delete;
+        GameScene& operator=(GameScene&& rhs) = delete;
+        ~GameScene();
+
+        Entity& CreateEntity();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         const SceneRenderData& GetRenderData();
@@ -26,7 +35,7 @@ namespace Merlin
         }
 
     private:
-        void OnComponentAdded(std::shared_ptr<Component> component);
+        friend class Entity;
     };
 }  // namespace Merlin
 
