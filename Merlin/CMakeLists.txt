@@ -160,6 +160,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt)
 if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
@@ -212,6 +213,7 @@ target_link_libraries(Merlin
     glfw
     stb
     assimp
+    EnTT::EnTT
 )
 
 if(MERLIN_ENABLE_OPENGL)
