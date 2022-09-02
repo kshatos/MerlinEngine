@@ -326,6 +326,9 @@ public:
                 "Ambient Light", &m_ambient_radiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambient_radiance);
             ImGui::End();
+
+            ImGui::Begin("Dockable");
+            ImGui::End();
         }
     }
 

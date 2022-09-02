@@ -36,8 +36,11 @@ namespace Merlin
         context = ImGui::CreateContext();
         ImGui::StyleColorsDark();
 
+        ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)window_pointer, true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
+
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
