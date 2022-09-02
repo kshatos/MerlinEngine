@@ -57,68 +57,18 @@ uint32_t cube_indices[]{0,  1,  2,  0,  2,  3,
 
                         20, 21, 22, 20, 22, 23};
 
-std::shared_ptr<TransformComponent> camera_transform;
 std::shared_ptr<MeshBuffer> cube_mbuffer;
 std::shared_ptr<MeshBuffer> sphere_mbuffer;
 std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Material> main_material;
 std::shared_ptr<Material> pbr_texture_material;
 
-class SpinningComponent : public Component
-{
-    glm::vec3 axis;
-    float rotation_speed;
-    std::shared_ptr<TransformComponent> transform_comp;
-
-public:
-    SpinningComponent(Entity* parent) : Component(parent)
-    {
-        rotation_speed = glm::linearRand(0.05f, 0.50f);
-        axis = glm::vec3(glm::linearRand(-1.0f, 1.0f),
-                         glm::linearRand(-1.0f, 1.0f),
-                         glm::linearRand(-1.0f, 1.0f));
-        axis = glm::normalize(axis);
-    }
-
-    virtual void OnAwake() override
-    {
-        transform_comp = m_parent->GetComponent<TransformComponent>();
-    }
-
-    virtual void OnUpdate(float time_step) override
-    {
-        auto th = time_step * rotation_speed;
-        auto c = glm::cos(th);
-        auto s = glm::sin(th);
-
-        glm::quat q(c, s * axis.x, s * axis.y, s * axis.z);
-        transform_comp->m_transform.Rotate(q);
-    }
-};
-
-class FollowCameraComponent : public Component
-{
-    std::shared_ptr<TransformComponent> transform_comp;
-
-public:
-    FollowCameraComponent(Entity* parent) : Component(parent) {}
-
-    virtual void OnAwake() override
-    {
-        transform_comp = m_parent->GetComponent<TransformComponent>();
-    }
-
-    virtual void OnUpdate(float time_step) override
-    {
-        transform_comp->m_transform = camera_transform->m_transform;
-    }
-};
 
 class SceneLayer : public Layer
 {
     float m_ambient_radiance = 0.0f;
     GameScene scene;
-    CameraRenderData* camera_data;
+    Transform* camera_transform;
     ImVec2 viewport_size{0, 0};
 
 public:
@@ -299,63 +249,61 @@ public:
 
             auto skybox = std::make_shared<Skybox>(main_cubemap, 10.0);
 
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto camera_component = entity->AddComponent<CameraComponent>();
+            auto& entity = scene.CreateEntity();
+            auto& transform_comp = entity.GetComponent<TransformComponent>();
+            auto& camera_component = entity.AddComponent<CameraComponent>();
             auto camera = std::make_shared<PerspectiveCamera>(
                 glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
-            transform_comp->m_transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
-            camera_component->m_data.camera = camera;
-            camera_component->m_data.frame_buffer = fbuffer;
-            camera_component->m_data.clear_color =
+            transform_comp.transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
+            camera_component.camera_data.camera = camera;
+            camera_component.camera_data.frame_buffer = fbuffer;
+            camera_component.camera_data.clear_color =
                 glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-            camera_component->m_data.skybox = skybox;
-            camera_transform = transform_comp;
+            camera_component.camera_data.skybox = skybox;
 
-            camera_data = &camera_component->m_data;
+            camera_transform = &transform_comp.transform;
         }
         {  // DIRECTIONAL LIGHT
-            auto entity = scene.CreateEntity();
-            auto light_comp = entity->AddComponent<DirectionalLightComponent>();
-            light_comp->m_data.color = glm::vec3(0.5, 0.5, 0.5);
-            light_comp->m_data.irradiance = 100.0f;
-            light_comp->m_data.direction =
+            auto& entity = scene.CreateEntity();
+            auto& light_comp = entity.AddComponent<DirectionalLightComponent>();
+            light_comp.m_data.color = glm::vec3(0.5, 0.5, 0.5);
+            light_comp.m_data.irradiance = 100.0f;
+            light_comp.m_data.direction =
                 glm::normalize(glm::vec3(-0.5, -0.5, 0.0));
         }
         {  // HELMET
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
-            // auto spin_comp = entity->AddComponent<SpinningComponent>();
+            auto& entity = scene.CreateEntity();
+            auto& transform_comp = entity.GetComponent<TransformComponent>();
+            auto& mesh_comp = entity.AddComponent<MeshRenderComponent>();
 
-            transform_comp->m_transform.Scale(glm::vec3(1.0));
-            transform_comp->m_transform.Translate(glm::vec3(-2.0, 1.5, 0.0));
+            transform_comp.transform.Scale(glm::vec3(1.0));
+            transform_comp.transform.Translate(glm::vec3(-2.0, 1.5, 0.0));
 
-            mesh_comp->m_data.mesh_buffer = helmet_mesh_buffer;
-            mesh_comp->m_data.material_instance = helmet_material_instance;
+            mesh_comp.m_data.mesh_buffer = helmet_mesh_buffer;
+            mesh_comp.m_data.material_instance = helmet_material_instance;
         }
         {  // SPITFIRE
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+            auto& entity = scene.CreateEntity();
+            auto& transform_comp = entity.GetComponent<TransformComponent>();
+            auto& mesh_comp = entity.AddComponent<MeshRenderComponent>();
 
-            transform_comp->m_transform.Scale(glm::vec3(0.01));
-            transform_comp->m_transform.Translate(glm::vec3(2.0, 0.5, 0.0));
-            transform_comp->m_transform.Rotate(glm::vec3(1.0, 0.0, 0.0),
+            transform_comp.transform.Scale(glm::vec3(0.01));
+            transform_comp.transform.Translate(glm::vec3(2.0, 0.5, 0.0));
+            transform_comp.transform.Rotate(glm::vec3(1.0, 0.0, 0.0),
                                                -glm::pi<float>() * 0.5f);
 
-            mesh_comp->m_data.mesh_buffer = spitfire_mesh_buffer;
-            mesh_comp->m_data.material_instance = spitfire_material_instance;
+            mesh_comp.m_data.mesh_buffer = spitfire_mesh_buffer;
+            mesh_comp.m_data.material_instance = spitfire_material_instance;
         }
         {  // BASE PLATFORM
-            auto entity = scene.CreateEntity();
-            auto transform_comp = entity->AddComponent<TransformComponent>();
-            auto mesh_comp = entity->AddComponent<MeshRenderComponent>();
+            auto& entity = scene.CreateEntity();
+            auto& transform_comp = entity.GetComponent<TransformComponent>();
+            auto& mesh_comp = entity.AddComponent<MeshRenderComponent>();
 
-            transform_comp->m_transform.Scale(glm::vec3(10.0f, 0.1f, 10.0));
+            transform_comp.transform.Scale(glm::vec3(10.0f, 0.1f, 10.0));
 
-            mesh_comp->m_data.mesh_buffer = cube_mbuffer;
-            mesh_comp->m_data.material_instance = metal_plate_material_instance;
+            mesh_comp.m_data.mesh_buffer = cube_mbuffer;
+            mesh_comp.m_data.material_instance = metal_plate_material_instance;
         }
 
         scene.OnAwake();
@@ -386,7 +334,9 @@ public:
         app_event.Dispatch<WindowResizedEvent>(
             [this](WindowResizedEvent& e)
             {
-                camera_data->camera->SetAspectRatio((float)e.GetWidth() /
+                auto& render_data = scene.GetRenderData();
+                
+                render_data.camera->camera->SetAspectRatio((float)e.GetWidth() /
                                                     (float)e.GetHeight());
                 return false;
             });
@@ -396,31 +346,31 @@ public:
 
     void MoveCamera(float time_step)
     {
-        const auto& up = camera_transform->m_transform.Up();
-        const auto& right = camera_transform->m_transform.Right();
-        const auto& forward = camera_transform->m_transform.Forward();
+        const auto& up = camera_transform->Up();
+        const auto& right = camera_transform->Right();
+        const auto& forward = camera_transform->Forward();
         float speed = 5.0e-1f;
         if (Input::GetKeyDown(Key::LEFT_SHIFT)) speed *= 2.0f;
         if (Input::GetKeyDown(Key::W))
-            camera_transform->m_transform.Translate(+forward * speed *
+            camera_transform->Translate(+forward * speed *
                                                     time_step);
         if (Input::GetKeyDown(Key::A))
-            camera_transform->m_transform.Translate(-right * speed * time_step);
+            camera_transform->Translate(-right * speed * time_step);
         if (Input::GetKeyDown(Key::S))
-            camera_transform->m_transform.Translate(-forward * speed *
+            camera_transform->Translate(-forward * speed *
                                                     time_step);
         if (Input::GetKeyDown(Key::D))
-            camera_transform->m_transform.Translate(+right * speed * time_step);
+            camera_transform->Translate(+right * speed * time_step);
         if (Input::GetKeyDown(Key::Z))
-            camera_transform->m_transform.Translate(+up * speed * time_step);
+            camera_transform->Translate(+up * speed * time_step);
         if (Input::GetKeyDown(Key::X))
-            camera_transform->m_transform.Translate(-up * speed * time_step);
+            camera_transform->Translate(-up * speed * time_step);
         if (Input::GetKeyDown(Key::Q))
-            camera_transform->m_transform.Rotate(up, time_step * 1.0);
+            camera_transform->Rotate(up, time_step * 1.0);
         if (Input::GetKeyDown(Key::E))
-            camera_transform->m_transform.Rotate(up, -time_step * 1.0);
+            camera_transform->Rotate(up, -time_step * 1.0);
 
-        camera_transform->m_transform.Rotate(
+        camera_transform->Rotate(
             up, Input::GetMouseScrollDelta().y * time_step * 5.0);
     }
 };

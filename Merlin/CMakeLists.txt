@@ -79,7 +79,6 @@ set(MERLIN_SCENE_INCLUDE
     Merlin/Scene/scene.hpp
     Merlin/Scene/game_scene.hpp
     Merlin/Scene/entity.hpp
-    Merlin/Scene/component.hpp
     Merlin/Scene/core_components.hpp
 )
 source_group("Scene" FILES ${MERLIN_SCENE_SOURCE} ${MERLIN_SCENE_INCLUDE})
@@ -160,6 +159,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glm)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt)
 if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
@@ -207,6 +207,7 @@ target_link_libraries(Merlin
     PUBLIC
     glm
     imgui
+    EnTT::EnTT
     PRIVATE
     spdlog::spdlog
     glfw

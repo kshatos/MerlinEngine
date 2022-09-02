@@ -3,73 +3,95 @@
 #include "Merlin/Render/shader.hpp"
 #include "Merlin/Render/transform.hpp"
 #include "Merlin/Scene/core_components.hpp"
+#include "Merlin/Scene/entity.hpp"
 
 namespace Merlin
 {
-    std::shared_ptr<Entity> GameScene::CreateEntity()
+    GameScene::GameScene() {}
+
+    GameScene::~GameScene() {}
+
+    Entity& GameScene::CreateEntity()
     {
-        auto entity = std::shared_ptr<Entity>(new Entity());
-        entity->component_added_callback =
-            [this](std::shared_ptr<Component> component)
-        { OnComponentAdded(component); };
-        m_entities.push_back(entity);
+        auto entity_handle = m_registry.create();
+        Entity entity(entity_handle, this);
+        entity.AddComponent<TransformComponent>();
+
         return entity;
     }
 
     const SceneRenderData& GameScene::GetRenderData() { return m_render_data; }
 
-    void GameScene::OnAwake()
-    {
-        for (const auto& entity : m_entities)
-        {
-            entity->OnAwake();
-        }
-    }
+    void GameScene::OnAwake() {}
 
     void GameScene::OnUpdate(float time_step)
     {
-        for (const auto& entity : m_entities)
-        {
-            entity->OnUpdate(time_step);
-        }
-    }
+        m_render_data.meshes.clear();
+        m_render_data.directional_lights.clear();
+        m_render_data.point_lights.clear();
+        m_render_data.spot_lights.clear();
 
-    void GameScene::OnComponentAdded(std::shared_ptr<Component> component)
-    {
-        auto camera_component =
-            std::dynamic_pointer_cast<CameraComponent>(component);
-        if (camera_component)
         {
-            m_render_data.camera = &camera_component->m_data;
+            auto view = m_registry.view<MeshRenderComponent>();
+            view.each(
+                [this](entt::entity entity, MeshRenderComponent& component)
+                {
+                    auto transform = m_registry.get<TransformComponent>(entity);
+                    component.m_data.model_matrix =
+                        transform.transform.GetTransformationMatrix();
+                    m_render_data.meshes.push_back(&component.m_data);
+                });
         }
-
-        auto point_light_comp =
-            std::dynamic_pointer_cast<PointLightComponent>(component);
-        if (point_light_comp != nullptr)
         {
-            m_render_data.point_lights.push_back(&point_light_comp->m_data);
+            auto view = m_registry.view<SpotLightComponent>();
+            view.each(
+                [this](entt::entity entity, SpotLightComponent& component)
+                {
+                    auto transform = m_registry.get<TransformComponent>(entity);
+                    component.m_data.position =
+                        transform.transform.GetPosition();
+                    component.m_data.direction = transform.transform.Forward();
+                    m_render_data.spot_lights.push_back(&component.m_data);
+                });
         }
-
-        auto directional_light_comp =
-            std::dynamic_pointer_cast<DirectionalLightComponent>(component);
-        if (directional_light_comp != nullptr)
         {
-            m_render_data.directional_lights.push_back(
-                &directional_light_comp->m_data);
+            auto view = m_registry.view<PointLightComponent>();
+            view.each(
+                [this](entt::entity entity, PointLightComponent& component)
+                {
+                    auto transform = m_registry.get<TransformComponent>(entity);
+                    component.m_data.position =
+                        transform.transform.GetPosition();
+                    m_render_data.point_lights.push_back(&component.m_data);
+                });
         }
-
-        auto spot_light_component =
-            std::dynamic_pointer_cast<SpotLightComponent>(component);
-        if (spot_light_component != nullptr)
         {
-            m_render_data.spot_lights.push_back(&spot_light_component->m_data);
+            auto view = m_registry.view<DirectionalLightComponent>();
+            view.each(
+                [this](entt::entity entity,
+                       DirectionalLightComponent& component)
+                {
+                    auto transform = m_registry.get<TransformComponent>(entity);
+                    m_render_data.directional_lights.push_back(
+                        &component.m_data);
+                });
         }
-
-        auto mesh_render_comp =
-            std::dynamic_pointer_cast<MeshRenderComponent>(component);
-        if (mesh_render_comp != nullptr)
         {
-            m_render_data.meshes.push_back(&mesh_render_comp->m_data);
+            auto view = m_registry.view<CameraComponent>();
+            view.each(
+                [this](entt::entity entity, CameraComponent& component)
+                {
+                    auto& transform =
+                        m_registry.get<TransformComponent>(entity);
+                    component.camera_data.projection_matrix =
+                        component.camera_data.camera->GetProjectionMatrix();
+                    component.camera_data.view_matrix = glm::inverse(
+                        transform.transform.GetTransformationMatrix());
+                    component.camera_data.view_pos =
+                        transform.transform.GetPosition();
+
+                    m_render_data.camera = &component.camera_data;
+                });
         }
     }
 
