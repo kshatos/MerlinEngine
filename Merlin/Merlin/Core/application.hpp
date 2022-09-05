@@ -46,6 +46,7 @@ namespace Merlin
 
         inline std::shared_ptr<Window> GeMaintWindow() { return m_main_window; }
         void Run();
+        void Close();
 
     private:
         void HandleEvent(AppEvent& app_event);
