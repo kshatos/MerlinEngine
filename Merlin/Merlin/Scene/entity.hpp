@@ -25,10 +25,17 @@ namespace Merlin
                                                   std::forward<Args>(args)...);
         }
 
+        void Destroy();
+
         template <typename T>
         T& GetComponent()
         {
             return m_scene->m_registry.get<T>(m_entity_handle);
+        }
+
+        inline uint32_t GetID()
+        {
+            return static_cast<uint32_t>(m_entity_handle);
         }
 
         bool operator==(Entity const& other);
