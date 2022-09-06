@@ -29,11 +29,13 @@ namespace Merlin
     void Application::PushLayerFront(std::shared_ptr<Layer> layer)
     {
         m_layer_stack.PushFront(layer);
+        layer->m_application = this;
     }
 
     void Application::PushLayerBack(std::shared_ptr<Layer> layer)
     {
         m_layer_stack.PushFront(layer);
+        layer->m_application = this;
     }
 
     void Application::HandleEvent(AppEvent& app_event)
@@ -81,5 +83,7 @@ namespace Merlin
             m_main_window->PresentFrame();
         }
     }
+
+    void Application::Close() { m_is_running = false; }
 
 }  // namespace Merlin
