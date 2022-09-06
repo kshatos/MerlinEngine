@@ -95,4 +95,10 @@ namespace Merlin
         }
     }
 
+    void GameScene::VisitEntities(std::function<void(Entity)> callback)
+    {
+        m_registry.each([callback, this](entt::entity entity)
+                        { callback(Entity(entity, this)); });
+    }
+
 }  // namespace Merlin

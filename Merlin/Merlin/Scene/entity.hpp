@@ -30,6 +30,8 @@ namespace Merlin
         {
             return m_scene->m_registry.get<T>(m_entity_handle);
         }
+
+        bool operator==(Entity const& other);
     };
 }  // namespace Merlin
 

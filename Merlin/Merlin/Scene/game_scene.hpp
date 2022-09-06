@@ -28,6 +28,7 @@ namespace Merlin
         Entity& CreateEntity();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
+        void VisitEntities(std::function<void(Entity)> callback);
         const SceneRenderData& GetRenderData();
         inline void SetAmbientLight(float radiance)
         {

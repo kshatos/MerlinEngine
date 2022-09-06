@@ -4,7 +4,20 @@
 
 namespace MerlinEditor
 {
-    void EditorGUILayer::OnAttach() {}
+
+    EditorGUILayer::EditorGUILayer()
+        : m_active_scene(nullptr), first_frame(true)
+    {
+    }
+
+    void EditorGUILayer::OnAttach()
+    {
+        m_active_scene = std::make_shared<Merlin::GameScene>();
+        m_active_scene->CreateEntity();
+        m_active_scene->CreateEntity();
+        m_active_scene->CreateEntity();
+        m_scene_hierarchy_panel.SetScene(m_active_scene);
+    }
 
     void EditorGUILayer::OnDetatch() {}
 
