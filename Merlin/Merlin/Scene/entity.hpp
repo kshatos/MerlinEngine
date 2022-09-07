@@ -1,12 +1,13 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
+#include <entt/entt.hpp>
 #include <functional>
 #include <vector>
 
-#include "Merlin/Scene/game_scene.hpp"
-
 namespace Merlin
 {
+    class GameScene;
+
     class Entity
     {
         entt::entity m_entity_handle;
@@ -25,12 +26,28 @@ namespace Merlin
                                                   std::forward<Args>(args)...);
         }
 
+        void AddChild(Entity child);
+        void RemoveChild(Entity child);
+        void RemoveParent();
+        bool IsAncestorOf(Entity entity);
+
+        void Destroy();
+
         template <typename T>
-        T& GetComponent()
+        T& GetComponent() const
         {
             return m_scene->m_registry.get<T>(m_entity_handle);
         }
+
+        inline uint32_t GetID() const
+        {
+            return static_cast<uint32_t>(m_entity_handle);
+        }
+
+        bool operator==(Entity const& other);
     };
+
+    bool operator<(Entity const& left, Entity const& right);
 }  // namespace Merlin
 
 #endif `

@@ -13,6 +13,7 @@ namespace MerlinEditor
 {
     class EditorGUILayer : public Merlin::Layer
     {
+        std::shared_ptr<Merlin::GameScene> m_active_scene = nullptr;
         ImGuiID m_dockspace_id;
         SceneHierarchyPanel m_scene_hierarchy_panel;
         AssetExplorerPanel m_asset_explorer_panel;
@@ -20,6 +21,9 @@ namespace MerlinEditor
         ViewportPanel m_viewport_panel;
         bool first_frame = true;
 
+    public:
+        EditorGUILayer();
+    private:
         void OnAttach() override;
 
         void OnDetatch() override;

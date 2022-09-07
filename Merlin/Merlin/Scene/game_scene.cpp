@@ -11,11 +11,13 @@ namespace Merlin
 
     GameScene::~GameScene() {}
 
-    Entity& GameScene::CreateEntity()
+    Entity GameScene::CreateEntity()
     {
         auto entity_handle = m_registry.create();
         Entity entity(entity_handle, this);
         entity.AddComponent<TransformComponent>();
+        entity.AddComponent<EntityInfoComponent>();
+        entity.AddComponent<EntityTreeComponent>();
 
         return entity;
     }
@@ -93,6 +95,12 @@ namespace Merlin
                     m_render_data.camera = &component.camera_data;
                 });
         }
+    }
+
+    void GameScene::VisitEntities(std::function<void(Entity)> callback)
+    {
+        m_registry.each([callback, this](entt::entity entity)
+                        { callback(Entity(entity, this)); });
     }
 
 }  // namespace Merlin
