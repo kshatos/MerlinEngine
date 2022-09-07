@@ -11,12 +11,13 @@ namespace Merlin
 
     GameScene::~GameScene() {}
 
-    Entity& GameScene::CreateEntity()
+    Entity GameScene::CreateEntity()
     {
         auto entity_handle = m_registry.create();
         Entity entity(entity_handle, this);
         entity.AddComponent<TransformComponent>();
         entity.AddComponent<EntityInfoComponent>();
+        entity.AddComponent<EntityTreeComponent>();
 
         return entity;
     }

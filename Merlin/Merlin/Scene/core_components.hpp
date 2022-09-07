@@ -1,7 +1,9 @@
 #ifndef CORE_COMPONENTS_HPP
 #define CORE_COMPONENTS_HPP
-#include "Merlin/Render/scene_render_data.hpp"
+#include <optional>
 
+#include "Merlin/Render/scene_render_data.hpp"
+#include "Merlin/Scene/entity.hpp"
 
 namespace Merlin
 {
@@ -10,6 +12,12 @@ namespace Merlin
         std::string name;
 
         EntityInfoComponent() : name("New Entity") {}
+    };
+
+    struct EntityTreeComponent
+    {
+        std::optional<Entity> parent;
+        std::set<Entity> children;
     };
 
     struct TransformComponent

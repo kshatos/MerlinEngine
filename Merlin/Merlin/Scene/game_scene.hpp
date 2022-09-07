@@ -25,7 +25,7 @@ namespace Merlin
         GameScene& operator=(GameScene&& rhs) = delete;
         ~GameScene();
 
-        Entity& CreateEntity();
+        Entity CreateEntity();
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         void VisitEntities(std::function<void(Entity)> callback);
