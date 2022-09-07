@@ -5,6 +5,12 @@
 
 namespace Merlin
 {
+    struct EntityInfoComponent
+    {
+        std::string name;
+
+        EntityInfoComponent() : name("New Entity") {}
+    };
 
     struct TransformComponent
     {

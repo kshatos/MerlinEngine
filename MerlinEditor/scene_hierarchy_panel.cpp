@@ -38,13 +38,15 @@ namespace MerlinEditor
 
     void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity)
     {
+        auto& entity_info = entity.GetComponent<Merlin::EntityInfoComponent>();
         ImGuiTreeNodeFlags flags =
             ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
         if (m_selected_entity.has_value() &&
             m_selected_entity.value() == entity)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        if (ImGui::TreeNodeEx((void*)entity.GetID(), flags, "Entity"))
+        if (ImGui::TreeNodeEx(
+                (void*)entity.GetID(), flags, entity_info.name.c_str()))
         {
             ImGui::TreePop();
         }

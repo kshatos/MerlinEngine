@@ -16,6 +16,7 @@ namespace Merlin
         auto entity_handle = m_registry.create();
         Entity entity(entity_handle, this);
         entity.AddComponent<TransformComponent>();
+        entity.AddComponent<EntityInfoComponent>();
 
         return entity;
     }
