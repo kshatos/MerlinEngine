@@ -45,14 +45,24 @@ namespace MerlinEditor
                                   position_buffer[2]));
                 }
 
-                auto scale = transform_comp.transform.GetScale();
-                std::vector<float> rotation_buffer{scale.x, scale.y, scale.z};
-                if (ImGui::InputFloat3("Scale", rotation_buffer.data()))
+                auto rotation =
+                    transform_comp.transform.GetEulerAnglesDegrees();
+                std::vector<float> rotation_buffer{
+                    rotation.x, rotation.y, rotation.z};
+                if (ImGui::InputFloat3("Rotation", rotation_buffer.data()))
                 {
-                    transform_comp.transform.SetScale(
+                    transform_comp.transform.SetEulerAnglesDegrees(
                         glm::vec3(rotation_buffer[0],
                                   rotation_buffer[1],
                                   rotation_buffer[2]));
+                }
+
+                auto scale = transform_comp.transform.GetScale();
+                std::vector<float> scale_buffer{scale.x, scale.y, scale.z};
+                if (ImGui::InputFloat3("Scale", scale_buffer.data()))
+                {
+                    transform_comp.transform.SetScale(glm::vec3(
+                        scale_buffer[0], scale_buffer[1], scale_buffer[2]));
                 }
                 ImGui::TreePop();
             }

@@ -34,11 +34,21 @@ namespace Merlin
         m_orientation = orientation;
     }
 
+    void Transform::SetEulerAnglesDegrees(glm::vec3 angles)
+    {
+        m_orientation = glm::quat(glm::radians(angles));
+    }
+
     const glm::vec3& Transform::GetPosition() { return m_position; }
 
     const glm::vec3& Transform::GetScale() { return m_scale; }
 
     const glm::quat& Transform::GetOrientation() { return m_orientation; }
+
+    const glm::vec3& Transform::GetEulerAnglesDegrees()
+    {
+        return glm::degrees(glm::eulerAngles(m_orientation));
+    }
 
     const glm::mat4& Transform::GetTransformationMatrix()
     {
