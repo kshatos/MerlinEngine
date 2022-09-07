@@ -32,8 +32,14 @@ namespace MerlinEditor
                 ImGui::EndPopup();
             }
         }
-
         ImGui::End();
+
+        while (!m_deleted_entities.empty())
+        {
+            auto entity = m_deleted_entities.back();
+            m_deleted_entities.pop_back();
+            entity.Destroy();
+        }
     }
 
     void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity,
@@ -59,7 +65,8 @@ namespace MerlinEditor
         }
         if (ImGui::BeginPopupContextItem())
         {
-            if (ImGui::MenuItem("Delete Entity")) entity.Destroy();
+            if (ImGui::MenuItem("Delete Entity"))
+                m_deleted_entities.push_back(entity);
 
             ImGui::EndPopup();
         }

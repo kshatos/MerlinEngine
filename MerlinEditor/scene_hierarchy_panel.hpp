@@ -10,6 +10,7 @@ namespace MerlinEditor
         std::string m_name = "Scene Hierarchy";
         std::shared_ptr<Merlin::GameScene> m_scene = nullptr;
         std::optional<Merlin::Entity> m_selected_entity;
+        std::vector<Merlin::Entity> m_deleted_entities;
 
     public:
         SceneHierarchyPanel();
