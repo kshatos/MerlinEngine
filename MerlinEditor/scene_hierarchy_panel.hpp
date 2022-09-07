@@ -22,6 +22,10 @@ namespace MerlinEditor
             m_scene = scene;
         }
         void DrawPanel();
+        inline std::optional<Merlin::Entity> GetSelectedEntity()
+        {
+            return m_selected_entity;
+        }
 
     private:
         void DrawEntity(Merlin::Entity entity, bool first_layer);
