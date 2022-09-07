@@ -9,16 +9,16 @@ namespace MerlinEditor
 {
     void InspectorPanel::DrawPanel()
     {
-        auto flags = ImGuiTreeNodeFlags_DefaultOpen |
-                     ImGuiTreeNodeFlags_SpanAvailWidth |
-                     ImGuiTreeNodeFlags_OpenOnArrow;
+        auto tree_flags = ImGuiTreeNodeFlags_DefaultOpen |
+                          ImGuiTreeNodeFlags_SpanAvailWidth |
+                          ImGuiTreeNodeFlags_OpenOnArrow;
 
         ImGui::Begin(m_name.c_str());
         if (m_inspected_entity.has_value())
         {
             auto& entity_info =
                 m_inspected_entity->GetComponent<Merlin::EntityInfoComponent>();
-            if (ImGui::TreeNodeEx("Entity", flags))
+            if (ImGui::TreeNodeEx("Entity", tree_flags))
             {
                 std::vector<char> name_buffer(64);
                 std::strcpy(name_buffer.data(), entity_info.name.c_str());
@@ -32,7 +32,7 @@ namespace MerlinEditor
 
             auto& transform_comp =
                 m_inspected_entity->GetComponent<Merlin::TransformComponent>();
-            if (ImGui::TreeNodeEx("Transform", flags))
+            if (ImGui::TreeNodeEx("Transform", tree_flags))
             {
                 auto position = transform_comp.transform.GetPosition();
                 std::vector<float> position_buffer{
@@ -72,7 +72,19 @@ namespace MerlinEditor
                 auto& point_light =
                     m_inspected_entity
                         ->GetComponent<Merlin::PointLightComponent>();
-                if (ImGui::TreeNodeEx("Point Light", flags))
+                bool tree_open = ImGui::TreeNodeEx("Point Light", tree_flags);
+
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Remove Component"))
+                    {
+                        m_inspected_entity
+                            ->RemoveComponent<Merlin::PointLightComponent>();
+                    }
+                    ImGui::EndPopup();
+                }
+
+                if (tree_open)
                 {
                     std::vector<float> color_buffer{
                         point_light.m_data.color.r,
@@ -109,7 +121,19 @@ namespace MerlinEditor
                 auto& directional_light =
                     m_inspected_entity
                         ->GetComponent<Merlin::DirectionalLightComponent>();
-                if (ImGui::TreeNodeEx("Directional Light", flags))
+                bool tree_open =
+                    ImGui::TreeNodeEx("Directional Light", tree_flags);
+
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Remove Component"))
+                    {
+                        m_inspected_entity->RemoveComponent<
+                            Merlin::DirectionalLightComponent>();
+                    }
+                    ImGui::EndPopup();
+                }
+                if (tree_open)
                 {
                     std::vector<float> color_buffer{
                         directional_light.m_data.color.r,
@@ -139,7 +163,19 @@ namespace MerlinEditor
                 auto& spot_light =
                     m_inspected_entity
                         ->GetComponent<Merlin::SpotLightComponent>();
-                if (ImGui::TreeNodeEx("Spot Light", flags))
+                bool tree_open = ImGui::TreeNodeEx("Spot Light", tree_flags);
+
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Remove Component"))
+                    {
+                        m_inspected_entity
+                            ->RemoveComponent<Merlin::SpotLightComponent>();
+                    }
+                    ImGui::EndPopup();
+                }
+
+                if (tree_open)
                 {
                     std::vector<float> color_buffer{
                         spot_light.m_data.color.r,
@@ -171,7 +207,6 @@ namespace MerlinEditor
                         spot_light.m_data.cutoff_angle =
                             std::max(0.0f, spot_light.m_data.cutoff_angle);
                     }
-
                     ImGui::TreePop();
                 }
             }
@@ -181,8 +216,19 @@ namespace MerlinEditor
                 auto& mesh_render_component =
                     m_inspected_entity
                         ->GetComponent<Merlin::MeshRenderComponent>();
+                bool tree_open = ImGui::TreeNodeEx("Mesh Render", tree_flags);
 
-                if (ImGui::TreeNodeEx("Mesh Render", flags))
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Remove Component"))
+                    {
+                        m_inspected_entity
+                            ->RemoveComponent<Merlin::MeshRenderComponent>();
+                    }
+                    ImGui::EndPopup();
+                }
+
+                if (tree_open)
                 {
                     // TODO:
                     // Show mesh asset used (need UUID & asset registry?)
@@ -197,7 +243,18 @@ namespace MerlinEditor
                 auto& camera_component =
                     m_inspected_entity->GetComponent<Merlin::CameraComponent>();
 
-                if (ImGui::TreeNodeEx("Camera", flags))
+                bool tree_open = ImGui::TreeNodeEx("Camera", tree_flags);
+
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Remove Component"))
+                    {
+                        m_inspected_entity
+                            ->RemoveComponent<Merlin::CameraComponent>();
+                    }
+                    ImGui::EndPopup();
+                }
+                if (tree_open)
                 {
                     // TODO:
                     // Dropdown for camera type selection
@@ -205,7 +262,46 @@ namespace MerlinEditor
                     ImGui::TreePop();
                 }
             }
+
+            if (ImGui::Button("Add Component"))
+            {
+                ImGui::OpenPopup("Add Component Context Window");
+            }
+
+            if (ImGui::BeginPopup("Add Component Context Window"))
+            {
+                if (ImGui::BeginMenu("Lighting"))
+                {
+                    if (ImGui::MenuItem("Point Light"))
+                    {
+                        m_inspected_entity
+                            ->AddComponent<Merlin::PointLightComponent>();
+                    }
+                    if (ImGui::MenuItem("Directional Light"))
+                    {
+                        m_inspected_entity
+                            ->AddComponent<Merlin::DirectionalLightComponent>();
+                    }
+                    if (ImGui::MenuItem("Spot Light"))
+                    {
+                        m_inspected_entity
+                            ->AddComponent<Merlin::SpotLightComponent>();
+                    }
+                    ImGui::EndMenu();
+                }
+                if (ImGui::MenuItem("Mesh Render"))
+                {
+                    m_inspected_entity
+                        ->AddComponent<Merlin::MeshRenderComponent>();
+                }
+                if (ImGui::MenuItem("Camera"))
+                {
+                    m_inspected_entity->AddComponent<Merlin::CameraComponent>();
+                }
+                ImGui::EndPopup();
+            }
         }
+
         ImGui::End();
     }
 }  // namespace MerlinEditor
