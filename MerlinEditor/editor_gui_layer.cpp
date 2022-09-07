@@ -33,12 +33,13 @@ namespace MerlinEditor
 
         m_scene_hierarchy_panel.DrawPanel();
         m_asset_explorer_panel.DrawPanel();
-        m_inspector_panel.DrawPanel();
         m_viewport_panel.DrawPanel();
 
         auto tree_selection = m_scene_hierarchy_panel.GetSelectedEntity();
         if (tree_selection.has_value())
             m_inspector_panel.Inspect(tree_selection.value());
+
+        m_inspector_panel.DrawPanel();
     }
 
     void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event) {}
