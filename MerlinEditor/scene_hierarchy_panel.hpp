@@ -21,7 +21,7 @@ namespace MerlinEditor
         void DrawPanel();
 
     private:
-        void DrawEntity(Merlin::Entity entity);
+        void DrawEntity(Merlin::Entity entity, bool first_layer);
     };
 }  // namespace MerlinEditor
 #endif

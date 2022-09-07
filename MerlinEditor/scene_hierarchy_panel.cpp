@@ -17,7 +17,7 @@ namespace MerlinEditor
         if (m_scene != nullptr)
         {
             m_scene->VisitEntities([this](Merlin::Entity entity)
-                                   { DrawEntity(entity); });
+                                   { DrawEntity(entity, true); });
 
             if (ImGui::BeginPopupContextWindow(
                     "",
@@ -36,20 +36,23 @@ namespace MerlinEditor
         ImGui::End();
     }
 
-    void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity)
+    void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity,
+                                         bool first_layer)
     {
         auto& entity_info = entity.GetComponent<Merlin::EntityInfoComponent>();
-        ImGuiTreeNodeFlags flags =
-            ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
+        auto& entity_tree = entity.GetComponent<Merlin::EntityTreeComponent>();
+
+        if (first_layer && entity_tree.parent.has_value())
+            return;  // Only draw children on recursion
+
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
+        if (entity_tree.children.empty()) flags |= ImGuiTreeNodeFlags_Leaf;
         if (m_selected_entity.has_value() &&
             m_selected_entity.value() == entity)
             flags |= ImGuiTreeNodeFlags_Selected;
 
-        if (ImGui::TreeNodeEx(
-                (void*)entity.GetID(), flags, entity_info.name.c_str()))
-        {
-            ImGui::TreePop();
-        }
+        auto open = ImGui::TreeNodeEx(
+            (void*)entity.GetID(), flags, entity_info.name.c_str());
         if (ImGui::IsItemClicked())
         {
             m_selected_entity = entity;
@@ -59,6 +62,14 @@ namespace MerlinEditor
             if (ImGui::MenuItem("Delete Entity")) entity.Destroy();
 
             ImGui::EndPopup();
+        }
+        if (open)
+        {
+            for (auto& child : entity_tree.children)
+            {
+                DrawEntity(child, false);
+            }
+            ImGui::TreePop();
         }
     }
 }  // namespace MerlinEditor

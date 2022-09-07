@@ -26,6 +26,9 @@ namespace Merlin
                                                   std::forward<Args>(args)...);
         }
 
+        void AddChild(Entity child);
+        void RemoveChild(Entity child);
+
         void Destroy();
 
         template <typename T>

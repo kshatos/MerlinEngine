@@ -16,6 +16,24 @@ namespace Merlin
         return left.GetID() < right.GetID();
     }
 
+    void Entity::AddChild(Entity child)
+    {
+        auto& tree_comp = GetComponent<EntityTreeComponent>();
+        auto& child_tree = child.GetComponent<EntityTreeComponent>();
+
+        tree_comp.children.insert(child);
+        child_tree.parent = *this;
+    }
+
+    void Entity::RemoveChild(Entity child)
+    {
+        auto& tree_comp = GetComponent<EntityTreeComponent>();
+        auto& child_tree = child.GetComponent<EntityTreeComponent>();
+
+        tree_comp.children.erase(child);
+        child_tree.parent.reset();
+    }
+
     void Entity::Destroy()
     {
         // Remove parent child references

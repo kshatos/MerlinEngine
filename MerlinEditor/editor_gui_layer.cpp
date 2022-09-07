@@ -14,6 +14,15 @@ namespace MerlinEditor
     {
         m_active_scene = std::make_shared<Merlin::GameScene>();
         m_scene_hierarchy_panel.SetScene(m_active_scene);
+
+        auto e1 = m_active_scene->CreateEntity();
+        auto e2 = m_active_scene->CreateEntity();
+        auto e3 = m_active_scene->CreateEntity();
+        auto e4 = m_active_scene->CreateEntity();
+
+        e1.AddChild(e2);
+        e1.AddChild(e3);
+        e3.AddChild(e4);
     }
 
     void EditorGUILayer::OnDetatch() {}
