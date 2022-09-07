@@ -66,6 +66,145 @@ namespace MerlinEditor
                 }
                 ImGui::TreePop();
             }
+
+            if (m_inspected_entity->HasComponent<Merlin::PointLightComponent>())
+            {
+                auto& point_light =
+                    m_inspected_entity
+                        ->GetComponent<Merlin::PointLightComponent>();
+                if (ImGui::TreeNodeEx("Point Light", flags))
+                {
+                    std::vector<float> color_buffer{
+                        point_light.m_data.color.r,
+                        point_light.m_data.color.g,
+                        point_light.m_data.color.b,
+                    };
+                    if (ImGui::ColorEdit3("Color",
+                                          color_buffer.data(),
+                                          ImGuiColorEditFlags_DefaultOptions_))
+                    {
+                        point_light.m_data.color.x = color_buffer[0];
+                        point_light.m_data.color.y = color_buffer[1];
+                        point_light.m_data.color.z = color_buffer[2];
+                    }
+                    if (ImGui::InputFloat("Radiant Flux",
+                                          &point_light.m_data.radiant_flux))
+                    {
+                        point_light.m_data.radiant_flux =
+                            std::max(0.0f, point_light.m_data.radiant_flux);
+                    }
+                    if (ImGui::InputFloat("Range", &point_light.m_data.range))
+                    {
+                        point_light.m_data.range =
+                            std::max(0.0f, point_light.m_data.range);
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+
+            if (m_inspected_entity
+                    ->HasComponent<Merlin::DirectionalLightComponent>())
+            {
+                auto& directional_light =
+                    m_inspected_entity
+                        ->GetComponent<Merlin::DirectionalLightComponent>();
+                if (ImGui::TreeNodeEx("Directional Light", flags))
+                {
+                    std::vector<float> color_buffer{
+                        directional_light.m_data.color.r,
+                        directional_light.m_data.color.g,
+                        directional_light.m_data.color.b,
+                    };
+                    if (ImGui::ColorEdit3("Color",
+                                          color_buffer.data(),
+                                          ImGuiColorEditFlags_DefaultOptions_))
+                    {
+                        directional_light.m_data.color.x = color_buffer[0];
+                        directional_light.m_data.color.y = color_buffer[1];
+                        directional_light.m_data.color.z = color_buffer[2];
+                    }
+                    if (ImGui::InputFloat("Irradiance",
+                                          &directional_light.m_data.irradiance))
+                    {
+                        directional_light.m_data.irradiance =
+                            std::max(0.0f, directional_light.m_data.irradiance);
+                    }
+                    ImGui::TreePop();
+                }
+            }
+
+            if (m_inspected_entity->HasComponent<Merlin::SpotLightComponent>())
+            {
+                auto& spot_light =
+                    m_inspected_entity
+                        ->GetComponent<Merlin::SpotLightComponent>();
+                if (ImGui::TreeNodeEx("Spot Light", flags))
+                {
+                    std::vector<float> color_buffer{
+                        spot_light.m_data.color.r,
+                        spot_light.m_data.color.g,
+                        spot_light.m_data.color.b,
+                    };
+                    if (ImGui::ColorEdit3("Color",
+                                          color_buffer.data(),
+                                          ImGuiColorEditFlags_DefaultOptions_))
+                    {
+                        spot_light.m_data.color.x = color_buffer[0];
+                        spot_light.m_data.color.y = color_buffer[1];
+                        spot_light.m_data.color.z = color_buffer[2];
+                    }
+                    if (ImGui::InputFloat("Radiant Intensity",
+                                          &spot_light.m_data.radiant_intensity))
+                    {
+                        spot_light.m_data.radiant_intensity =
+                            std::max(0.0f, spot_light.m_data.radiant_intensity);
+                    }
+                    if (ImGui::InputFloat("Range", &spot_light.m_data.range))
+                    {
+                        spot_light.m_data.range =
+                            std::max(0.0f, spot_light.m_data.range);
+                    }
+                    if (ImGui::InputFloat("Cutoff Angle",
+                                          &spot_light.m_data.cutoff_angle))
+                    {
+                        spot_light.m_data.cutoff_angle =
+                            std::max(0.0f, spot_light.m_data.cutoff_angle);
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+
+            if (m_inspected_entity->HasComponent<Merlin::MeshRenderComponent>())
+            {
+                auto& mesh_render_component =
+                    m_inspected_entity
+                        ->GetComponent<Merlin::MeshRenderComponent>();
+
+                if (ImGui::TreeNodeEx("Mesh Render", flags))
+                {
+                    // TODO:
+                    // Show mesh asset used (need UUID & asset registry?)
+                    // Drag & drop from asset viewer
+                    // Popup to search through registered meshes
+                    ImGui::TreePop();
+                }
+            }
+
+            if (m_inspected_entity->HasComponent<Merlin::CameraComponent>())
+            {
+                auto& camera_component =
+                    m_inspected_entity->GetComponent<Merlin::CameraComponent>();
+
+                if (ImGui::TreeNodeEx("Camera", flags))
+                {
+                    // TODO:
+                    // Dropdown for camera type selection
+                    // Skybox asset references
+                    ImGui::TreePop();
+                }
+            }
         }
         ImGui::End();
     }

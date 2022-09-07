@@ -20,6 +20,12 @@ namespace MerlinEditor
         auto e3 = m_active_scene->CreateEntity();
         auto e4 = m_active_scene->CreateEntity();
 
+        e1.AddComponent<Merlin::PointLightComponent>();
+        e1.AddComponent<Merlin::DirectionalLightComponent>();
+        e1.AddComponent<Merlin::SpotLightComponent>();
+        e1.AddComponent<Merlin::MeshRenderComponent>();
+        e1.AddComponent<Merlin::CameraComponent>();
+
         e1.AddChild(e2);
         e1.AddChild(e3);
         e3.AddChild(e4);
