@@ -38,6 +38,10 @@ namespace MerlinEditor
         {
             auto entity = m_deleted_entities.back();
             m_deleted_entities.pop_back();
+            if (m_selected_entity.has_value() &&
+                m_selected_entity.value() == entity)
+                m_selected_entity.reset();
+
             entity.Destroy();
         }
     }

@@ -19,11 +19,25 @@ namespace Merlin
         {
         }
 
+        template <typename T>
+        bool HasComponent()
+        {
+            return m_scene->m_registry.any_of<T>(m_entity_handle);
+        }
+
         template <typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
+            if (HasComponent<T>()) return GetComponent<T>();
             return m_scene->m_registry.emplace<T>(m_entity_handle,
                                                   std::forward<Args>(args)...);
+        }
+
+        template <typename T>
+        void RemoveComponent()
+        {
+            if (!HasComponent<T>()) return;
+            m_scene->m_registry.remove<T>(m_entity_handle);
         }
 
         void AddChild(Entity child);

@@ -14,15 +14,6 @@ namespace MerlinEditor
     {
         m_active_scene = std::make_shared<Merlin::GameScene>();
         m_scene_hierarchy_panel.SetScene(m_active_scene);
-
-        auto e1 = m_active_scene->CreateEntity();
-        auto e2 = m_active_scene->CreateEntity();
-        auto e3 = m_active_scene->CreateEntity();
-        auto e4 = m_active_scene->CreateEntity();
-
-        e1.AddChild(e2);
-        e1.AddChild(e3);
-        e3.AddChild(e4);
     }
 
     void EditorGUILayer::OnDetatch() {}
@@ -33,8 +24,13 @@ namespace MerlinEditor
 
         m_scene_hierarchy_panel.DrawPanel();
         m_asset_explorer_panel.DrawPanel();
-        m_inspector_panel.DrawPanel();
         m_viewport_panel.DrawPanel();
+
+        auto tree_selection = m_scene_hierarchy_panel.GetSelectedEntity();
+        if (tree_selection.has_value())
+            m_inspector_panel.Inspect(tree_selection.value());
+
+        m_inspector_panel.DrawPanel();
     }
 
     void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event) {}

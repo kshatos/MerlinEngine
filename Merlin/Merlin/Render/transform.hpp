@@ -21,10 +21,12 @@ namespace Merlin
         void SetPosition(glm::vec3 position);
         void SetScale(glm::vec3 scale);
         void SetOrientation(glm::vec3 orientation);
+        void SetEulerAnglesDegrees(glm::vec3 angles);
 
         const glm::vec3& GetPosition();
         const glm::vec3& GetScale();
         const glm::quat& GetOrientation();
+        const glm::vec3& GetEulerAnglesDegrees();
         const glm::mat4& GetTransformationMatrix();
 
         glm::vec3 Forward();
