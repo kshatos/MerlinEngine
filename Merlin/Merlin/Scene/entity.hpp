@@ -28,6 +28,8 @@ namespace Merlin
 
         void AddChild(Entity child);
         void RemoveChild(Entity child);
+        void RemoveParent();
+        bool IsAncestorOf(Entity entity);
 
         void Destroy();
 

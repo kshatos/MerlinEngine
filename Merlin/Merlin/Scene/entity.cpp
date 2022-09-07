@@ -1,5 +1,7 @@
 #include "Merlin/Scene/entity.hpp"
 
+#include <queue>
+
 #include "Merlin/Scene/game_scene.hpp"
 
 namespace Merlin
@@ -32,6 +34,36 @@ namespace Merlin
 
         tree_comp.children.erase(child);
         child_tree.parent.reset();
+    }
+
+    void Entity::RemoveParent()
+    {
+        auto& tree_comp = GetComponent<EntityTreeComponent>();
+        if (!tree_comp.parent.has_value()) return;
+
+        auto& parent_tree =
+            tree_comp.parent->GetComponent<EntityTreeComponent>();
+        parent_tree.children.erase(*this);
+        tree_comp.parent.reset();
+    }
+
+    bool Entity::IsAncestorOf(Entity entity)
+    {
+        auto& tree_component = GetComponent<EntityTreeComponent>();
+        std::queue<Entity> search_queue;
+        search_queue.push(*this);
+        while (!search_queue.empty())
+        {
+            auto search_entity = search_queue.front();
+            search_queue.pop();
+
+            if (search_entity == entity) return true;
+
+            auto& search_tree =
+                search_entity.GetComponent<EntityTreeComponent>();
+            for (auto& child : search_tree.children) search_queue.push(child);
+        }
+        return false;
     }
 
     void Entity::Destroy()
