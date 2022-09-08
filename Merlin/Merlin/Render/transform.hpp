@@ -21,6 +21,7 @@ namespace Merlin
         void SetPosition(glm::vec3 position);
         void SetScale(glm::vec3 scale);
         void SetOrientation(glm::vec3 orientation);
+        void SetOrientation(glm::quat orientation);
         void SetEulerAnglesDegrees(glm::vec3 angles);
 
         const glm::vec3& GetPosition();
