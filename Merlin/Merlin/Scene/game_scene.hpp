@@ -37,6 +37,7 @@ namespace Merlin
 
     private:
         friend class Entity;
+        friend class SceneSerializer;
     };
 }  // namespace Merlin
 

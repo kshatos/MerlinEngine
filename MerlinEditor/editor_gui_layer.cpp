@@ -2,6 +2,8 @@
 
 #include <imgui_internal.h>  // Dockbuilder not exposed to public API yet, might churn
 
+#include <Merlin/Scene/scene_serialization.hpp>
+
 namespace MerlinEditor
 {
 
@@ -90,6 +92,10 @@ namespace MerlinEditor
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("Save Scene"))
+                {
+                    SaveScene();
+                }
                 if (ImGui::MenuItem("Exit"))
                 {
                     m_application->Close();
@@ -104,6 +110,12 @@ namespace MerlinEditor
             ImGui::EndMainMenuBar();
         }
         ImGui::End();
+    }
+
+    void EditorGUILayer::SaveScene()
+    {
+        Merlin::SceneSerializer x;
+        x.Serialize("current_scene.scene", m_active_scene);
     }
 
 }  // namespace MerlinEditor

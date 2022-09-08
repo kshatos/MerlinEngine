@@ -33,6 +33,8 @@ namespace MerlinEditor
         void HandleEvent(Merlin::AppEvent& app_event) override;
 
         void DrawLayer();
+
+        void SaveScene();
     };
 }  // namespace MerlinEditor
 #endif

@@ -76,12 +76,14 @@ source_group("Render" FILES ${MERLIN_RENDER_SOURCE} ${MERLIN_RENDER_INCLUDE})
 set(MERLIN_SCENE_SOURCE
     Merlin/Scene/game_scene.cpp
     Merlin/Scene/entity.cpp
+    Merlin/Scene/scene_serialization.cpp
 )
 set(MERLIN_SCENE_INCLUDE
     Merlin/Scene/scene.hpp
     Merlin/Scene/game_scene.hpp
     Merlin/Scene/entity.hpp
     Merlin/Scene/core_components.hpp
+    Merlin/Scene/scene_serialization.hpp
 )
 source_group("Scene" FILES ${MERLIN_SCENE_SOURCE} ${MERLIN_SCENE_INCLUDE})
 
@@ -163,6 +165,8 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stduuid)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/yaml-cpp)
+target_compile_definitions(yaml-cpp PUBLIC YAML_CPP_STATIC_DEFINE)
 if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
@@ -217,6 +221,7 @@ target_link_libraries(Merlin
     glfw
     stb
     assimp
+    yaml-cpp
 )
 
 if(MERLIN_ENABLE_OPENGL)
