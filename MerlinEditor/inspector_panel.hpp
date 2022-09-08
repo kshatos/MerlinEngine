@@ -15,7 +15,7 @@ namespace MerlinEditor
     public:
         inline std::string GetPanelName() { return m_name; }
         void DrawPanel();
-        inline void Inspect(Merlin::Entity entity)
+        inline void Inspect(std::optional<Merlin::Entity> entity)
         {
             m_inspected_entity = entity;
         }

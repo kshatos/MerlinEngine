@@ -27,8 +27,7 @@ namespace MerlinEditor
         m_viewport_panel.DrawPanel();
 
         auto tree_selection = m_scene_hierarchy_panel.GetSelectedEntity();
-        if (tree_selection.has_value())
-            m_inspector_panel.Inspect(tree_selection.value());
+        m_inspector_panel.Inspect(tree_selection);
 
         m_inspector_panel.DrawPanel();
     }
