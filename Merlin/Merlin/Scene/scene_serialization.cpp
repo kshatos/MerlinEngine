@@ -137,7 +137,6 @@ namespace YAML
 
 namespace Merlin
 {
-
     void SerializeEntity(YAML::Emitter& out, Entity entity)
     {
         out << YAML::BeginMap;
@@ -149,6 +148,7 @@ namespace Merlin
             {
                 out << YAML::Key << "Name";
                 out << YAML::Value << info_component.name;
+
                 out << YAML::Key << "UUID";
                 out << YAML::Value << info_component.uuid.ToString();
             }
@@ -163,9 +163,11 @@ namespace Merlin
                 out << YAML::Key << "Position";
                 out << YAML::Value
                     << transform_component.transform.GetPosition();
+
                 out << YAML::Key << "Rotation";
                 out << YAML::Value
                     << transform_component.transform.GetOrientation();
+
                 out << YAML::Key << "Scale";
                 out << YAML::Value << transform_component.transform.GetScale();
             }
@@ -181,11 +183,80 @@ namespace Merlin
                 {
                     out << YAML::Key << "Color";
                     out << YAML::Value << point_light_component.m_data.color;
+
                     out << YAML::Key << "RadiantFlux";
                     out << YAML::Value
                         << point_light_component.m_data.radiant_flux;
+
                     out << YAML::Key << "Range";
                     out << YAML::Value << point_light_component.m_data.range;
+                }
+                out << YAML::EndMap;
+            }
+
+            if (entity.HasComponent<DirectionalLightComponent>())
+            {
+                auto& directional_light_component =
+                    entity.GetComponent<DirectionalLightComponent>();
+                out << YAML::Key << "DirectionalLight";
+                out << YAML::Value;
+                out << YAML::BeginMap;
+                {
+                    out << YAML::Key << "Color";
+                    out << YAML::Value
+                        << directional_light_component.m_data.color;
+
+                    out << YAML::Key << "Irradiance";
+                    out << YAML::Value
+                        << directional_light_component.m_data.irradiance;
+                }
+                out << YAML::EndMap;
+            }
+
+            if (entity.HasComponent<SpotLightComponent>())
+            {
+                auto& spot_light_component =
+                    entity.GetComponent<SpotLightComponent>();
+                out << YAML::Key << "SpotLight";
+                out << YAML::Value;
+                out << YAML::BeginMap;
+                {
+                    out << YAML::Key << "Color";
+                    out << YAML::Value << spot_light_component.m_data.color;
+
+                    out << YAML::Key << "RadiantIntensity";
+                    out << YAML::Value
+                        << spot_light_component.m_data.radiant_intensity;
+
+                    out << YAML::Key << "FalloffRatio";
+                    out << YAML::Value
+                        << spot_light_component.m_data.falloff_ratio;
+
+                    out << YAML::Key << "Range";
+                    out << YAML::Value << spot_light_component.m_data.range;
+                }
+                out << YAML::EndMap;
+            }
+
+            if (entity.HasComponent<MeshRenderComponent>())
+            {
+                auto& mesh_render_component =
+                    entity.GetComponent<MeshRenderComponent>();
+                out << YAML::Key << "MeshRender";
+                out << YAML::Value;
+                out << YAML::BeginMap;
+                {
+                }
+                out << YAML::EndMap;
+            }
+
+            if (entity.HasComponent<CameraComponent>())
+            {
+                auto& camera_component = entity.GetComponent<CameraComponent>();
+                out << YAML::Key << "Camera";
+                out << YAML::Value;
+                out << YAML::BeginMap;
+                {
                 }
                 out << YAML::EndMap;
             }
@@ -237,6 +308,50 @@ namespace Merlin
 
             deserialized_point_light_component.m_data.range =
                 point_light_component["Range"].as<float>();
+        }
+
+        auto directional_light_component = entity["DirectionalLight"];
+        if (directional_light_component)
+        {
+            auto& deserialized_directional_light_component =
+                deserialized_entity.AddComponent<DirectionalLightComponent>();
+
+            deserialized_directional_light_component.m_data.color =
+                directional_light_component["Color"].as<glm::vec3>();
+
+            deserialized_directional_light_component.m_data.irradiance =
+                directional_light_component["Irradiance"].as<float>();
+        }
+
+        auto spot_light_component = entity["SpotLight"];
+        if (spot_light_component)
+        {
+            auto& deserialized_spot_light_component =
+                deserialized_entity.AddComponent<SpotLightComponent>();
+
+            deserialized_spot_light_component.m_data.color =
+                spot_light_component["Color"].as<glm::vec3>();
+
+            deserialized_spot_light_component.m_data.falloff_ratio =
+                spot_light_component["FalloffRatio"].as<float>();
+
+            deserialized_spot_light_component.m_data.radiant_intensity =
+                spot_light_component["RadiantIntensity"].as<float>();
+
+            deserialized_spot_light_component.m_data.range =
+                spot_light_component["Range"].as<float>();
+        }
+
+        auto mesh_render_component = entity["MeshRender"];
+        if (mesh_render_component)
+        {
+            deserialized_entity.AddComponent<MeshRenderComponent>();
+        }
+
+        auto camera_component = entity["Camera"];
+        if (camera_component)
+        {
+            deserialized_entity.AddComponent<CameraComponent>();
         }
     }
 
