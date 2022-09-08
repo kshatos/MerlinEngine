@@ -8,6 +8,7 @@ set(MERLIN_CORE_SOURCE
     Merlin/Core/input.cpp
     Merlin/Core/layer_stack.cpp
     Merlin/Core/file_util.cpp
+    Merlin/Core/uuid.cpp
 )
 set(MERLIN_CORE_INCLUDE
     Merlin/Core/core.hpp
@@ -20,6 +21,7 @@ set(MERLIN_CORE_INCLUDE
     Merlin/Core/layer.hpp
     Merlin/Core/layer_stack.hpp
     Merlin/Core/file_util.hpp
+    Merlin/Core/uuid.hpp
 )
 source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 
@@ -160,6 +162,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/imgui)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/assimp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/entt)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stduuid)
 if(MERLIN_ENABLE_OPENGL)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glad)
 endif()
@@ -209,6 +212,7 @@ target_link_libraries(Merlin
     imgui
     EnTT::EnTT
     PRIVATE
+    stduuid
     spdlog::spdlog
     glfw
     stb
