@@ -35,12 +35,23 @@ namespace Merlin
 
     UUID ::~UUID() = default;
 
+    UUID::UUID(const UUID& other)
+    {
+        m_uuid_impl = std::move(std::make_unique<UUIDImpl>(other.ToString()));
+    }
+
+    UUID& UUID::operator=(const UUID& other)
+    {
+        m_uuid_impl = std::move(std::make_unique<UUIDImpl>(other.ToString()));
+        return *this;
+    }
+
     UUID::UUID(std::string string)
     {
         m_uuid_impl = std::make_unique<UUIDImpl>(string);
     }
 
-    std::string UUID::ToString() { return m_uuid_impl->ToString(); }
+    std::string UUID::ToString() const { return m_uuid_impl->ToString(); }
 
     bool UUID::operator==(const UUID& other) const
     {

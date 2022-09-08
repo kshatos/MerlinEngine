@@ -17,7 +17,9 @@ namespace Merlin
         UUID();
         UUID(std::string string);
         ~UUID();
-        std::string ToString();
+        UUID(const UUID& other);
+        UUID& operator=(const UUID& other);
+        std::string ToString() const;
         bool operator==(const UUID& other) const;
     };
 }  // namespace Merlin

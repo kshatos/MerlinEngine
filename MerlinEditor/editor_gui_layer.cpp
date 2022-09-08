@@ -14,8 +14,7 @@ namespace MerlinEditor
 
     void EditorGUILayer::OnAttach()
     {
-        m_active_scene = std::make_shared<Merlin::GameScene>();
-        m_scene_hierarchy_panel.SetScene(m_active_scene);
+        SetActiveScene(std::make_shared<Merlin::GameScene>());
     }
 
     void EditorGUILayer::OnDetatch() {}
@@ -96,6 +95,10 @@ namespace MerlinEditor
                 {
                     SaveScene();
                 }
+                if (ImGui::MenuItem("Load Scene"))
+                {
+                    LoadScene();
+                }
                 if (ImGui::MenuItem("Exit"))
                 {
                     m_application->Close();
@@ -112,10 +115,25 @@ namespace MerlinEditor
         ImGui::End();
     }
 
+    void EditorGUILayer::SetActiveScene(std::shared_ptr<Merlin::GameScene> scene)
+    {
+        m_active_scene = scene;
+        m_scene_hierarchy_panel.SetScene(scene);
+    }
+
     void EditorGUILayer::SaveScene()
     {
         Merlin::SceneSerializer x;
         x.Serialize("current_scene.scene", m_active_scene);
+    }
+
+    void EditorGUILayer::LoadScene()
+    {
+        auto loaded_scene = std::make_shared<Merlin::GameScene>();
+        Merlin::SceneSerializer x;
+        x.Deserialize("current_scene.scene", loaded_scene);
+
+        SetActiveScene(loaded_scene);
     }
 
 }  // namespace MerlinEditor

@@ -20,6 +20,9 @@ namespace MerlinEditor
         inline void SetScene(std::shared_ptr<Merlin::GameScene> scene)
         {
             m_scene = scene;
+            m_selected_entity.reset();
+            m_draged_entity.reset();
+            m_deleted_entities.clear();
         }
         void DrawPanel();
         inline std::optional<Merlin::Entity> GetSelectedEntity()

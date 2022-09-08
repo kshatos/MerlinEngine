@@ -11,8 +11,9 @@ namespace Merlin
     {
     public:
         void Serialize(const std::string& filepath,
-                              std::shared_ptr<GameScene> scene);
-        void Deserialize(const std::string& filespath);
+                       std::shared_ptr<GameScene> scene);
+        void Deserialize(const std::string& filepath,
+                         std::shared_ptr<GameScene> scene);
     };
 
 }  // namespace Merlin
