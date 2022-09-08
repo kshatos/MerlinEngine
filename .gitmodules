@@ -19,3 +19,6 @@
 [submodule "Merlin/thirdparty/entt"]
 	path = Merlin/thirdparty/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "Merlin/thirdparty/stduuid"]
+	path = Merlin/thirdparty/stduuid
+	url = https://github.com/mariusbancila/stduuid.git

@@ -27,8 +27,10 @@ namespace MerlinEditor
                 {
                     entity_info.name = name_buffer.data();
                 }
+                ImGui::Text("%s", entity_info.uuid.ToString().c_str());
                 ImGui::TreePop();
             }
+            ImGui::Separator();
 
             auto& transform_comp =
                 m_inspected_entity->GetComponent<Merlin::TransformComponent>();
@@ -66,6 +68,7 @@ namespace MerlinEditor
                 }
                 ImGui::TreePop();
             }
+            ImGui::Separator();
 
             if (m_inspected_entity->HasComponent<Merlin::PointLightComponent>())
             {
@@ -113,6 +116,7 @@ namespace MerlinEditor
 
                     ImGui::TreePop();
                 }
+                ImGui::Separator();
             }
 
             if (m_inspected_entity
@@ -156,6 +160,7 @@ namespace MerlinEditor
                     }
                     ImGui::TreePop();
                 }
+                ImGui::Separator();
             }
 
             if (m_inspected_entity->HasComponent<Merlin::SpotLightComponent>())
@@ -209,6 +214,7 @@ namespace MerlinEditor
                     }
                     ImGui::TreePop();
                 }
+                ImGui::Separator();
             }
 
             if (m_inspected_entity->HasComponent<Merlin::MeshRenderComponent>())
@@ -236,6 +242,7 @@ namespace MerlinEditor
                     // Popup to search through registered meshes
                     ImGui::TreePop();
                 }
+                ImGui::Separator();
             }
 
             if (m_inspected_entity->HasComponent<Merlin::CameraComponent>())
@@ -261,6 +268,7 @@ namespace MerlinEditor
                     // Skybox asset references
                     ImGui::TreePop();
                 }
+                ImGui::Separator();
             }
 
             if (ImGui::Button("Add Component"))

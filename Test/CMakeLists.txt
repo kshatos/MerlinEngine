@@ -17,6 +17,7 @@ add_executable(
   source/cubemap_data_tests.cpp
   source/texture2d_tests.cpp
   source/buffer_data_tests.cpp
+  source/test_uuid.cpp
 )
 target_link_libraries(
     Test

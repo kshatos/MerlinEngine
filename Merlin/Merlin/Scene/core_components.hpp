@@ -4,12 +4,14 @@
 
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Scene/entity.hpp"
+#include "Merlin/Core/uuid.hpp"
 
 namespace Merlin
 {
     struct EntityInfoComponent
     {
         std::string name;
+        UUID uuid;
 
         EntityInfoComponent() : name("New Entity") {}
     };
