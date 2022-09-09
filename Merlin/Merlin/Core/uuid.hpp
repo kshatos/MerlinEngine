@@ -14,11 +14,24 @@ namespace Merlin
         std::unique_ptr<UUIDImpl> m_uuid_impl;
 
     public:
+        static UUID Nil();
         UUID();
         UUID(std::string string);
         ~UUID();
-        std::string ToString();
+        UUID(const UUID& other);
+        UUID& operator=(const UUID& other);
+        std::string ToString() const;
+        bool IsNil();
         bool operator==(const UUID& other) const;
     };
 }  // namespace Merlin
+
+template <>
+struct std::hash<Merlin::UUID>
+{
+    std::size_t operator()(Merlin::UUID const& s) const noexcept
+    {
+        return std::hash<std::string>{}(s.ToString());
+    }
+};
 #endif

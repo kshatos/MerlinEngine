@@ -34,6 +34,11 @@ namespace Merlin
         m_orientation = orientation;
     }
 
+    void Transform::SetOrientation(glm::quat orientation)
+    {
+        m_orientation = orientation;
+    }
+
     void Transform::SetEulerAnglesDegrees(glm::vec3 angles)
     {
         m_orientation = glm::quat(glm::radians(angles));

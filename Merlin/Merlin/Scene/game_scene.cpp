@@ -11,14 +11,28 @@ namespace Merlin
 
     GameScene::~GameScene() {}
 
-    Entity GameScene::CreateEntity()
+    Entity GameScene::CreateEntity(UUID uuid)
     {
         auto entity_handle = m_registry.create();
         Entity entity(entity_handle, this);
+        auto info_component = entity.AddComponent<EntityInfoComponent>(uuid);
         entity.AddComponent<TransformComponent>();
-        entity.AddComponent<EntityInfoComponent>();
         entity.AddComponent<EntityTreeComponent>();
 
+        m_uuid_entity_map[info_component.uuid] = entity_handle;
+
+        return entity;
+    }
+
+    std::optional<Entity> GameScene::GetEntity(UUID uuid)
+    {
+        std::optional<Entity> entity;
+        auto map_iterator = m_uuid_entity_map.find(uuid);
+        if (map_iterator != m_uuid_entity_map.end())
+        {
+            auto handle = map_iterator->second;
+            entity = Entity(handle, this);
+        }
         return entity;
     }
 

@@ -31,16 +31,31 @@ namespace Merlin
     uuids::uuid_system_generator UUID::UUIDImpl::s_id_generator =
         uuids::uuid_system_generator();
 
+    UUID UUID::Nil() { return UUID("00000000-0000-0000-0000-000000000000"); }
+
     UUID::UUID() { m_uuid_impl = std::make_unique<UUIDImpl>(); }
 
     UUID ::~UUID() = default;
+
+    UUID::UUID(const UUID& other)
+    {
+        m_uuid_impl = std::move(std::make_unique<UUIDImpl>(other.ToString()));
+    }
+
+    UUID& UUID::operator=(const UUID& other)
+    {
+        m_uuid_impl = std::move(std::make_unique<UUIDImpl>(other.ToString()));
+        return *this;
+    }
 
     UUID::UUID(std::string string)
     {
         m_uuid_impl = std::make_unique<UUIDImpl>(string);
     }
 
-    std::string UUID::ToString() { return m_uuid_impl->ToString(); }
+    std::string UUID::ToString() const { return m_uuid_impl->ToString(); }
+
+    bool UUID::IsNil() { return m_uuid_impl->m_internal_id.is_nil(); }
 
     bool UUID::operator==(const UUID& other) const
     {

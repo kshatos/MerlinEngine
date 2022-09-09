@@ -2,18 +2,21 @@
 #define CORE_COMPONENTS_HPP
 #include <optional>
 
+#include "Merlin/Core/uuid.hpp"
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Scene/entity.hpp"
-#include "Merlin/Core/uuid.hpp"
 
 namespace Merlin
 {
     struct EntityInfoComponent
     {
         std::string name;
-        UUID uuid;
+        const UUID uuid;
 
-        EntityInfoComponent() : name("New Entity") {}
+        EntityInfoComponent(UUID _uuid = UUID())
+            : name("New Entity"), uuid(_uuid.IsNil() ? UUID() : _uuid)
+        {
+        }
     };
 
     struct EntityTreeComponent

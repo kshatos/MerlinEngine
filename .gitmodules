@@ -22,3 +22,6 @@
 [submodule "Merlin/thirdparty/stduuid"]
 	path = Merlin/thirdparty/stduuid
 	url = https://github.com/mariusbancila/stduuid.git
+[submodule "Merlin/thirdparty/yaml-cpp"]
+	path = Merlin/thirdparty/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git

@@ -33,6 +33,10 @@ namespace MerlinEditor
         void HandleEvent(Merlin::AppEvent& app_event) override;
 
         void DrawLayer();
+
+        void SetActiveScene(std::shared_ptr<Merlin::GameScene> scene);
+        void SaveScene();
+        void LoadScene();
     };
 }  // namespace MerlinEditor
 #endif
