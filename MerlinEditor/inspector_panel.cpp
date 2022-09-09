@@ -81,8 +81,10 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Remove Component"))
                     {
-                        m_inspected_entity
-                            ->RemoveComponent<Merlin::PointLightComponent>();
+                        auto command = std::make_shared<RemoveComponentCommand<
+                            Merlin::PointLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndPopup();
                 }
@@ -132,8 +134,10 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Remove Component"))
                     {
-                        m_inspected_entity->RemoveComponent<
-                            Merlin::DirectionalLightComponent>();
+                        auto command = std::make_shared<RemoveComponentCommand<
+                            Merlin::DirectionalLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndPopup();
                 }
@@ -174,8 +178,10 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Remove Component"))
                     {
-                        m_inspected_entity
-                            ->RemoveComponent<Merlin::SpotLightComponent>();
+                        auto command = std::make_shared<
+                            RemoveComponentCommand<Merlin::SpotLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndPopup();
                 }
@@ -228,8 +234,10 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Remove Component"))
                     {
-                        m_inspected_entity
-                            ->RemoveComponent<Merlin::MeshRenderComponent>();
+                        auto command = std::make_shared<RemoveComponentCommand<
+                            Merlin::MeshRenderComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndPopup();
                 }
@@ -256,8 +264,10 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Remove Component"))
                     {
-                        m_inspected_entity
-                            ->RemoveComponent<Merlin::CameraComponent>();
+                        auto command = std::make_shared<
+                            RemoveComponentCommand<Merlin::CameraComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndPopup();
                 }
