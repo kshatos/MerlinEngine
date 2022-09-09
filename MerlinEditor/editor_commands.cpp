@@ -25,6 +25,8 @@ namespace MerlinEditor
 
     void EditorCommandQueue::UndoCommand()
     {
+        if (m_undo_queue.empty()) return;
+
         auto command = m_undo_queue.front();
         m_undo_queue.pop();
 
@@ -41,6 +43,13 @@ namespace MerlinEditor
 
         command->Redo();
         m_undo_queue.push(command);
+    }
+
+    void EditorCommandQueue::Clear()
+    {
+        while (!m_do_queue.empty()) m_do_queue.pop();
+        while (!m_undo_queue.empty()) m_undo_queue.pop();
+        while (!m_redo_queue.empty()) m_redo_queue.pop();
     }
 
     void CreateEntityCommand::Do()

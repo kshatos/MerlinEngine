@@ -3,6 +3,8 @@
 #include <Merlin/Scene/scene.hpp>
 #include <optional>
 
+#include "editor_commands.hpp"
+
 namespace MerlinEditor
 {
     class SceneHierarchyPanel
@@ -12,7 +14,8 @@ namespace MerlinEditor
         std::optional<Merlin::Entity> m_selected_entity;
         std::optional<Merlin::Entity> m_draged_entity;
         std::vector<Merlin::Entity> m_deleted_entities;
-        
+
+        std::function<void(std::shared_ptr<EditorCommand>)> m_command_callback;
 
     public:
         SceneHierarchyPanel();
@@ -28,6 +31,11 @@ namespace MerlinEditor
         inline std::optional<Merlin::Entity> GetSelectedEntity()
         {
             return m_selected_entity;
+        }
+        inline void SetCommandCallback(
+            std::function<void(std::shared_ptr<EditorCommand>)> callback)
+        {
+            m_command_callback = callback;
         }
 
     private:

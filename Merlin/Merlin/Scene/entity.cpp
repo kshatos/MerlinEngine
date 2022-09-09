@@ -7,6 +7,11 @@
 namespace Merlin
 {
 
+    bool Entity::IsValid() const
+    {
+        return m_scene->m_registry.valid(m_entity_handle);
+    }
+
     bool Entity::operator==(Entity const& other)
     {
         return (m_scene == other.m_scene &&

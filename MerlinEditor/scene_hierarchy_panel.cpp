@@ -6,12 +6,17 @@ namespace MerlinEditor
 {
 
     SceneHierarchyPanel::SceneHierarchyPanel()
-        : m_name("Scene Hierarchy"), m_scene(nullptr)
+        : m_name("Scene Hierarchy")
+        , m_scene(nullptr)
+        , m_command_callback(nullptr)
     {
     }
 
     void SceneHierarchyPanel::DrawPanel()
     {
+        if (m_selected_entity.has_value() && !m_selected_entity->IsValid())
+            m_selected_entity.reset();
+
         ImGui::Begin(m_name.c_str());
 
         if (m_scene != nullptr)
@@ -26,7 +31,9 @@ namespace MerlinEditor
             {
                 if (ImGui::MenuItem("Create Entity"))
                 {
-                    m_scene->CreateEntity();
+                    auto command =
+                        std::make_shared<CreateEntityCommand>(m_scene);
+                    m_command_callback(command);
                 }
 
                 ImGui::EndPopup();

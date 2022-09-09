@@ -26,6 +26,7 @@ namespace MerlinEditor
         void DoCommands();
         void UndoCommand();
         void RedoCommand();
+        void Clear();
     };
 
     class CreateEntityCommand : public EditorCommand
