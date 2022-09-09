@@ -136,6 +136,7 @@ namespace MerlinEditor
     {
         m_active_scene = scene;
         m_scene_hierarchy_panel.SetScene(scene);
+        m_inspector_panel.SetScene(scene);
     }
 
     void EditorGUILayer::SaveScene()

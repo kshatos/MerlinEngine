@@ -53,7 +53,8 @@ namespace MerlinEditor
         Merlin::UUID m_entity_uuid;
 
     public:
-        DestroyEntityCommand(std::shared_ptr<Merlin::GameScene> scene, Merlin::UUID uuid)
+        DestroyEntityCommand(std::shared_ptr<Merlin::GameScene> scene,
+                             Merlin::UUID uuid)
             : m_scene(scene), m_entity_uuid(uuid)
         {
         }
@@ -61,5 +62,38 @@ namespace MerlinEditor
         virtual void Undo() override;
         virtual void Redo() override;
     };
+
+    template <typename T>
+    class AddComponentCommand : public EditorCommand
+    {
+        std::shared_ptr<Merlin::GameScene> m_scene;
+        Merlin::UUID m_entity_uuid;
+
+    public:
+        AddComponentCommand(std::shared_ptr<Merlin::GameScene> scene,
+                            Merlin::UUID uuid)
+            : m_scene(scene), m_entity_uuid(uuid)
+        {
+        }
+
+        virtual void Do() override
+        {
+            auto entity = m_scene->GetEntity(m_entity_uuid);
+            entity->AddComponent<T>();
+        }
+
+        virtual void Undo() override
+        {
+            auto entity = m_scene->GetEntity(m_entity_uuid);
+            entity->RemoveComponent<T>();
+        }
+
+        virtual void Redo() override
+        {
+            auto entity = m_scene->GetEntity(m_entity_uuid);
+            entity->AddComponent<T>();
+        }
+    };
+
 }  // namespace MerlinEditor
 #endif

@@ -282,29 +282,40 @@ namespace MerlinEditor
                 {
                     if (ImGui::MenuItem("Point Light"))
                     {
-                        m_inspected_entity
-                            ->AddComponent<Merlin::PointLightComponent>();
+                        auto command = std::make_shared<
+                            AddComponentCommand<Merlin::PointLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     if (ImGui::MenuItem("Directional Light"))
                     {
-                        m_inspected_entity
-                            ->AddComponent<Merlin::DirectionalLightComponent>();
+                        auto command = std::make_shared<AddComponentCommand<
+                            Merlin::DirectionalLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     if (ImGui::MenuItem("Spot Light"))
                     {
-                        m_inspected_entity
-                            ->AddComponent<Merlin::SpotLightComponent>();
+                        auto command = std::make_shared<
+                            AddComponentCommand<Merlin::SpotLightComponent>>(
+                            m_scene, m_inspected_entity->GetUUID());
+                        SubmitCommand(command);
                     }
                     ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem("Mesh Render"))
                 {
-                    m_inspected_entity
-                        ->AddComponent<Merlin::MeshRenderComponent>();
+                    auto command = std::make_shared<
+                        AddComponentCommand<Merlin::MeshRenderComponent>>(
+                        m_scene, m_inspected_entity->GetUUID());
+                    SubmitCommand(command);
                 }
                 if (ImGui::MenuItem("Camera"))
                 {
-                    m_inspected_entity->AddComponent<Merlin::CameraComponent>();
+                    auto command = std::make_shared<
+                        AddComponentCommand<Merlin::CameraComponent>>(
+                        m_scene, m_inspected_entity->GetUUID());
+                    SubmitCommand(command);
                 }
                 ImGui::EndPopup();
             }
