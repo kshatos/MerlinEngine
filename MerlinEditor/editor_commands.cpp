@@ -2,10 +2,23 @@
 
 namespace MerlinEditor
 {
-    void EditorCommandQueue::DoCommand(std::shared_ptr<EditorCommand> command)
+    void EditorCommandQueue::AddCommand(std::shared_ptr<EditorCommand> command)
     {
-        command->Do();
-        m_undo_queue.push(command);
+        m_do_queue.push(command);
+    }
+
+    void EditorCommandQueue::DoCommands()
+    {
+        if (m_do_queue.empty()) return;
+
+        while (!m_do_queue.empty())
+        {
+            auto command = m_do_queue.front();
+            m_do_queue.pop();
+
+            command->Do();
+            m_undo_queue.push(command);
+        }
 
         while (!m_redo_queue.empty()) m_redo_queue.pop();
     }
@@ -29,5 +42,19 @@ namespace MerlinEditor
         command->Redo();
         m_undo_queue.push(command);
     }
+
+    void CreateEntityCommand::Do()
+    {
+        auto entity = m_scene->CreateEntity();
+        m_entity_uuid = entity.GetUUID();
+    }
+
+    void CreateEntityCommand::Undo()
+    {
+        auto entity = m_scene->GetEntity(m_entity_uuid);
+        entity->Destroy();
+    }
+
+    void CreateEntityCommand::Redo() { m_scene->CreateEntity(m_entity_uuid); }
 
 }  // namespace MerlinEditor
