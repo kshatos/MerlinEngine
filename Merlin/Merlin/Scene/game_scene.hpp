@@ -16,6 +16,7 @@ namespace Merlin
     {
         entt::registry m_registry;
         SceneRenderData m_render_data;
+        std::unordered_map<UUID, entt::entity> m_uuid_entity_map;
 
     public:
         GameScene();
@@ -25,7 +26,7 @@ namespace Merlin
         GameScene& operator=(GameScene&& rhs) = delete;
         ~GameScene();
 
-        Entity CreateEntity();
+        Entity CreateEntity(UUID uuid = UUID());
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         void VisitEntities(std::function<void(Entity)> callback);

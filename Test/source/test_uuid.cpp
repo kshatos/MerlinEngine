@@ -25,3 +25,11 @@ TEST(UUIDTest, TestCreateFromString)
 
     ASSERT_EQ(uuid.ToString(), uuid_string);
 }
+
+TEST(UUIDTest, TestNilUUID)
+{
+    auto nil = UUID::Nil();
+    auto non_nil = UUID();
+    ASSERT_TRUE(nil.IsNil());
+    ASSERT_FALSE(non_nil.IsNil());
+}

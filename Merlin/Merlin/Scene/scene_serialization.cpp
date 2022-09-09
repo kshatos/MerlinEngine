@@ -274,9 +274,6 @@ namespace Merlin
         {
             deserialized_info_component.name =
                 info_component["Name"].as<std::string>();
-
-            deserialized_info_component.uuid =
-                Merlin::UUID(info_component["UUID"].as<std::string>());
         }
 
         auto& deserialized_transform_component =
@@ -396,7 +393,8 @@ namespace Merlin
         {
             for (auto entity : entities)
             {
-                auto deserialized_entity = scene->CreateEntity();
+                auto deserialized_entity = scene->CreateEntity(
+                    entity["EntityInfo"]["UUID"].as<std::string>());
                 DeserializeEntity(entity, deserialized_entity);
             }
         }
