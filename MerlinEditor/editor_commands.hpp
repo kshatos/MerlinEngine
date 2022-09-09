@@ -30,7 +30,6 @@ namespace MerlinEditor
         void Clear();
     };
 
-    // TODO: Use serialization to restore entity components on recreate
     class CreateEntityCommand : public EditorCommand
     {
         std::shared_ptr<Merlin::GameScene> m_scene;
@@ -51,6 +50,7 @@ namespace MerlinEditor
     {
         std::shared_ptr<Merlin::GameScene> m_scene;
         Merlin::UUID m_entity_uuid;
+        std::string m_serialized_entity;
 
     public:
         DestroyEntityCommand(std::shared_ptr<Merlin::GameScene> scene,

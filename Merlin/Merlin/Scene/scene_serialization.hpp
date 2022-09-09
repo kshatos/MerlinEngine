@@ -10,10 +10,14 @@ namespace Merlin
     class SceneSerializer
     {
     public:
-        void Serialize(const std::string& filepath,
-                       std::shared_ptr<GameScene> scene);
-        void Deserialize(const std::string& filepath,
-                         std::shared_ptr<GameScene> scene);
+        static void Serialize(const std::string& filepath,
+                              std::shared_ptr<GameScene> scene);
+        static void Deserialize(const std::string& filepath,
+                                std::shared_ptr<GameScene> scene);
+        static std::string SerializeEntity(Merlin::Entity entity);
+        static void DeserializeEntity(std::string serialized_entity,
+                                 Entity deserialized_entity,
+                                 std::shared_ptr<GameScene> scene);
     };
 
 }  // namespace Merlin

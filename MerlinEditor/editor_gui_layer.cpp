@@ -141,15 +141,15 @@ namespace MerlinEditor
 
     void EditorGUILayer::SaveScene()
     {
-        Merlin::SceneSerializer x;
-        x.Serialize("current_scene.scene", m_active_scene);
+        Merlin::SceneSerializer::Serialize("current_scene.scene",
+                                           m_active_scene);
     }
 
     void EditorGUILayer::LoadScene()
     {
         auto loaded_scene = std::make_shared<Merlin::GameScene>();
-        Merlin::SceneSerializer x;
-        x.Deserialize("current_scene.scene", loaded_scene);
+        Merlin::SceneSerializer::Deserialize("current_scene.scene",
+                                             loaded_scene);
 
         SetActiveScene(loaded_scene);
     }

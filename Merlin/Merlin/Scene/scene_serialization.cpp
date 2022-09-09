@@ -137,7 +137,7 @@ namespace YAML
 
 namespace Merlin
 {
-    void SerializeEntity(YAML::Emitter& out, Entity entity)
+    void SerializeEntityInternal(YAML::Emitter& out, Entity entity)
     {
         out << YAML::BeginMap;
         {
@@ -286,9 +286,9 @@ namespace Merlin
         out << YAML::EndMap;
     }
 
-    void DeserializeEntity(YAML::Node& entity,
-                           Entity deserialized_entity,
-                           std::shared_ptr<GameScene> scene)
+    void DeserializeEntityInternal(YAML::Node& entity,
+                                   Entity deserialized_entity,
+                                   std::shared_ptr<GameScene> scene)
     {
         auto& deserialized_info_component =
             deserialized_entity.GetComponent<EntityInfoComponent>();
@@ -402,7 +402,7 @@ namespace Merlin
             out << YAML::BeginSeq;
             {
                 scene->VisitEntities([&](Entity entity)
-                                     { SerializeEntity(out, entity); });
+                                     { SerializeEntityInternal(out, entity); });
             }
             out << YAML::EndSeq;
         }
@@ -440,8 +440,26 @@ namespace Merlin
             {
                 auto deserialized_entity = scene->GetEntity(
                     UUID(entity["EntityInfo"]["UUID"].as<std::string>()));
-                DeserializeEntity(entity, deserialized_entity.value(), scene);
+                DeserializeEntityInternal(
+                    entity, deserialized_entity.value(), scene);
             }
         }
+    }
+
+    std::string SceneSerializer::SerializeEntity(Merlin::Entity entity)
+    {
+        YAML::Emitter out;
+        SerializeEntityInternal(out, entity);
+        std::string result(out.c_str());
+        return result;
+    }
+
+    void SceneSerializer::DeserializeEntity(std::string serialized_entity,
+                                            Entity deserialized_entity,
+                                            std::shared_ptr<GameScene> scene)
+    {
+        auto serialized_entity_node = YAML::Load(serialized_entity);
+        DeserializeEntityInternal(
+            serialized_entity_node, deserialized_entity, scene);
     }
 }  // namespace Merlin

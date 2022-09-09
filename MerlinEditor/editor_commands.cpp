@@ -1,5 +1,7 @@
 #include "editor_commands.hpp"
 
+#include <Merlin/Scene/scene_serialization.hpp>
+
 namespace MerlinEditor
 {
     void EditorCommandQueue::AddCommand(std::shared_ptr<EditorCommand> command)
@@ -69,10 +71,17 @@ namespace MerlinEditor
     void DestroyEntityCommand::Do()
     {
         auto entity = m_scene->GetEntity(m_entity_uuid);
+        m_serialized_entity =
+            Merlin::SceneSerializer::SerializeEntity(entity.value());
         entity->Destroy();
     }
 
-    void DestroyEntityCommand::Undo() { m_scene->CreateEntity(m_entity_uuid); }
+    void DestroyEntityCommand::Undo()
+    {
+        auto entity = m_scene->CreateEntity(m_entity_uuid);
+        Merlin::SceneSerializer::DeserializeEntity(
+            m_serialized_entity, entity, m_scene);
+    }
 
     void DestroyEntityCommand::Redo()
     {
