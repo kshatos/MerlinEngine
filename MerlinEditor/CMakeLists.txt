@@ -6,6 +6,7 @@ set(MERLIN_EDITOR_SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/asset_explorer_panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inspector_panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/viewport_panel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/editor_commands.cpp
 )
 
 set(MERLIN_EDITOR_INCLUDE
@@ -15,6 +16,7 @@ set(MERLIN_EDITOR_INCLUDE
     ${CMAKE_CURRENT_SOURCE_DIR}/asset_explorer_panel.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/inspector_panel.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/viewport_panel.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/editor_commands.hpp
 )
 
 add_executable(MerlinEditor
