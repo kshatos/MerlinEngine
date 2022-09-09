@@ -3,6 +3,7 @@
 #include <Merlin/Scene/game_scene.hpp>
 #include <memory>
 #include <queue>
+#include <stack>
 
 namespace MerlinEditor
 {
@@ -18,8 +19,8 @@ namespace MerlinEditor
     class EditorCommandQueue
     {
         std::queue<std::shared_ptr<EditorCommand>> m_do_queue;
-        std::queue<std::shared_ptr<EditorCommand>> m_undo_queue;
-        std::queue<std::shared_ptr<EditorCommand>> m_redo_queue;
+        std::stack<std::shared_ptr<EditorCommand>> m_undo_stack;
+        std::stack<std::shared_ptr<EditorCommand>> m_redo_stack;
 
     public:
         void AddCommand(std::shared_ptr<EditorCommand> command);
@@ -29,6 +30,7 @@ namespace MerlinEditor
         void Clear();
     };
 
+    // TODO: Use serialization to restore entity components on recreate
     class CreateEntityCommand : public EditorCommand
     {
         std::shared_ptr<Merlin::GameScene> m_scene;
@@ -40,6 +42,21 @@ namespace MerlinEditor
         {
         }
 
+        virtual void Do() override;
+        virtual void Undo() override;
+        virtual void Redo() override;
+    };
+
+    class DestroyEntityCommand : public EditorCommand
+    {
+        std::shared_ptr<Merlin::GameScene> m_scene;
+        Merlin::UUID m_entity_uuid;
+
+    public:
+        DestroyEntityCommand(std::shared_ptr<Merlin::GameScene> scene, Merlin::UUID uuid)
+            : m_scene(scene), m_entity_uuid(uuid)
+        {
+        }
         virtual void Do() override;
         virtual void Undo() override;
         virtual void Redo() override;

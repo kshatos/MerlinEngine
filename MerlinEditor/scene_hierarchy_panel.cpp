@@ -40,17 +40,6 @@ namespace MerlinEditor
             }
         }
         ImGui::End();
-
-        while (!m_deleted_entities.empty())
-        {
-            auto entity = m_deleted_entities.back();
-            m_deleted_entities.pop_back();
-            if (m_selected_entity.has_value() &&
-                m_selected_entity.value() == entity)
-                m_selected_entity.reset();
-
-            entity.Destroy();
-        }
     }
 
     void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity,
@@ -79,8 +68,11 @@ namespace MerlinEditor
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Delete Entity"))
-                m_deleted_entities.push_back(entity);
-
+            {
+                auto command = std::make_shared<DestroyEntityCommand>(
+                    m_scene, entity.GetUUID());
+                m_command_callback(command);
+            }
             ImGui::EndPopup();
         }
         if (ImGui::BeginDragDropSource())

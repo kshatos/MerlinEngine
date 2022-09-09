@@ -17,39 +17,39 @@ namespace MerlinEditor
             m_do_queue.pop();
 
             command->Do();
-            m_undo_queue.push(command);
+            m_undo_stack.push(command);
         }
 
-        while (!m_redo_queue.empty()) m_redo_queue.pop();
+        while (!m_redo_stack.empty()) m_redo_stack.pop();
     }
 
     void EditorCommandQueue::UndoCommand()
     {
-        if (m_undo_queue.empty()) return;
+        if (m_undo_stack.empty()) return;
 
-        auto command = m_undo_queue.front();
-        m_undo_queue.pop();
+        auto command = m_undo_stack.top();
+        m_undo_stack.pop();
 
         command->Undo();
-        m_redo_queue.push(command);
+        m_redo_stack.push(command);
     }
 
     void EditorCommandQueue::RedoCommand()
     {
-        if (m_redo_queue.empty()) return;
+        if (m_redo_stack.empty()) return;
 
-        auto command = m_redo_queue.front();
-        m_redo_queue.pop();
+        auto command = m_redo_stack.top();
+        m_redo_stack.pop();
 
         command->Redo();
-        m_undo_queue.push(command);
+        m_undo_stack.push(command);
     }
 
     void EditorCommandQueue::Clear()
     {
         while (!m_do_queue.empty()) m_do_queue.pop();
-        while (!m_undo_queue.empty()) m_undo_queue.pop();
-        while (!m_redo_queue.empty()) m_redo_queue.pop();
+        while (!m_undo_stack.empty()) m_undo_stack.pop();
+        while (!m_redo_stack.empty()) m_redo_stack.pop();
     }
 
     void CreateEntityCommand::Do()
@@ -65,5 +65,19 @@ namespace MerlinEditor
     }
 
     void CreateEntityCommand::Redo() { m_scene->CreateEntity(m_entity_uuid); }
+
+    void DestroyEntityCommand::Do()
+    {
+        auto entity = m_scene->GetEntity(m_entity_uuid);
+        entity->Destroy();
+    }
+
+    void DestroyEntityCommand::Undo() { m_scene->CreateEntity(m_entity_uuid); }
+
+    void DestroyEntityCommand::Redo()
+    {
+        auto entity = m_scene->GetEntity(m_entity_uuid);
+        entity->Destroy();
+    }
 
 }  // namespace MerlinEditor
