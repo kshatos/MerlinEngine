@@ -154,6 +154,28 @@ namespace Merlin
             }
             out << YAML::EndMap;
 
+            auto& tree_component = entity.GetComponent<EntityTreeComponent>();
+            out << YAML::Key << "EntityTree";
+            out << YAML::Value;
+            out << YAML::BeginMap;
+            {
+                out << YAML::Key << "Parent";
+                out << YAML::Value;
+                if (tree_component.parent.has_value())
+                    out << tree_component.parent->GetUUID().ToString();
+                else
+                    out << "None";
+                out << YAML::Key << "Children";
+                out << YAML::Value;
+                out << YAML::BeginSeq;
+                for (const auto& child : tree_component.children)
+                {
+                    out << child.GetUUID().ToString();
+                }
+                out << YAML::EndSeq;
+            }
+            out << YAML::EndMap;
+
             auto& transform_component =
                 entity.GetComponent<TransformComponent>();
             out << YAML::Key << "Transform";
@@ -264,10 +286,12 @@ namespace Merlin
         out << YAML::EndMap;
     }
 
-    void DeserializeEntity(YAML::Node& entity, Entity deserialized_entity)
+    void DeserializeEntity(YAML::Node& entity,
+                           Entity deserialized_entity,
+                           std::shared_ptr<GameScene> scene)
     {
         auto& deserialized_info_component =
-            deserialized_entity.GetComponent<Merlin::EntityInfoComponent>();
+            deserialized_entity.GetComponent<EntityInfoComponent>();
 
         auto info_component = entity["EntityInfo"];
         if (info_component)
@@ -276,8 +300,22 @@ namespace Merlin
                 info_component["Name"].as<std::string>();
         }
 
+        auto deserialized_tree_component =
+            deserialized_entity.GetComponent<EntityTreeComponent>();
+        auto tree_component = entity["EntityTree"];
+        if (tree_component)
+        {
+            auto children = tree_component["Children"];
+            for (auto& child : children)
+            {
+                UUID child_uuid(child.as<std::string>());
+                auto child_entity = scene->GetEntity(child_uuid);
+                deserialized_entity.AddChild(child_entity.value());
+            }
+        }
+
         auto& deserialized_transform_component =
-            deserialized_entity.GetComponent<Merlin::TransformComponent>();
+            deserialized_entity.GetComponent<TransformComponent>();
         auto transform_component = entity["Transform"];
         if (transform_component)
         {
@@ -391,11 +429,18 @@ namespace Merlin
         auto entities = data["Entities"];
         if (entities)
         {
+            // Create entities, registering uuids with scene
             for (auto entity : entities)
             {
-                auto deserialized_entity = scene->CreateEntity(
-                    entity["EntityInfo"]["UUID"].as<std::string>());
-                DeserializeEntity(entity, deserialized_entity);
+                scene->CreateEntity(
+                    UUID(entity["EntityInfo"]["UUID"].as<std::string>()));
+            }
+            // Deserialize entity, as all uuid references can be found
+            for (auto entity : entities)
+            {
+                auto deserialized_entity = scene->GetEntity(
+                    UUID(entity["EntityInfo"]["UUID"].as<std::string>()));
+                DeserializeEntity(entity, deserialized_entity.value(), scene);
             }
         }
     }

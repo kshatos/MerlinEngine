@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include <functional>
 #include <vector>
+#include "Merlin/Core/uuid.hpp"
 
 namespace Merlin
 {
@@ -57,6 +58,8 @@ namespace Merlin
         {
             return static_cast<uint32_t>(m_entity_handle);
         }
+
+        UUID GetUUID() const;
 
         bool operator==(Entity const& other);
     };

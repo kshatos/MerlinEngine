@@ -82,7 +82,12 @@ namespace Merlin
             child_tree.parent.reset();
         }
 
+        m_scene->m_uuid_entity_map.erase(GetUUID());
         m_scene->m_registry.destroy(m_entity_handle);
     }
 
+    UUID Entity::GetUUID() const
+    {
+        return GetComponent<EntityInfoComponent>().uuid;
+    }
 }  // namespace Merlin

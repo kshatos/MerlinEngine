@@ -27,6 +27,7 @@ namespace Merlin
         ~GameScene();
 
         Entity CreateEntity(UUID uuid = UUID());
+        std::optional<Entity> GetEntity(UUID uuid);
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         void VisitEntities(std::function<void(Entity)> callback);

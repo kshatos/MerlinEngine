@@ -24,6 +24,18 @@ namespace Merlin
         return entity;
     }
 
+    std::optional<Entity> GameScene::GetEntity(UUID uuid)
+    {
+        std::optional<Entity> entity;
+        auto map_iterator = m_uuid_entity_map.find(uuid);
+        if (map_iterator != m_uuid_entity_map.end())
+        {
+            auto handle = map_iterator->second;
+            entity = Entity(handle, this);
+        }
+        return entity;
+    }
+
     const SceneRenderData& GameScene::GetRenderData() { return m_render_data; }
 
     void GameScene::OnAwake() {}
