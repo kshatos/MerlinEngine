@@ -4,17 +4,16 @@
 #include <optional>
 
 #include "editor_commands.hpp"
+#include "editor_panel.hpp"
 
 namespace MerlinEditor
 {
-    class SceneHierarchyPanel
+    class SceneHierarchyPanel : public EditorPanel
     {
         std::string m_name = "Scene Hierarchy";
         std::shared_ptr<Merlin::GameScene> m_scene = nullptr;
         std::optional<Merlin::Entity> m_selected_entity;
         std::optional<Merlin::Entity> m_draged_entity;
-
-        std::function<void(std::shared_ptr<EditorCommand>)> m_command_callback;
 
     public:
         SceneHierarchyPanel();
@@ -29,11 +28,6 @@ namespace MerlinEditor
         inline std::optional<Merlin::Entity> GetSelectedEntity()
         {
             return m_selected_entity;
-        }
-        inline void SetCommandCallback(
-            std::function<void(std::shared_ptr<EditorCommand>)> callback)
-        {
-            m_command_callback = callback;
         }
 
     private:

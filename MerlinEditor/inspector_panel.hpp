@@ -4,9 +4,11 @@
 #include <optional>
 #include <string>
 
+#include "editor_panel.hpp"
+
 namespace MerlinEditor
 {
-    class InspectorPanel
+    class InspectorPanel : public EditorPanel
     {
         std::string m_name = "Inspector";
 

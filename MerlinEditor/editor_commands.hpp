@@ -61,6 +61,5 @@ namespace MerlinEditor
         virtual void Undo() override;
         virtual void Redo() override;
     };
-
 }  // namespace MerlinEditor
 #endif

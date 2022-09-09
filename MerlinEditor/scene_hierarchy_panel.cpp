@@ -6,9 +6,7 @@ namespace MerlinEditor
 {
 
     SceneHierarchyPanel::SceneHierarchyPanel()
-        : m_name("Scene Hierarchy")
-        , m_scene(nullptr)
-        , m_command_callback(nullptr)
+        : m_name("Scene Hierarchy"), m_scene(nullptr)
     {
     }
 
@@ -33,7 +31,7 @@ namespace MerlinEditor
                 {
                     auto command =
                         std::make_shared<CreateEntityCommand>(m_scene);
-                    m_command_callback(command);
+                    SubmitCommand(command);
                 }
 
                 ImGui::EndPopup();
@@ -71,7 +69,7 @@ namespace MerlinEditor
             {
                 auto command = std::make_shared<DestroyEntityCommand>(
                     m_scene, entity.GetUUID());
-                m_command_callback(command);
+                SubmitCommand(command);
             }
             ImGui::EndPopup();
         }

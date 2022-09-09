@@ -14,6 +14,8 @@ namespace MerlinEditor
         { m_command_queue.AddCommand(command); };
 
         m_scene_hierarchy_panel.SetCommandCallback(command_callback);
+        m_inspector_panel.SetCommandCallback(command_callback);
+        m_asset_explorer_panel.SetCommandCallback(command_callback);
     }
 
     void EditorGUILayer::OnAttach()
