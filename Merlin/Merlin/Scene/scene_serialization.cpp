@@ -305,6 +305,15 @@ namespace Merlin
         auto tree_component = entity["EntityTree"];
         if (tree_component)
         {
+            auto parent = tree_component["Parent"];
+            auto parent_string = parent.as<std::string>();
+            if (parent_string != "None")
+            {
+                auto parent_uuid = Merlin::UUID(parent_string);
+                auto parent = scene->GetEntity(parent_uuid);
+                parent->AddChild(deserialized_entity);
+            }
+
             auto children = tree_component["Children"];
             for (auto& child : children)
             {
