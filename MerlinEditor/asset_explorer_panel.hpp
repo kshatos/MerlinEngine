@@ -2,9 +2,11 @@
 #define ASSET_EXPLORER_PANEL_HPP
 #include <string>
 
+#include "editor_panel.hpp"
+
 namespace MerlinEditor
 {
-    class AssetExplorerPanel
+    class AssetExplorerPanel : public EditorPanel
     {
         std::string m_name = "Asset Explorer";
 

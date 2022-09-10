@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include <functional>
 #include <vector>
+
 #include "Merlin/Core/uuid.hpp"
 
 namespace Merlin
@@ -19,6 +20,8 @@ namespace Merlin
             : m_entity_handle(entity_handle), m_scene(scene)
         {
         }
+
+        bool IsValid() const;
 
         template <typename T>
         bool HasComponent()
@@ -44,6 +47,7 @@ namespace Merlin
         void AddChild(Entity child);
         void RemoveChild(Entity child);
         void RemoveParent();
+        void Disconnect();
         bool IsAncestorOf(Entity entity);
 
         void Destroy();

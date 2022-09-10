@@ -7,6 +7,11 @@
 namespace Merlin
 {
 
+    bool Entity::IsValid() const
+    {
+        return m_scene->m_registry.valid(m_entity_handle);
+    }
+
     bool Entity::operator==(Entity const& other)
     {
         return (m_scene == other.m_scene &&
@@ -45,6 +50,24 @@ namespace Merlin
             tree_comp.parent->GetComponent<EntityTreeComponent>();
         parent_tree.children.erase(*this);
         tree_comp.parent.reset();
+    }
+
+    
+    void Entity::Disconnect()
+    {
+        auto& tree_comp = GetComponent<EntityTreeComponent>();
+        if (tree_comp.parent.has_value())
+        {
+            auto& parent_tree =
+                tree_comp.parent->GetComponent<EntityTreeComponent>();
+            parent_tree.children.erase(*this);
+            tree_comp.parent.reset();
+        }
+        while (!tree_comp.children.empty())
+        {
+            auto child = *tree_comp.children.begin();
+            RemoveChild(child);
+        }
     }
 
     bool Entity::IsAncestorOf(Entity entity)

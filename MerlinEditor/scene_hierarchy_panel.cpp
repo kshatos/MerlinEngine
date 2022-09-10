@@ -12,6 +12,9 @@ namespace MerlinEditor
 
     void SceneHierarchyPanel::DrawPanel()
     {
+        if (m_selected_entity.has_value() && !m_selected_entity->IsValid())
+            m_selected_entity.reset();
+
         ImGui::Begin(m_name.c_str());
 
         if (m_scene != nullptr)
@@ -26,24 +29,15 @@ namespace MerlinEditor
             {
                 if (ImGui::MenuItem("Create Entity"))
                 {
-                    m_scene->CreateEntity();
+                    auto command =
+                        std::make_shared<CreateEntityCommand>(m_scene);
+                    SubmitCommand(command);
                 }
 
                 ImGui::EndPopup();
             }
         }
         ImGui::End();
-
-        while (!m_deleted_entities.empty())
-        {
-            auto entity = m_deleted_entities.back();
-            m_deleted_entities.pop_back();
-            if (m_selected_entity.has_value() &&
-                m_selected_entity.value() == entity)
-                m_selected_entity.reset();
-
-            entity.Destroy();
-        }
     }
 
     void SceneHierarchyPanel::DrawEntity(Merlin::Entity entity,
@@ -72,8 +66,11 @@ namespace MerlinEditor
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Delete Entity"))
-                m_deleted_entities.push_back(entity);
-
+            {
+                auto command = std::make_shared<DestroyEntityCommand>(
+                    m_scene, entity.GetUUID());
+                SubmitCommand(command);
+            }
             ImGui::EndPopup();
         }
         if (ImGui::BeginDragDropSource())
@@ -94,8 +91,13 @@ namespace MerlinEditor
 
                 if (can_accept)
                 {
-                    m_draged_entity->RemoveParent();
-                    entity.AddChild(m_draged_entity.value());
+                    auto dragged_uuid = m_draged_entity->GetUUID();
+                    auto entity_uuid = entity.GetUUID();
+
+                    auto command = std::make_shared<EntityReplaceParentCommand>(
+                        m_scene, entity_uuid, dragged_uuid);
+                    SubmitCommand(command);
+
                     m_draged_entity.reset();
                 }
             }

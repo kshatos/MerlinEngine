@@ -8,6 +8,7 @@
 #include "inspector_panel.hpp"
 #include "scene_hierarchy_panel.hpp"
 #include "viewport_panel.hpp"
+#include "editor_commands.hpp"
 
 namespace MerlinEditor
 {
@@ -15,6 +16,9 @@ namespace MerlinEditor
     {
         std::shared_ptr<Merlin::GameScene> m_active_scene = nullptr;
         ImGuiID m_dockspace_id;
+
+        EditorCommandQueue m_command_queue;
+
         SceneHierarchyPanel m_scene_hierarchy_panel;
         AssetExplorerPanel m_asset_explorer_panel;
         InspectorPanel m_inspector_panel;
@@ -35,8 +39,14 @@ namespace MerlinEditor
         void DrawLayer();
 
         void SetActiveScene(std::shared_ptr<Merlin::GameScene> scene);
+
         void SaveScene();
+
         void LoadScene();
+
+        void Undo();
+
+        void Redo();
     };
 }  // namespace MerlinEditor
 #endif

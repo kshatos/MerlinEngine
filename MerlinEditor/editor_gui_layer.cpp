@@ -10,6 +10,12 @@ namespace MerlinEditor
     EditorGUILayer::EditorGUILayer()
         : m_active_scene(nullptr), first_frame(true)
     {
+        auto command_callback = [this](std::shared_ptr<EditorCommand> command)
+        { m_command_queue.AddCommand(command); };
+
+        m_scene_hierarchy_panel.SetCommandCallback(command_callback);
+        m_inspector_panel.SetCommandCallback(command_callback);
+        m_asset_explorer_panel.SetCommandCallback(command_callback);
     }
 
     void EditorGUILayer::OnAttach()
@@ -31,9 +37,28 @@ namespace MerlinEditor
         m_inspector_panel.Inspect(tree_selection);
 
         m_inspector_panel.DrawPanel();
+
+        m_command_queue.DoCommands();
     }
 
-    void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event) {}
+    void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event)
+    {
+        ;
+        app_event.Dispatch<Merlin::KeyPressedEvent>(
+            [this](Merlin::KeyPressedEvent& e)
+            { 
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::Z))
+                    Undo();
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::Y))
+                    Redo();
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::S))
+                    SaveScene();
+                return false;
+            });
+    }
 
     void EditorGUILayer::DrawLayer()
     {
@@ -91,7 +116,7 @@ namespace MerlinEditor
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Save Scene"))
+                if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
                 {
                     SaveScene();
                 }
@@ -108,6 +133,14 @@ namespace MerlinEditor
 
             if (ImGui::BeginMenu("Edit"))
             {
+                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
+                {
+                    Undo();
+                }
+                if (ImGui::MenuItem("Redo", "Ctrl+Y"))
+                {
+                    Redo();
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
@@ -115,25 +148,31 @@ namespace MerlinEditor
         ImGui::End();
     }
 
-    void EditorGUILayer::SetActiveScene(std::shared_ptr<Merlin::GameScene> scene)
+    void EditorGUILayer::SetActiveScene(
+        std::shared_ptr<Merlin::GameScene> scene)
     {
         m_active_scene = scene;
         m_scene_hierarchy_panel.SetScene(scene);
+        m_inspector_panel.SetScene(scene);
     }
 
     void EditorGUILayer::SaveScene()
     {
-        Merlin::SceneSerializer x;
-        x.Serialize("current_scene.scene", m_active_scene);
+        Merlin::SceneSerializer::Serialize("current_scene.scene",
+                                           m_active_scene);
     }
 
     void EditorGUILayer::LoadScene()
     {
         auto loaded_scene = std::make_shared<Merlin::GameScene>();
-        Merlin::SceneSerializer x;
-        x.Deserialize("current_scene.scene", loaded_scene);
+        Merlin::SceneSerializer::Deserialize("current_scene.scene",
+                                             loaded_scene);
 
         SetActiveScene(loaded_scene);
     }
+
+    void EditorGUILayer::Undo() { m_command_queue.UndoCommand(); }
+
+    void EditorGUILayer::Redo() { m_command_queue.RedoCommand(); }
 
 }  // namespace MerlinEditor

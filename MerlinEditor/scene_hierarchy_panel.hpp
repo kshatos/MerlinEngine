@@ -3,16 +3,17 @@
 #include <Merlin/Scene/scene.hpp>
 #include <optional>
 
+#include "editor_commands.hpp"
+#include "editor_panel.hpp"
+
 namespace MerlinEditor
 {
-    class SceneHierarchyPanel
+    class SceneHierarchyPanel : public EditorPanel
     {
         std::string m_name = "Scene Hierarchy";
         std::shared_ptr<Merlin::GameScene> m_scene = nullptr;
         std::optional<Merlin::Entity> m_selected_entity;
         std::optional<Merlin::Entity> m_draged_entity;
-        std::vector<Merlin::Entity> m_deleted_entities;
-        
 
     public:
         SceneHierarchyPanel();
@@ -22,7 +23,6 @@ namespace MerlinEditor
             m_scene = scene;
             m_selected_entity.reset();
             m_draged_entity.reset();
-            m_deleted_entities.clear();
         }
         void DrawPanel();
         inline std::optional<Merlin::Entity> GetSelectedEntity()
