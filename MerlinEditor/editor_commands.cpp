@@ -89,4 +89,38 @@ namespace MerlinEditor
         entity->Destroy();
     }
 
+    void EntityReplaceParentCommand::Do()
+    {
+        auto parent_entity = m_scene->GetEntity(m_parent_uuid);
+        auto child_entity = m_scene->GetEntity(m_child_uuid);
+
+        m_parent_state =
+            Merlin::SceneSerializer::SerializeEntity(parent_entity.value());
+        m_child_state =
+            Merlin::SceneSerializer::SerializeEntity(child_entity.value());
+
+        child_entity->RemoveParent();
+        parent_entity->AddChild(child_entity.value());
+    }
+
+    void EntityReplaceParentCommand::Undo()
+    {
+        auto parent_entity = m_scene->GetEntity(m_parent_uuid);
+        auto child_entity = m_scene->GetEntity(m_child_uuid);
+
+        Merlin::SceneSerializer::DeserializeEntity(
+            m_parent_state, parent_entity.value(), m_scene);
+        Merlin::SceneSerializer::DeserializeEntity(
+            m_child_state, child_entity.value(), m_scene);
+    }
+
+    void EntityReplaceParentCommand::Redo()
+    {
+        auto parent_entity = m_scene->GetEntity(m_parent_uuid);
+        auto child_entity = m_scene->GetEntity(m_child_uuid);
+
+        child_entity->RemoveParent();
+        parent_entity->AddChild(child_entity.value());
+    }
+
 }  // namespace MerlinEditor

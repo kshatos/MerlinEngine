@@ -91,8 +91,13 @@ namespace MerlinEditor
 
                 if (can_accept)
                 {
-                    m_draged_entity->RemoveParent();
-                    entity.AddChild(m_draged_entity.value());
+                    auto dragged_uuid = m_draged_entity->GetUUID();
+                    auto entity_uuid = entity.GetUUID();
+
+                    auto command = std::make_shared<EntityReplaceParentCommand>(
+                        m_scene, entity_uuid, dragged_uuid);
+                    SubmitCommand(command);
+
                     m_draged_entity.reset();
                 }
             }

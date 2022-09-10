@@ -171,5 +171,27 @@ namespace MerlinEditor
         }
     };
 
+    class EntityReplaceParentCommand : public EditorCommand
+    {
+        std::shared_ptr<Merlin::GameScene> m_scene;
+        Merlin::UUID m_parent_uuid;
+        Merlin::UUID m_child_uuid;
+        std::string m_parent_state;
+        std::string m_child_state;
+
+    public:
+        EntityReplaceParentCommand(std::shared_ptr<Merlin::GameScene> scene,
+                              Merlin::UUID parent_uuid,
+                              Merlin::UUID child_uuid)
+            : m_scene(scene)
+            , m_parent_uuid(parent_uuid)
+            , m_child_uuid(child_uuid)
+        {
+        }
+        virtual void Do() override;
+        virtual void Undo() override;
+        virtual void Redo() override;
+    };
+
 }  // namespace MerlinEditor
 #endif
