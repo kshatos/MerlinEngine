@@ -41,7 +41,24 @@ namespace MerlinEditor
         m_command_queue.DoCommands();
     }
 
-    void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event) {}
+    void EditorGUILayer::HandleEvent(Merlin::AppEvent& app_event)
+    {
+        ;
+        app_event.Dispatch<Merlin::KeyPressedEvent>(
+            [this](Merlin::KeyPressedEvent& e)
+            { 
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::Z))
+                    Undo();
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::Y))
+                    Redo();
+                if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
+                    Merlin::Input::GetKeyDown(Merlin::Key::S))
+                    SaveScene();
+                return false;
+            });
+    }
 
     void EditorGUILayer::DrawLayer()
     {
@@ -99,7 +116,7 @@ namespace MerlinEditor
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Save Scene"))
+                if (ImGui::MenuItem("Save Scene", "Ctrl+S"))
                 {
                     SaveScene();
                 }
@@ -116,11 +133,11 @@ namespace MerlinEditor
 
             if (ImGui::BeginMenu("Edit"))
             {
-                if (ImGui::MenuItem("Undo"))
+                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
                 {
                     Undo();
                 }
-                if (ImGui::MenuItem("Redo"))
+                if (ImGui::MenuItem("Redo", "Ctrl+Y"))
                 {
                     Redo();
                 }
