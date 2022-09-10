@@ -48,6 +48,10 @@ namespace MerlinEditor
 
         std::string path_string = path.stem().string();
         bool is_open = ImGui::TreeNodeEx(path_string.c_str(), tree_flags);
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+        {
+            m_current_path = path;
+        }
 
         if (is_open)
         {
