@@ -9,6 +9,7 @@ set(MERLIN_CORE_SOURCE
     Merlin/Core/layer_stack.cpp
     Merlin/Core/file_util.cpp
     Merlin/Core/uuid.cpp
+    Merlin/Core/asset_registry.cpp
 )
 set(MERLIN_CORE_INCLUDE
     Merlin/Core/core.hpp
@@ -22,6 +23,7 @@ set(MERLIN_CORE_INCLUDE
     Merlin/Core/layer_stack.hpp
     Merlin/Core/file_util.hpp
     Merlin/Core/uuid.hpp
+    Merlin/Core/asset_registry.hpp
 )
 source_group("Core" FILES ${MERLIN_CORE_SOURCE} ${MERLIN_CORE_INCLUDE})
 

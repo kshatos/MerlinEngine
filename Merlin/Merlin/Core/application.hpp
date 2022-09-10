@@ -2,6 +2,7 @@
 #define APPLICATION_HPP
 #include "Merlin//Core/app_events.hpp"
 #include "Merlin//Core/window.hpp"
+#include "Merlin/Core/asset_registry.hpp"
 #include "Merlin/Core/layer_stack.hpp"
 #include "Merlin/Render/render_api.hpp"
 
@@ -31,6 +32,7 @@ namespace Merlin
         static Application* app_instance;
 
         std::shared_ptr<Window> m_main_window;
+        AssetRegistry m_asset_registry;
         LayerStack m_layer_stack;
         bool m_is_running;
         float m_last_frame_time = 0.0f;
@@ -45,6 +47,7 @@ namespace Merlin
         void PushLayerBack(std::shared_ptr<Layer> layer);
 
         inline std::shared_ptr<Window> GeMaintWindow() { return m_main_window; }
+        inline AssetRegistry& GetAssetRegistry() { return m_asset_registry; }
         void Run();
         void Close();
 
