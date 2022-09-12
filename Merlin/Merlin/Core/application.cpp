@@ -28,14 +28,14 @@ namespace Merlin
 
     void Application::PushLayerFront(std::shared_ptr<Layer> layer)
     {
-        m_layer_stack.PushFront(layer);
         layer->m_application = this;
+        m_layer_stack.PushFront(layer);
     }
 
     void Application::PushLayerBack(std::shared_ptr<Layer> layer)
     {
-        m_layer_stack.PushFront(layer);
         layer->m_application = this;
+        m_layer_stack.PushFront(layer);
     }
 
     void Application::HandleEvent(AppEvent& app_event)

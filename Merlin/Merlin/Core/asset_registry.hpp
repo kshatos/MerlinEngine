@@ -9,9 +9,11 @@ namespace Merlin
 {
     enum class AssetType
     {
+        None,
         Mesh,
         Texture,
-        Shader
+        Shader,
+        Scene
     };
 
     class Asset
@@ -21,6 +23,9 @@ namespace Merlin
         std::shared_ptr<void> m_asset;
 
     public:
+        Asset() : m_uuid(UUID::Nil()), m_type(AssetType::None), m_asset(nullptr)
+        {
+        }
         Asset(UUID uuid, AssetType type, std::shared_ptr<void> asset)
             : m_uuid(uuid), m_type(type), m_asset(asset)
         {

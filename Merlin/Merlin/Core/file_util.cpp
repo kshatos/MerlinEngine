@@ -13,17 +13,22 @@
 
 namespace Merlin
 {
-    Texture2DData LoadTexture(std::string file_path)
+    Texture2DData LoadTexture(std::filesystem::path file_path)
     {
         int width, height, channel_count;
         // TODO: Add options for fewer channels and flip
         // stbi_set_flip_vertically_on_load(1);
-        unsigned char* data = stbi_load(
-            file_path.c_str(), &width, &height, &channel_count, STBI_rgb_alpha);
+        auto path_string = file_path.string();
+        unsigned char* data = stbi_load(path_string.c_str(),
+                                        &width,
+                                        &height,
+                                        &channel_count,
+                                        STBI_rgb_alpha);
         if (data == nullptr)
         {
-            ME_LOG_ERROR("Failed to load texture at: " + file_path);
-            throw std::runtime_error("Failed to load texture at: " + file_path);
+            ME_LOG_ERROR("Failed to load texture at: " + path_string);
+            throw std::runtime_error("Failed to load texture at: " +
+                                     path_string);
         }
         Texture2DData texture_data(width, height, 4, data);
         stbi_image_free(data);
@@ -31,16 +36,18 @@ namespace Merlin
         return texture_data;
     }
 
-    std::shared_ptr<Mesh<Vertex_XNTBUV>> LoadMesh(std::string file_path)
+    std::shared_ptr<Mesh<Vertex_XNTBUV>> LoadMesh(
+        std::filesystem::path file_path)
     {
+        auto path_string = file_path.string();
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
-            file_path, aiProcess_Triangulate | aiProcess_FlipUVs);
+            path_string, aiProcess_Triangulate | aiProcess_FlipUVs);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
             !scene->mRootNode)
         {
-            ME_LOG_ERROR("Unable to load mesh at: " + file_path);
+            ME_LOG_ERROR("Unable to load mesh at: " + path_string);
             return nullptr;
         }
 
