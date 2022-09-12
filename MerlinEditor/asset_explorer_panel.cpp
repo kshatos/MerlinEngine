@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include <Merlin/Core/asset_registry.hpp>
+#include <Merlin/Core/file_util.hpp>
 #include <Merlin/Core/logger.hpp>
 #include <fstream>
 #include <iostream>
@@ -189,12 +190,28 @@ namespace MerlinEditor
         Merlin::UUID asset_uuid(uuid_string);
         inputfile.close();
 
+        std::shared_ptr<void> asset_pointer = nullptr;
         switch (asset_type)
         {
             case Merlin::AssetType::Mesh:
+            {
+                auto mesh_data = Merlin::LoadMesh(asset_path);
+                auto mesh_buffer = Merlin::Renderer::CreateMeshBuffer(
+                    mesh_data->GetVertexDataPointer(),
+                    mesh_data->GetVertexCount() * sizeof(Merlin::Vertex_XNTBUV),
+                    mesh_data->GetIndexDataPointer(),
+                    mesh_data->GetTriangleCount() * 3,
+                    Merlin::Vertex_XNTBUV::GetLayout());
+                asset_pointer = std::static_pointer_cast<void>(mesh_buffer);
                 break;
+            }
             case Merlin::AssetType::Texture:
+            {
+                auto data = Merlin::LoadTexture(asset_path);
+                auto texture = Merlin::Renderer::CreateTexture2D(data);
+                asset_pointer = std::static_pointer_cast<void>(texture);
                 break;
+            }
             case Merlin::AssetType::Shader:
                 break;
             case Merlin::AssetType::Scene:
@@ -202,6 +219,10 @@ namespace MerlinEditor
             default:
                 break;
         }
+        auto& registry = m_application->GetAssetRegistry();
+
+        Merlin::Asset asset(asset_uuid, asset_type, asset_pointer);
+        registry.RegisterAsset(asset);
 
         m_registered_asset_paths.insert(asset_path);
     }

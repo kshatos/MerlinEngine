@@ -20,6 +20,7 @@ namespace MerlinEditor
 
     void EditorGUILayer::OnAttach()
     {
+        m_asset_explorer_panel.SetApplication(m_application);
         SetActiveScene(std::make_shared<Merlin::GameScene>());
     }
 
@@ -46,7 +47,7 @@ namespace MerlinEditor
         ;
         app_event.Dispatch<Merlin::KeyPressedEvent>(
             [this](Merlin::KeyPressedEvent& e)
-            { 
+            {
                 if (Merlin::Input::GetKeyDown(Merlin::Key::LEFT_CONTROL) &&
                     Merlin::Input::GetKeyDown(Merlin::Key::Z))
                     Undo();
