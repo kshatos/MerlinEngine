@@ -9,9 +9,11 @@ namespace Merlin
 {
     enum class AssetType
     {
+        None,
         Mesh,
         Texture,
-        Shader
+        Shader,
+        Scene
     };
 
     class Asset
