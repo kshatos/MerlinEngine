@@ -31,6 +31,7 @@ namespace MerlinEditor
         void DrawDirectoryEntry(std::filesystem::directory_entry);
 
         void ScanForAssets(std::filesystem::path directory_path);
+        void RegisterAsset(std::filesystem::path asset_path);
     };
 }  // namespace MerlinEditor
 #endif

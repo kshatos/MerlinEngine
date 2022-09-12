@@ -4,6 +4,8 @@
 
 #include <Merlin/Core/asset_registry.hpp>
 #include <Merlin/Core/logger.hpp>
+#include <fstream>
+#include <iostream>
 
 namespace MerlinEditor
 {
@@ -157,11 +159,51 @@ namespace MerlinEditor
                     m_registered_asset_paths.end();
                 if (!is_registered)
                 {
-                    // LOAD ASSET FILE... {}
-                    m_registered_asset_paths.insert(entry_path);
+                    RegisterAsset(entry_path);
                 }
             }
         }
+    }
+
+    void AssetExplorerPanel::RegisterAsset(std::filesystem::path asset_path)
+    {
+        auto extension = asset_path.extension().string();
+        auto asset_type = ExtensionAssetType(extension);
+
+        auto meta_path = asset_path;
+        meta_path.replace_extension(".asset");
+
+        if (!std::filesystem::exists(asset_path))
+        {
+            Merlin::UUID asset_uuid;
+            std::ofstream outfile;
+            outfile.open(meta_path, std::ios::out | std::ios::trunc);
+            outfile << asset_uuid.ToString();
+            outfile.close();
+        }
+
+        std::ifstream inputfile;
+        inputfile.open(meta_path);
+        std::string uuid_string;
+        inputfile >> uuid_string;
+        Merlin::UUID asset_uuid(uuid_string);
+        inputfile.close();
+
+        switch (asset_type)
+        {
+            case Merlin::AssetType::Mesh:
+                break;
+            case Merlin::AssetType::Texture:
+                break;
+            case Merlin::AssetType::Shader:
+                break;
+            case Merlin::AssetType::Scene:
+                break;
+            default:
+                break;
+        }
+
+        m_registered_asset_paths.insert(asset_path);
     }
 
 }  // namespace MerlinEditor
