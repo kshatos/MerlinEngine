@@ -174,7 +174,7 @@ namespace MerlinEditor
         auto meta_path = asset_path;
         meta_path.replace_extension(".asset");
 
-        if (!std::filesystem::exists(asset_path))
+        if (!std::filesystem::exists(meta_path))
         {
             Merlin::UUID asset_uuid;
             std::ofstream outfile;

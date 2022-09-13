@@ -63,7 +63,6 @@ std::shared_ptr<Cubemap> main_cubemap;
 std::shared_ptr<Material> main_material;
 std::shared_ptr<Material> pbr_texture_material;
 
-
 class SceneLayer : public Layer
 {
     float m_ambient_radiance = 0.0f;
@@ -252,14 +251,12 @@ public:
             auto& entity = scene.CreateEntity();
             auto& transform_comp = entity.GetComponent<TransformComponent>();
             auto& camera_component = entity.AddComponent<CameraComponent>();
-            auto camera = std::make_shared<PerspectiveCamera>(
+            auto camera = std::make_shared<PerspectiveProjection>(
                 glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
             transform_comp.transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
-            camera_component.camera_data.camera = camera;
-            camera_component.camera_data.frame_buffer = fbuffer;
-            camera_component.camera_data.clear_color =
-                glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-            camera_component.camera_data.skybox = skybox;
+            camera_component.projection = camera;
+            camera_component.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            // camera_component.camera_data.skybox = skybox;
 
             camera_transform = &transform_comp.transform;
         }
@@ -290,7 +287,7 @@ public:
             transform_comp.transform.Scale(glm::vec3(0.01));
             transform_comp.transform.Translate(glm::vec3(2.0, 0.5, 0.0));
             transform_comp.transform.Rotate(glm::vec3(1.0, 0.0, 0.0),
-                                               -glm::pi<float>() * 0.5f);
+                                            -glm::pi<float>() * 0.5f);
 
             mesh_comp.m_data.mesh_buffer = spitfire_mesh_buffer;
             mesh_comp.m_data.material_instance = spitfire_material_instance;
@@ -326,9 +323,6 @@ public:
                 "Ambient Light", &m_ambient_radiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambient_radiance);
             ImGui::End();
-
-            ImGui::Begin("Dockable");
-            ImGui::End();
         }
     }
 
@@ -337,10 +331,11 @@ public:
         app_event.Dispatch<WindowResizedEvent>(
             [this](WindowResizedEvent& e)
             {
-                auto& render_data = scene.GetRenderData();
-                
-                render_data.camera->camera->SetAspectRatio((float)e.GetWidth() /
-                                                    (float)e.GetHeight());
+                float aspect_ratio = (float)e.GetWidth() / (float)e.GetHeight();
+                scene.VisitEntities<Merlin::CameraComponent>(
+                    [aspect_ratio](Entity entity,
+                                   Merlin::CameraComponent& camera)
+                    { camera.projection->SetAspectRatio(aspect_ratio); });
                 return false;
             });
 
@@ -355,13 +350,11 @@ public:
         float speed = 5.0e-1f;
         if (Input::GetKeyDown(Key::LEFT_SHIFT)) speed *= 2.0f;
         if (Input::GetKeyDown(Key::W))
-            camera_transform->Translate(+forward * speed *
-                                                    time_step);
+            camera_transform->Translate(+forward * speed * time_step);
         if (Input::GetKeyDown(Key::A))
             camera_transform->Translate(-right * speed * time_step);
         if (Input::GetKeyDown(Key::S))
-            camera_transform->Translate(-forward * speed *
-                                                    time_step);
+            camera_transform->Translate(-forward * speed * time_step);
         if (Input::GetKeyDown(Key::D))
             camera_transform->Translate(+right * speed * time_step);
         if (Input::GetKeyDown(Key::Z))

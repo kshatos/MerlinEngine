@@ -41,7 +41,6 @@ namespace Merlin
         ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)window_pointer, true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
 
-
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_DEPTH_TEST);
@@ -84,8 +83,6 @@ namespace Merlin
 
     void OpenGLRenderAPI::RenderScene(const SceneRenderData& scene)
     {
-        if (scene.camera == nullptr) return;
-
         // Shadow map depth pass
         {
             auto shadow_buffer =
@@ -105,10 +102,10 @@ namespace Merlin
             int width, height;
             glfwGetFramebufferSize(m_window, &width, &height);
             glViewport(0, 0, width, height);
-            glClearColor(scene.camera->clear_color.r,
-                         scene.camera->clear_color.g,
-                         scene.camera->clear_color.b,
-                         scene.camera->clear_color.a);
+            glClearColor(scene.camera.clear_color.r,
+                         scene.camera.clear_color.g,
+                         scene.camera.clear_color.b,
+                         scene.camera.clear_color.a);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             DrawMeshes(scene);
             DrawSkybox(scene);
@@ -141,7 +138,7 @@ namespace Merlin
 
     void OpenGLRenderAPI::DrawMeshes(const SceneRenderData& scene)
     {
-        auto& camera_data = *scene.camera;
+        auto& camera_data = scene.camera;
         auto shadow_buffer =
             std::dynamic_pointer_cast<OpenGLFrameBuffer>(m_shadow_buffer);
         for (const auto& mesh_pointer : scene.meshes)
@@ -255,7 +252,7 @@ namespace Merlin
 
     void OpenGLRenderAPI::DrawSkybox(const SceneRenderData& scene)
     {
-        auto& camera = *scene.camera;
+        auto& camera = scene.camera;
         auto skybox = camera.skybox;
         auto skybox_shader =
             std::dynamic_pointer_cast<OpenGLShader>(m_skybox_shader);
@@ -299,7 +296,7 @@ namespace Merlin
         if (scene.directional_lights.size() < 1) return;
 
         auto& light_data = *scene.directional_lights[0];
-        auto& camera_data = *scene.camera;
+        auto& camera_data = scene.camera;
 
         auto light_matrix = GetLightMatrix(camera_data, light_data);
 

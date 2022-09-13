@@ -95,18 +95,21 @@ namespace Merlin
         {
             auto view = m_registry.view<CameraComponent>();
             view.each(
-                [this](entt::entity entity, CameraComponent& component)
+                [this](entt::entity entity, CameraComponent& camera_component)
                 {
-                    auto& transform =
+                    auto& transform_component =
                         m_registry.get<TransformComponent>(entity);
-                    component.camera_data.projection_matrix =
-                        component.camera_data.camera->GetProjectionMatrix();
-                    component.camera_data.view_matrix = glm::inverse(
-                        transform.transform.GetTransformationMatrix());
-                    component.camera_data.view_pos =
-                        transform.transform.GetPosition();
 
-                    m_render_data.camera = &component.camera_data;
+                    CameraRenderData camera_data;
+                    camera_data.projection_matrix =
+                        camera_component.projection->GetProjectionMatrix();
+                    camera_data.view_matrix =
+                        glm::inverse(transform_component.transform
+                                         .GetTransformationMatrix());
+                    camera_data.view_pos =
+                        transform_component.transform.GetPosition();
+
+                    m_render_data.camera = camera_data;
                 });
         }
     }

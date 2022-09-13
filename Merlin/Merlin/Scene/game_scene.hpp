@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 
-#include "Merlin/Render/camera.hpp"
+#include "Merlin/Render/camera_projection.hpp"
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Scene/core_components.hpp"
@@ -31,6 +31,13 @@ namespace Merlin
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         void VisitEntities(std::function<void(Entity)> callback);
+        template <typename... Args>
+        void VisitEntities(std::function<void(Entity, Args&...)> callback)
+        {
+            auto view = m_registry.view<Args...>();
+            view.each([callback, this](entt::entity entity, Args&... args)
+                      { callback(Entity(entity, this), args...); });
+        }
         const SceneRenderData& GetRenderData();
         inline void SetAmbientLight(float radiance)
         {

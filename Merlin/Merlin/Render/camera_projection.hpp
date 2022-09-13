@@ -1,14 +1,14 @@
-#ifndef CAMERA_HPP
-#define CAMERA_HPP
+#ifndef CAMERA_PROJECTION_HPP
+#define CAMERA_PROJECTION_HPP
 #include <Merlin/Render/transform.hpp>
 #include <glm/glm.hpp>
 
 namespace Merlin
 {
-    class Camera
+    class CameraProjection
     {
     public:
-        virtual ~Camera() {}
+        virtual ~CameraProjection() {}
         virtual glm::mat4 GetProjectionMatrix() = 0;
         virtual void SetAspectRatio(float aspect_ratio) = 0;
     };
