@@ -254,11 +254,9 @@ public:
             auto camera = std::make_shared<PerspectiveProjection>(
                 glm::pi<float>() / 2.0f, 1.0f, 0.1f, 30.0f);
             transform_comp.transform.Translate(glm::vec3(0.0f, 1.5f, 5.0f));
-            camera_component.camera_data.camera = camera;
-            camera_component.camera_data.frame_buffer = fbuffer;
-            camera_component.camera_data.clear_color =
-                glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
-            camera_component.camera_data.skybox = skybox;
+            camera_component.projection = camera;
+            camera_component.clear_color = glm::vec4(0.05f, 0.05f, 0.05f, 1.0f);
+            // camera_component.camera_data.skybox = skybox;
 
             camera_transform = &transform_comp.transform;
         }
@@ -325,9 +323,6 @@ public:
                 "Ambient Light", &m_ambient_radiance, 0.0f, 1.0f);
             scene.SetAmbientLight(m_ambient_radiance);
             ImGui::End();
-
-            ImGui::Begin("Dockable");
-            ImGui::End();
         }
     }
 
@@ -336,10 +331,11 @@ public:
         app_event.Dispatch<WindowResizedEvent>(
             [this](WindowResizedEvent& e)
             {
-                auto& render_data = scene.GetRenderData();
-
-                render_data.camera->camera->SetAspectRatio(
-                    (float)e.GetWidth() / (float)e.GetHeight());
+                float aspect_ratio = (float)e.GetWidth() / (float)e.GetHeight();
+                scene.VisitEntities<Merlin::CameraComponent>(
+                    [aspect_ratio](Entity entity,
+                                   Merlin::CameraComponent& camera)
+                    { camera.projection->SetAspectRatio(aspect_ratio); });
                 return false;
             });
 

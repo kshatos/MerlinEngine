@@ -31,6 +31,13 @@ namespace Merlin
         void GameScene::OnAwake();
         void OnUpdate(float timestep);
         void VisitEntities(std::function<void(Entity)> callback);
+        template <typename... Args>
+        void VisitEntities(std::function<void(Entity, Args&...)> callback)
+        {
+            auto view = m_registry.view<Args...>();
+            view.each([callback, this](entt::entity entity, Args&... args)
+                      { callback(Entity(entity, this), args...); });
+        }
         const SceneRenderData& GetRenderData();
         inline void SetAmbientLight(float radiance)
         {

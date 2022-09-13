@@ -32,7 +32,8 @@ namespace Merlin
 
     struct CameraComponent
     {
-        CameraRenderData camera_data;
+        glm::vec4 clear_color;
+        std::shared_ptr<CameraProjection> projection;
     };
 
     struct MeshRenderComponent
