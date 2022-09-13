@@ -38,7 +38,8 @@ set(MERLIN_RENDER_SOURCE
     Merlin/Render/material.cpp
     Merlin/Render/render_api.cpp
     Merlin/Render/renderer.cpp
-    Merlin/Render/perspective_camera.cpp
+    Merlin/Render/perspective_projection.cpp
+    Merlin/Render/orthographic_projection.cpp
     Merlin/Render/transform.cpp
     Merlin/Render/mesh_utils.cpp
     Merlin/Render/skybox.cpp
@@ -60,8 +61,9 @@ set(MERLIN_RENDER_INCLUDE
     Merlin/Render/render_api.hpp
     Merlin/Render/scene_render_data.hpp
     Merlin/Render/renderer.hpp
-    Merlin/Render/camera.hpp
-    Merlin/Render/perspective_camera.hpp
+    Merlin/Render/camera_projection.hpp
+    Merlin/Render/perspective_projection.hpp
+    Merlin/Render/orthographic_projection.hpp
     Merlin/Render/transform.hpp
     Merlin/Render/mesh.hpp
     Merlin/Render/mesh_vertex.hpp

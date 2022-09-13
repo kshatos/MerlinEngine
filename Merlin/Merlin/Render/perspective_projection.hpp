@@ -1,10 +1,10 @@
-#ifndef PERSPECTIVE_CAMERA_HPP
-#define PERSPECTIVE_CAMERA_HPP
-#include "Merlin/Render/camera.hpp"
+#ifndef PERSPECTIVE_PROJECTION_HPP
+#define PERSPECTIVE_PROJECTION_HPP
+#include "Merlin/Render/camera_projection.hpp"
 
 namespace Merlin
 {
-    class PerspectiveCamera : public Camera
+    class PerspectiveCamera : public CameraProjection
     {
         float m_fov;
         float m_aspect;

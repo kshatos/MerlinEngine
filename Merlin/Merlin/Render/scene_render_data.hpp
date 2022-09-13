@@ -2,7 +2,7 @@
 #define SCENE_RENDER_DATA_HPP
 #include <vector>
 
-#include "Merlin/Render/camera.hpp"
+#include "Merlin/Render/camera_projection.hpp"
 #include "Merlin/Render/frame_buffer.hpp"
 #include "Merlin/Render/material.hpp"
 #include "Merlin/Render/mesh_buffer.hpp"
@@ -12,7 +12,7 @@ namespace Merlin
 {
     struct CameraRenderData
     {
-        std::shared_ptr<Camera> camera;
+        std::shared_ptr<CameraProjection> camera;
         std::shared_ptr<Skybox> skybox;
         std::shared_ptr<FrameBuffer> frame_buffer;
         glm::vec4 clear_color;

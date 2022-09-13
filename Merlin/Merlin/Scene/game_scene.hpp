@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 
-#include "Merlin/Render/camera.hpp"
+#include "Merlin/Render/camera_projection.hpp"
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Render/skybox.hpp"
 #include "Merlin/Scene/core_components.hpp"
