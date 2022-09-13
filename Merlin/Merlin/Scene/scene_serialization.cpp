@@ -480,7 +480,7 @@ namespace Merlin
                 deserialized_projection->SetFOV(projection["FOV"].as<float>());
                 deserialized_projection->SetNearPlane(
                     projection["NearPlane"].as<float>());
-                deserialized_projection->SetNearPlane(
+                deserialized_projection->SetFarPlane(
                     projection["FarPlane"].as<float>());
                 deserialized_camera_component.projection =
                     deserialized_projection;
@@ -495,7 +495,7 @@ namespace Merlin
                     projection["VerticalSize"].as<float>());
                 deserialized_projection->SetNearPlane(
                     projection["NearPlane"].as<float>());
-                deserialized_projection->SetNearPlane(
+                deserialized_projection->SetFarPlane(
                     projection["FarPlane"].as<float>());
                 deserialized_camera_component.projection =
                     deserialized_projection;

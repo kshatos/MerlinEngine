@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 
+#include <Merlin/Render/orthographic_projection.hpp>
 #include <Merlin/Scene/core_components.hpp>
 #include <Merlin/Scene/game_scene.hpp>
 
@@ -273,9 +274,103 @@ namespace MerlinEditor
                 }
                 if (tree_open)
                 {
-                    // TODO:
-                    // Dropdown for camera type selection
-                    // Skybox asset references
+                    std::vector<float> color_buffer{
+                        camera_component.clear_color.r,
+                        camera_component.clear_color.g,
+                        camera_component.clear_color.b,
+                        camera_component.clear_color.a,
+                    };
+                    if (ImGui::ColorEdit3("Clear Color",
+                                          color_buffer.data(),
+                                          ImGuiColorEditFlags_DefaultOptions_))
+                    {
+                        camera_component.clear_color.x = color_buffer[0];
+                        camera_component.clear_color.y = color_buffer[1];
+                        camera_component.clear_color.z = color_buffer[2];
+                    }
+
+                    auto perspective = std::dynamic_pointer_cast<
+                        Merlin::PerspectiveProjection>(
+                        camera_component.projection);
+                    auto orthographic = std::dynamic_pointer_cast<
+                        Merlin::OrthographicProjection>(
+                        camera_component.projection);
+
+                    ImGui::Text("Projection");
+                    ImGui::Indent();
+                    const char* projection_names[]{"Perspective",
+                                                   "Orthographic"};
+                    auto current_item = perspective ? 0 : 1;
+                    auto start_item = current_item;
+                    auto current_name = projection_names[current_item];
+                    if (ImGui::Combo("Type",
+                                     &current_item,
+                                     projection_names,
+                                     IM_ARRAYSIZE(projection_names)) &&
+                        current_item != start_item)
+                    {
+                        switch (current_item)
+                        {
+                            case 0:
+                            {
+                                camera_component.projection = std::make_shared<
+                                    Merlin::PerspectiveProjection>();
+                                break;
+                            }
+                            case 1:
+                            {
+                                camera_component.projection = std::make_shared<
+                                    Merlin::OrthographicProjection>();
+                                break;
+                            }
+                        }
+                    }
+
+                    if (perspective)
+                    {
+                        float fov_buffer = perspective->GetFOV();
+                        if (ImGui::InputFloat("FOV", &fov_buffer))
+                        {
+                            perspective->SetFOV(fov_buffer);
+                        }
+
+                        float near_buffer = perspective->GetNearPlane();
+                        if (ImGui::InputFloat("Near Plane", &near_buffer))
+                        {
+                            perspective->SetNearPlane(near_buffer);
+                        }
+
+                        float far_buffer = perspective->GetFarPlane();
+                        if (ImGui::InputFloat("Far Plane", &far_buffer))
+                        {
+                            perspective->SetFarPlane(far_buffer);
+                        }
+                    }
+
+                    if (orthographic)
+                    {
+                        float vertical_buffer = orthographic->GetVerticalSize();
+                        if (ImGui::InputFloat("Vertical Size",
+                                              &vertical_buffer))
+                        {
+                            orthographic->SetVerticalSize(vertical_buffer);
+                        }
+
+                        float near_buffer = orthographic->GetNearPlane();
+                        if (ImGui::InputFloat("Near Plane", &near_buffer))
+                        {
+                            orthographic->SetNearPlane(near_buffer);
+                        }
+
+                        float far_buffer = orthographic->GetFarPlane();
+                        if (ImGui::InputFloat("Far Plane", &far_buffer))
+                        {
+                            orthographic->SetFarPlane(far_buffer);
+                        }
+                    }
+
+                    ImGui::Unindent();
+
                     ImGui::TreePop();
                 }
                 ImGui::Separator();
