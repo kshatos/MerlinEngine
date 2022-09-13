@@ -14,7 +14,10 @@ namespace Merlin
         bool m_is_dirty;
 
     public:
-        PerspectiveProjection(float fov, float aspect, float near, float far);
+        PerspectiveProjection(float fov = 1.0f,
+                              float aspect = 1.0f,
+                              float near = 0.0001f,
+                              float far = 100.0f);
         glm::mat4 GetProjectionMatrix() override;
 
         void SetAspectRatio(float aspect_ratio) override;

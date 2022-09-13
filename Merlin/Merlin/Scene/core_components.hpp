@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "Merlin/Core/uuid.hpp"
+#include "Merlin/Render/perspective_projection.hpp"
 #include "Merlin/Render/scene_render_data.hpp"
 #include "Merlin/Scene/entity.hpp"
 
@@ -32,8 +33,9 @@ namespace Merlin
 
     struct CameraComponent
     {
-        glm::vec4 clear_color;
-        std::shared_ptr<CameraProjection> projection;
+        glm::vec4 clear_color = glm::vec4(0.0f);
+        std::shared_ptr<CameraProjection> projection =
+            std::make_shared<PerspectiveProjection>();
     };
 
     struct MeshRenderComponent

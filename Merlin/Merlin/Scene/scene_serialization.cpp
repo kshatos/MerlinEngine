@@ -3,6 +3,8 @@
 #include <fstream>
 
 #include "Merlin/Core/logger.hpp"
+#include "Merlin/Render/orthographic_projection.hpp"
+#include "Merlin/Render/perspective_projection.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace YAML
@@ -130,6 +132,60 @@ namespace YAML
     {
         out << YAML::Flow;
         out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
+        return out;
+    }
+
+    YAML::Emitter& operator<<(
+        YAML::Emitter& out,
+        const std::shared_ptr<Merlin::CameraProjection>& projection)
+    {
+        auto perspective =
+            std::dynamic_pointer_cast<Merlin::PerspectiveProjection>(
+                projection);
+        if (perspective)
+        {
+            out << YAML::BeginMap;
+            {
+                out << YAML::Key << "ProjectionType";
+                out << YAML::Value << "Perspective";
+
+                out << YAML::Key << "AspectRatio";
+                out << YAML::Value << perspective->GetAspectRatio();
+
+                out << YAML::Key << "FOV";
+                out << YAML::Value << perspective->GetFOV();
+
+                out << YAML::Key << "FarPlane";
+                out << YAML::Value << perspective->GetFarPlane();
+
+                out << YAML::Key << "NearPlane";
+                out << YAML::Value << perspective->GetNearPlane();
+            }
+            out << YAML::EndMap;
+        }
+
+        auto orthographic =
+            std::dynamic_pointer_cast<Merlin::OrthographicProjection>(
+                projection);
+        if (orthographic)
+        {
+            out << YAML::BeginMap;
+            {
+                out << YAML::Key << "ProjectionType";
+                out << YAML::Value << "Orthographic";
+
+                out << YAML::Key << "AspectRatio";
+                out << YAML::Value << orthographic->GetAspectRatio();
+                out << YAML::Key << "VerticalSize";
+                out << YAML::Value << orthographic->GetVerticalSize();
+                out << YAML::Key << "FarPlane";
+                out << YAML::Value << orthographic->GetFarPlane();
+                out << YAML::Key << "NearPlane";
+                out << YAML::Value << orthographic->GetNearPlane();
+            }
+            out << YAML::EndMap;
+        }
+
         return out;
     }
 
@@ -279,6 +335,11 @@ namespace Merlin
                 out << YAML::Value;
                 out << YAML::BeginMap;
                 {
+                    out << YAML::Key << "ClearColor";
+                    out << YAML::Value << camera_component.clear_color;
+
+                    out << YAML::Key << "Projection";
+                    out << YAML::Value << camera_component.projection;
                 }
                 out << YAML::EndMap;
             }
@@ -394,13 +455,51 @@ namespace Merlin
         auto mesh_render_component = entity["MeshRender"];
         if (mesh_render_component)
         {
-            deserialized_entity.AddComponent<MeshRenderComponent>();
+            auto& deserialized_mesh_component =
+                deserialized_entity.AddComponent<MeshRenderComponent>();
         }
 
         auto camera_component = entity["Camera"];
         if (camera_component)
         {
-            deserialized_entity.AddComponent<CameraComponent>();
+            auto& deserialized_camera_component =
+                deserialized_entity.AddComponent<CameraComponent>();
+
+            deserialized_camera_component.clear_color =
+                camera_component["ClearColor"].as<glm::vec4>();
+
+            auto projection = camera_component["Projection"];
+            auto projection_type =
+                projection["ProjectionType"].as<std::string>();
+            if (projection_type == "Perspective")
+            {
+                auto deserialized_projection =
+                    std::make_shared<Merlin::PerspectiveProjection>();
+                deserialized_projection->SetAspectRatio(
+                    projection["AspectRatio"].as<float>());
+                deserialized_projection->SetFOV(projection["FOV"].as<float>());
+                deserialized_projection->SetNearPlane(
+                    projection["NearPlane"].as<float>());
+                deserialized_projection->SetNearPlane(
+                    projection["FarPlane"].as<float>());
+                deserialized_camera_component.projection =
+                    deserialized_projection;
+            }
+            if (projection_type == "Orthographic")
+            {
+                auto deserialized_projection =
+                    std::make_shared<Merlin::OrthographicProjection>();
+                deserialized_projection->SetAspectRatio(
+                    projection["AspectRatio"].as<float>());
+                deserialized_projection->SetVerticalSize(
+                    projection["VerticalSize"].as<float>());
+                deserialized_projection->SetNearPlane(
+                    projection["NearPlane"].as<float>());
+                deserialized_projection->SetNearPlane(
+                    projection["FarPlane"].as<float>());
+                deserialized_camera_component.projection =
+                    deserialized_projection;
+            }
         }
     }
 

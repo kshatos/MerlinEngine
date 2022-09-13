@@ -14,10 +14,10 @@ namespace Merlin
         bool m_is_dirty;
 
     public:
-        OrthographicProjection(float vertical_size,
-                               float near_plane,
-                               float far_plane,
-                               float aspect_ratio);
+        OrthographicProjection(float vertical_size = 1.0f,
+                               float near_plane = 0.00001f,
+                               float far_plane = 100.0f,
+                               float aspect_ratio = 1.0f);
         virtual glm::mat4 GetProjectionMatrix() override;
 
         virtual void SetAspectRatio(float aspect_ratio) override;
